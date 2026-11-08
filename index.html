@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="uz">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Minbu Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@300;400;500&display=swap">
+<style>
+/* Night-green control room: the township map in the middle, smoked-glass instruments around it. Single dark look by choice. */
+:root{
+  color-scheme:dark;
+  --bg:#0c1b12; --rail:#0f2216; --land:#1b3522;
+  --glass:rgba(14,34,21,.8); --glass-2:rgba(120,180,120,.1); --line:rgba(170,215,160,.17);
+  --tx:#ecf4e6; --tx-2:#a5b9a2; --leaf:#7fd06c; --leaf-2:#3f8f49; --gold:#f0c744; --clay:#e58a4e;
+  --st1:#2e7d32; --st2:#6fb544; --st3:#b9d35a; --st4:#f5ec9c; --st0:#55665a;
+  --display:"Sora","Segoe UI",system-ui,sans-serif; --body:"Manrope","Segoe UI",system-ui,sans-serif;
+  --r:14px; --bottom-h:236px; --side:286px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--body);font-size:13px}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+h1,h2,p{margin:0}
+.num{font-family:var(--display);font-weight:300;font-variant-numeric:tabular-nums}
+.app{display:grid;grid-template-columns:200px minmax(0,1fr);grid-template-rows:56px minmax(0,1fr);height:100%}
+
+.top{grid-column:1/3;display:flex;align-items:center;gap:16px;padding-inline:16px;background:var(--rail);border-bottom:1px solid var(--line);position:relative;z-index:30}
+.brand{display:flex;align-items:center;gap:9px;font:400 16px var(--display);width:184px;flex:none}
+.brand svg{color:var(--leaf)}
+.search{position:relative;flex:0 1 340px;min-width:0}
+.search input{width:100%;height:36px;border:1px solid var(--line);border-radius:10px;background:var(--glass-2);padding:0 12px 0 34px}
+.search input::placeholder{color:var(--tx-2)}
+.search svg{position:absolute;left:11px;top:10px;width:16px;height:16px;fill:none;stroke:var(--tx-2);stroke-width:1.7;stroke-linecap:round}
+.results{position:absolute;left:0;right:0;top:calc(100% + 6px);background:#132a1b;border:1px solid var(--line);border-radius:12px;padding:5px;z-index:20;box-shadow:0 14px 30px rgba(0,0,0,.45);max-height:260px;overflow:auto}
+.results button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:7px 10px;border-radius:8px}
+.results button:hover,.results button:focus-visible{background:var(--glass-2)}
+.results span{color:var(--tx-2);font-size:12px;white-space:nowrap}
+
+/* filters: same pill group as the old Variant switch */
+.filters{margin-left:auto;display:flex;gap:2px;background:var(--glass-2);border:1px solid var(--line);border-radius:10px;padding:2px;flex:none}
+.fl{position:relative}
+.fbtn{display:flex;align-items:center;gap:6px;height:30px;padding:0 10px 0 11px;border-radius:8px;font-size:12px;color:var(--tx-2);white-space:nowrap}
+.fbtn b{color:var(--tx);font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis}
+.fbtn i{width:8px;height:8px;border-radius:50%;flex:none}
+.fbtn svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:1.8;transition:transform .16s}
+.fbtn:hover{color:var(--tx)}
+.fbtn.on{background:var(--leaf-2);color:#dff3d8}
+.fbtn.on b{color:#fff}
+.fbtn[aria-expanded="true"] svg{transform:rotate(180deg)}
+.menu{position:absolute;right:0;top:calc(100% + 8px);width:210px;background:#132a1b;border:1px solid var(--line);border-radius:12px;padding:5px;box-shadow:0 16px 34px rgba(0,0,0,.5);transform-origin:top center;animation:drop .17s ease-out}
+.menu.wide{width:250px}
+@keyframes drop{from{opacity:0;transform:translateY(-8px) scaleY(.94)}to{opacity:1;transform:none}}
+.menu input{width:100%;height:32px;margin-bottom:4px;border:1px solid var(--line);border-radius:8px;background:var(--glass-2);padding:0 10px}
+.menu input::placeholder{color:var(--tx-2)}
+.opts{max-height:204px;overflow:auto;display:flex;flex-direction:column;gap:1px;overscroll-behavior:contain}
+.opts button{display:flex;align-items:center;gap:8px;min-height:32px;padding:5px 10px;border-radius:8px;text-align:left;font-size:12.5px}
+.opts button:hover,.opts button:focus-visible{background:var(--glass-2);outline:none}
+.opts button[aria-selected="true"]{background:var(--leaf-2);color:#fff;font-weight:600}
+.opts small{margin-left:auto;color:var(--tx-2);font-size:11px;font-variant-numeric:tabular-nums}
+.opts button[aria-selected="true"] small{color:#dff3d8}
+.opts i{width:8px;height:8px;border-radius:50%;flex:none}
+.opts p{margin:0;padding:8px 10px;color:var(--tx-2);font-size:12px}
+
+.rail{background:var(--rail);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:14px;padding:12px 10px;min-height:0;overflow:auto}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;text-align:left;color:var(--tx-2);font-weight:500}
+.nav button:hover{background:var(--glass-2);color:var(--tx)}
+.nav button[aria-pressed="true"]{background:linear-gradient(90deg,#3f8f49,#2c6c39);color:#fff}
+.nav svg{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.soon{display:flex;flex-direction:column;gap:7px;padding:6px 10px;color:var(--tx-2);font-size:12px;line-height:1.4}
+.soon b{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;font-weight:600}
+.note{margin-top:auto;background:var(--glass-2);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:8px;align-items:flex-start;line-height:1.42}
+.note h2{font:400 13.5px var(--display)}
+.note b{color:var(--gold);font-weight:600}
+.btn{border:1px solid var(--leaf-2);color:var(--tx);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600}
+.btn:hover{background:var(--leaf-2)}
+.src{font-size:10.5px;line-height:1.4;color:var(--tx-2);padding-inline:4px}
+
+.stage{position:relative;min-width:0;min-height:0;overflow:hidden;background:var(--bg)}
+#map{position:absolute;inset:0;background:var(--bg)}
+.maplibregl-map{overflow:hidden;-webkit-tap-highlight-color:transparent}
+.maplibregl-canvas-container,.maplibregl-canvas{position:absolute;left:0;top:0}
+.maplibregl-canvas{outline:none}
+.vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 58% 62% at 50% 50%,transparent 55%,rgba(8,20,12,.72) 100%)}
+.mapmsg{position:absolute;inset:0;display:grid;place-items:center;font:300 16px var(--display);text-align:center;padding:24px}
+
+.ui{position:absolute;inset:0;padding:14px;display:grid;gap:10px;pointer-events:none;
+  grid-template-columns:var(--side) minmax(0,1fr) var(--side);
+  grid-template-rows:auto auto minmax(0,1fr) var(--bottom-h);
+  grid-template-areas:"head head right" "stats stats right" "left hole right" "bot bot bot"}
+.ui>*{pointer-events:auto;min-width:0;min-height:0}
+.head{grid-area:head;display:flex;align-items:center;gap:12px}
+.back{width:30px;height:30px;flex:none;border-radius:9px;background:var(--glass);border:1px solid var(--line);font-size:15px}
+.head h1{font:400 clamp(19px,1.9vw,23px)/1.15 var(--display);text-wrap:balance;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.head small{display:block;color:var(--tx-2);font-size:12px;text-shadow:0 1px 6px rgba(0,0,0,.7)}
+.stats{grid-area:stats;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:var(--r);backdrop-filter:blur(9px);padding:11px 13px;min-width:0}
+.stat{display:grid;grid-template-columns:32px minmax(0,1fr);gap:0 9px;align-items:center}
+.stat .ic{width:32px;height:32px;border-radius:9px;background:var(--glass-2);color:var(--leaf);display:grid;place-items:center}
+.stat .ic svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.stat label{color:var(--tx-2);font-size:12px;font-weight:500}
+.stat .num{grid-column:1/3;font-size:25px;line-height:1.25;margin-top:5px;white-space:nowrap}
+.stat .num small{font-size:13px}
+.stat .sub{grid-column:1/3;color:var(--leaf);font-size:11.5px}
+.left{grid-area:left;align-self:start;display:flex;flex-direction:column;gap:10px;overflow:auto;max-height:100%}
+.left h2,.card h2{font:400 14px var(--display)}
+.card header small{display:block;color:var(--tx-2);font:400 11.5px var(--body)}
+.health{display:grid;grid-template-columns:112px minmax(0,1fr);gap:12px;align-items:center}
+.legend{display:flex;flex-direction:column;gap:6px;font-size:12px}
+.legend div{display:flex;align-items:center;gap:7px}
+.legend i{width:8px;height:8px;border-radius:50%;flex:none}
+.legend b{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums}
+.legend em{font-style:normal;color:var(--tx-2);width:34px;text-align:right;font-variant-numeric:tabular-nums}
+.hole{grid-area:hole;pointer-events:none}
+.right{grid-area:right;display:flex;flex-direction:column;gap:10px;min-height:0;overflow:auto}
+.right .card{display:flex;flex-direction:column;gap:9px}
+.big{display:flex;align-items:baseline;gap:8px}
+.big .num{font-size:36px;line-height:1.05}
+.big span:last-child{color:var(--tx-2)}
+.tri{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.tri div{background:var(--glass-2);border-radius:9px;padding:6px 7px;text-align:center;min-width:0}
+.tri label{display:block;color:var(--tx-2);font-size:10.5px}
+.tri .num{display:block;font-size:13px;font-weight:400;white-space:nowrap}
+.tri em{display:block;font-style:normal;font-size:10.5px;font-weight:600}
+.up{color:var(--leaf)} .dn{color:var(--clay)} .eq{color:var(--gold)}
+.prog label{display:flex;justify-content:space-between;font-size:12px;color:var(--tx-2)}
+.prog b{color:var(--tx);font-weight:600}
+.track{height:7px;margin-top:5px;border-radius:4px;background:var(--glass-2);overflow:hidden}
+.track i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--leaf-2),var(--leaf));transition:width .35s}
+
+.bot{grid-area:bot;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1.18fr) minmax(0,1.08fr);gap:10px}
+.bot .card{display:flex;flex-direction:column;gap:6px;overflow:hidden;position:relative}
+.bot header{display:flex;align-items:flex-start;gap:8px}
+.bot header h2{white-space:nowrap}
+.bot header small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bot header>div{min-width:0}
+.bot header .chip{margin-inline:auto;flex:none}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--glass-2);border:1px solid var(--line);border-radius:999px;padding:3px 11px;font:400 12.5px var(--display);white-space:nowrap}
+.chip i{width:8px;height:8px;border-radius:50%}
+.plot{flex:1;min-height:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px}
+.ileg{display:flex;flex-direction:column;justify-content:center;gap:1px;font-size:11.5px}
+.ileg button{display:flex;align-items:center;gap:7px;padding:2px 6px;border-radius:6px;text-align:left;color:var(--tx-2);white-space:nowrap}
+.ileg button:hover{background:var(--glass-2);color:var(--tx)}
+.ileg button.on{color:var(--tx);font-weight:600}
+.ileg i{width:14px;height:3px;border-radius:2px;flex:none}
+.svgbox{position:relative;min-width:0;min-height:0}
+.svgbox svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.tip{position:absolute;pointer-events:none;background:#f2f7ec;color:#14261a;border-radius:8px;padding:4px 9px;font-size:11.5px;font-weight:600;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.4);z-index:5;line-height:1.45}
+.tip .row{display:flex;align-items:center;gap:6px;font-weight:500}
+.tip .row i{width:8px;height:8px;border-radius:50%}
+.tip .row b{margin-left:auto;padding-left:12px;font-variant-numeric:tabular-nums}
+.tip .h{font-weight:700;margin-bottom:1px}
+#hover{left:0;top:0;z-index:9}
+
+.dist{display:grid;grid-template-columns:118px minmax(0,1fr);gap:12px;align-items:center;flex:1;min-height:0}
+.dtab{display:grid;gap:4px;font-size:11.5px;min-width:0}
+.dtab .r{display:grid;grid-template-columns:9px minmax(0,auto) minmax(14px,1fr) auto 32px;gap:7px;align-items:center;font-variant-numeric:tabular-nums}
+.dtab .nm{display:flex;flex-direction:column;line-height:1.2;white-space:nowrap}
+.dtab i{width:9px;height:9px;border-radius:50%}
+.dtab .bar{height:6px;border-radius:3px;background:var(--glass-2);position:relative;overflow:hidden}
+.dtab .bar b{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
+.dtab .d{font-size:10px;color:var(--tx-2);white-space:nowrap}
+.dtab .ha{text-align:right}
+.dtab .pc{text-align:right;color:var(--tx-2)}
+.dtab .r{cursor:pointer;border-radius:7px;padding:1px 4px;margin:0 -4px}
+.dtab .r:hover{background:var(--glass-2)}
+.dtab .r.act{background:rgba(127,208,108,.16);outline:1px solid var(--leaf-2)}
+.dtab .r.off{opacity:.38}
+.mleg div{cursor:pointer;border-radius:6px;padding:1px 4px;margin:0 -4px}
+.mleg div:hover{background:var(--glass-2)}
+.mleg div.act{background:rgba(127,208,108,.16)}
+.mleg div.off{opacity:.38}
+.bm{align-self:stretch}
+.bm button{flex:1}
+.fchip{position:absolute;right:13px;top:40px;display:none;align-items:center;gap:6px;font-size:11px;color:var(--tx-2)}
+.fchip.on{display:flex}
+.fchip button{background:var(--glass-2);border-radius:6px;padding:2px 7px;color:var(--tx)}
+.dnote{font-size:11px;color:var(--tx-2);line-height:1.35}
+.dnote b{color:var(--tx);font-weight:600}
+
+/* pins */
+.pin{position:absolute;left:0;top:0;width:26px;height:33px;padding:0;display:block;filter:drop-shadow(0 3px 5px rgba(0,0,0,.55))}
+.pin svg{display:block}
+.pin .lab{position:absolute;left:30px;top:-8px;background:var(--glass);border:1px solid var(--line);border-radius:9px;padding:5px 9px;text-align:left;white-space:nowrap;font-size:11.5px;line-height:1.35;color:var(--tx)}
+.pin .lab b{display:block;font-weight:600}
+.pin .lab em{font-style:normal;color:var(--tx-2)}
+
+.drawer{position:absolute;left:0;top:0;bottom:0;width:min(380px,100%);background:#10261a;border-right:1px solid var(--line);z-index:12;display:flex;flex-direction:column;box-shadow:12px 0 30px rgba(0,0,0,.45)}
+.drawer header{display:flex;flex-direction:column;gap:9px;padding:14px 14px 9px}
+.drawer h2{font:400 18px var(--display);display:flex;justify-content:space-between;align-items:center}
+.drawer h2 button{width:28px;height:28px;border-radius:8px;background:var(--glass-2)}
+.seg{display:flex;background:var(--glass-2);border-radius:8px;padding:2px;flex:none}
+.seg button{padding:3px 9px;border-radius:6px;font-size:11.5px;color:var(--tx-2)}
+.seg button[aria-pressed="true"]{background:var(--leaf-2);color:#fff;font-weight:600}
+.list{overflow:auto;flex:1;padding:0 7px 10px}
+.list button{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:3px 8px;width:100%;text-align:left;padding:7px;border-radius:9px;align-items:baseline}
+.list button:hover,.list button[aria-current="true"]{background:var(--glass-2)}
+.list .rk{color:var(--tx-2);font-size:11.5px;font-variant-numeric:tabular-nums}
+.list .v{font-variant-numeric:tabular-nums}
+.list .sub{grid-column:2/4;height:4px;border-radius:2px;background:var(--glass-2);overflow:hidden}
+.list .sub i{display:block;height:100%;background:var(--leaf)}
+
+@media (max-width:1250px){.fbtn{padding:0 8px}.fbtn .k{display:none}}
+@media (max-width:1100px){:root{--side:244px}.stat .num{font-size:21px}}
+@media (max-width:900px){
+  html,body{height:auto}
+  .app{display:block}
+  .top{flex-wrap:wrap;padding-block:10px;gap:10px;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px))}
+  .brand{width:auto}
+  .search{order:3;flex:1 0 100%}
+  .filters{order:4;flex:1 0 100%;margin-left:0;overflow-x:auto}
+  .fl{position:static}
+  .menu{left:16px;right:16px;width:auto}
+  .rail{border-right:0;padding:8px 16px}
+  .nav{flex-direction:row;overflow-x:auto}
+  .nav button{flex:none}
+  .soon,.src{display:none}
+  .stage{overflow:visible}
+  #map{position:relative;inset:auto;height:56vh;min-height:320px}
+  .vig{display:none}
+  .ui{position:static;display:flex;flex-direction:column;padding:12px 16px}
+  .hole{display:none}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bot{grid-template-columns:minmax(0,1fr)}
+  .bot .card{min-height:250px}
+  .left,.right{overflow:visible;max-height:none}
+  .drawer{position:fixed}
+}
+@media (prefers-reduced-motion:reduce){.track i{transition:none}.menu{animation:none}.fbtn svg{transition:none}}
+
+.gate{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,#173322,#0c1b12 70%);padding:24px}
+.gate .box{width:min(420px,100%);background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:26px 24px;display:flex;flex-direction:column;gap:14px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.gate h1{font:400 22px var(--display)}
+.gate p{color:var(--tx-2);line-height:1.45;margin:0}
+.gate .go{background:linear-gradient(90deg,#3f8f49,#2c6c39);color:#fff;border-radius:10px;padding:10px 14px;font-weight:600}
+.gate .go[disabled]{opacity:.6;cursor:wait}
+.gate .err{color:var(--clay)}
+.who{flex:none;height:30px;padding:0 10px;border-radius:8px;background:var(--glass-2);border:1px solid var(--line);font-size:12px;color:var(--tx-2)}
+.who:hover{color:var(--tx)}
+</style>
+
+<div class="gate" id="gate"><div class="box">
+  <svg width="34" height="34" viewBox="0 0 26 26" fill="none" stroke="#7fd06c" stroke-width="1.5" style="margin:0 auto" aria-hidden="true"><rect x="2" y="2" width="22" height="22" rx="7"/><path d="M2 14c6-4 10 3 22-3M9 2c-1 7 3 9 2 22M18 2c-2 5 2 6 0 10"/></svg>
+  <h1>Minbu Portal</h1>
+  <p id="gmsg">Ma'lumotlar ArcGIS Online'da xususiy saqlanadi. Ko'rish uchun ArcGIS akkauntingiz bilan kiring.</p>
+  <button class="go" id="signin">ArcGIS bilan kirish</button>
+</div></div>
+<div class="app">
+  <div class="top">
+    <div class="brand">
+      <svg width="24" height="24" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="2" width="22" height="22" rx="7"/><path d="M2 14c6-4 10 3 22-3M9 2c-1 7 3 9 2 22M18 2c-2 5 2 6 0 10"/></svg>
+      Minbu Atlas
+    </div>
+    <div class="search">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="m11 11 3.5 3.5"/></svg>
+      <input id="q" type="search" placeholder="Qishloq nomini yozing" autocomplete="off" aria-label="Qishloq qidirish">
+      <div class="results" id="res" hidden></div>
+    </div>
+    <div class="filters" id="filters" role="group" aria-label="Filtrlar"></div>
+    <button class="who" id="who" hidden title="Chiqish"></button>
+  </div>
+
+  <aside class="rail">
+    <nav class="nav" aria-label="Bo'limlar">
+      <button id="n-all" aria-pressed="true"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1.4"/><rect x="9" y="2" width="5" height="5" rx="1.4"/><rect x="2" y="9" width="5" height="5" rx="1.4"/><rect x="9" y="9" width="5" height="5" rx="1.4"/></svg>Boshqaruv paneli</button>
+      <button id="n-list" aria-pressed="false"><svg viewBox="0 0 16 16"><path d="M3 4h10M3 8h10M3 12h7"/></svg>Qishloqlar</button>
+      <button id="n-size" aria-pressed="false"><svg viewBox="0 0 16 16"><path d="M2 12 6 3l4 6 2-2 2 5z"/></svg>Kontur holati</button>
+      <button id="n-share" aria-pressed="false"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 2v6l4 4"/></svg>Ekin ulushi</button>
+    </nav>
+    <div class="soon">
+      <b>Ma'lumotlar</b>
+      <span>NDVI, NDRE, RVI, CI, NDMI, NBR, LAI</span>
+      <span>2022–2026, oylik va yillik</span>
+      <span>76 709 kontur, uniqueid bo'yicha bog'langan</span>
+    </div>
+    <div class="note">
+      <h2>Xulosa</h2>
+      <p id="insight"></p>
+      <button class="btn" id="more">Qishloqlarni ko'rish</button>
+    </div>
+    <p class="src">Manba: D:\MYANMA_NEW, Myanma.gdb va ikki CSV. Indeks qiymatlari kontur maydoni bo'yicha o'rtacha.</p>
+  </aside>
+
+  <main class="stage">
+    <div id="map" role="application" aria-label="Minbu tumani ekin konturlari xaritasi"></div>
+    <div class="vig"></div>
+    <div class="ui">
+      <div class="head">
+        <button class="back" id="back" aria-label="Tuman ko'rinishiga qaytish" hidden>&larr;</button>
+        <div><h1 id="title">Minbu tumani</h1><small id="coord"></small></div>
+      </div>
+      <div class="stats">
+        <div class="card stat"><span class="ic"><svg viewBox="0 0 18 18"><path d="M2 6 9 2l7 4-7 4zM2 12l7 4 7-4"/></svg></span><label>Konturlar</label><span class="num" id="s-n"></span><span class="sub" id="s-n2"></span></div>
+        <div class="card stat"><span class="ic"><svg viewBox="0 0 18 18"><path d="M3 15V3h12v12zM3 9h12M9 3v12"/></svg></span><label>Ekin maydoni</label><span class="num" id="s-ha"></span><span class="sub" id="s-ha2"></span></div>
+        <div class="card stat"><span class="ic"><svg viewBox="0 0 18 18"><path d="M9 16s5-4.6 5-8.5A5 5 0 0 0 4 7.5C4 11.4 9 16 9 16z"/><circle cx="9" cy="7.5" r="1.8"/></svg></span><label id="s-r-l"></label><span class="num" id="s-r"></span><span class="sub" id="s-r2"></span></div>
+        <div class="card stat"><span class="ic"><svg viewBox="0 0 18 18"><path d="M3 13c4 0 3-8 12-9-1 9-5 10-8 10M3 15c1-3 3-5 6-6"/></svg></span><label id="s-i-l">O'rtacha NDVI</label><span class="num" id="s-i"></span><span class="sub" id="s-i2"></span></div>
+      </div>
+      <div class="left">
+        <section class="card">
+          <h2>Ekin bandligi</h2>
+          <div class="health" style="margin-top:8px">
+            <svg id="gauge" viewBox="0 0 112 112" role="img" aria-label="Hududning ekin bilan band ulushi"></svg>
+            <div class="legend" id="glegend"></div>
+          </div>
+        </section>
+        <section class="card">
+          <header><h2>Xarita</h2><small id="m-sub"></small></header>
+          <div class="legend mleg" id="slegend" style="margin-top:8px"></div>
+          <div class="seg bm" id="bm" role="group" aria-label="Asosiy xarita" style="margin-top:10px">
+            <button data-b="dark" aria-pressed="true">Qorong'i</button><button data-b="sat" aria-pressed="false">Sun'iy yo'ldosh</button><button data-b="topo" aria-pressed="false">Topo</button>
+          </div>
+        </section>
+      </div>
+      <div class="hole" id="hole"></div>
+      <div class="right">
+        <section class="card">
+          <header><h2 id="r-name">Tuman</h2><small id="r-sub"></small></header>
+          <div class="big"><span class="num" id="r-share"></span><span>ekin ulushi</span></div>
+          <div class="tri">
+            <div><label>Hudud</label><span class="num" id="r-a"></span></div>
+            <div><label>Median</label><span class="num" id="r-m"></span></div>
+            <div><label>Eng katta</label><span class="num" id="r-x"></span></div>
+          </div>
+        </section>
+        <section class="card">
+          <header><h2>Tumanga nisbatan</h2><small id="c-sub"></small></header>
+          <div class="tri" id="cmp"></div>
+          <div class="prog"><label>Yirik konturlar (2 ga+) maydoni <b id="p-v"></b></label><div class="track"><i id="p-i"></i></div></div>
+        </section>
+      </div>
+      <div class="bot">
+        <section class="card">
+          <header><div><h2>Index qiymati yillik</h2><small>Barcha indekslar, oylar kesimida</small></div><span class="chip" id="c1-year"></span><span></span></header>
+          <div class="plot"><div class="ileg" id="ileg"></div><div class="svgbox" id="c1"></div></div>
+        </section>
+        <section class="card">
+          <header><div><h2>Index yillar kesimida</h2><small>Har bir yil alohida chiziq</small></div><span class="chip" id="c2-idx"></span><span></span></header>
+          <div class="svgbox" id="c2" style="flex:1"></div>
+        </section>
+        <section class="card">
+          <header style="grid-template-columns:minmax(0,1fr) auto"><div><h2>Maydon taqsimoti</h2><small id="d-sub"></small></div><span class="chip" id="d-chip"></span></header>
+          <div class="dist"><svg id="donut" viewBox="0 0 128 128" role="img" aria-label="Maydonning status bo'yicha taqsimoti"></svg><div class="dtab" id="dtab"></div></div>
+          <p class="dnote" id="dnote"></p>
+        </section>
+      </div>
+    </div>
+    <div class="drawer" id="drawer" hidden>
+      <header>
+        <h2>70 ta qishloq <button id="d-close" aria-label="Yopish">&times;</button></h2>
+        <div class="seg" style="align-self:flex-start">
+          <button data-s="ha" aria-pressed="true">Ekin, ga</button><button data-s="share" aria-pressed="false">Ulush</button><button data-s="n" aria-pressed="false">Konturlar</button><button data-s="ix" aria-pressed="false">Indeks</button>
+        </div>
+      </header>
+      <div class="list" id="list"></div>
+    </div>
+    <div class="tip" id="hover" hidden></div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script>
+window.__start=function(D,PARCELS,getCls){
+var $=function(i){return document.getElementById(i)};
+var T=D.T, V=D.V, M=D.meta, SER=D.SER, STA=D.STA;
+var YEARS=M.years, IDX=M.idx;
+var ICOL={ndvi:'#7fd06c',ndre:'#36c2a6',rvi:'#f0c744',ci:'#ef7a5f',ndmi:'#5aaef5',nbr:'#c08cf0',lai:'#ff9f43'};
+var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var MONUZ=['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr'];
+var STC=['#2e6b34','#5f9a3f','#a9c046','#efe08a','#3d4c41'];
+var STN=['Juda yaxshi','Yaxshi',"O'rtacha",'Yomon',"Ma'lumot yo'q"];
+var STN_M=['Juda nam','Nam',"O'rtacha",'Quruq',"Ma'lumot yo'q"];
+var EDGE=[.1,.25,.5,1,2,5];
+var S={sel:-1,y:YEARS.length-1,m:0,ix:'ndvi',mode:'size',sort:'ha',open:null,hl:null,fs:0,bm:'dark'};
+function f(x,d){return x.toLocaleString('ru-RU',{minimumFractionDigits:d||0,maximumFractionDigits:d||0})}
+function pct(x,d){return f(x*100,d||0)+'%'}
+function iv(x){return x==null?'—':f(x,3)}
+T.share=T.ha/T.vha; T.dens=T.n/T.ha*100;
+V.forEach(function(v,i){v.i=i;v.share=v.ha/v.vha;v.dens=v.n/v.ha*100});
+var byHa=V.slice().sort(function(a,b){return b.ha-a.ha});
+byHa.forEach(function(v,i){v.rank=i+1});
+V.slice().sort(function(a,b){return b.share-a.share}).forEach(function(v,i){v.srank=i+1});
+var byName=V.slice().sort(function(a,b){return a.name.localeCompare(b.name)});
+var SB=[['60%+',.6,9,'#7fd06c'],['40–60%',.4,.6,'#a9c046'],['20–40%',.2,.4,'#f0c744'],['20% gacha',0,.2,'#e58a4e']];
+SB.forEach(function(b){b.n=V.filter(function(v){return v.share>=b[1]&&v.share<b[2]}).length});
+function sum(a,i,j){var s=0;for(;i<j;i++)s+=a[i];return s}
+function arc(cx,cy,r,a0,a1){var p=function(a){return (cx+r*Math.cos(a)).toFixed(2)+' '+(cy+r*Math.sin(a)).toFixed(2)};return 'M'+p(a0)+' A'+r+' '+r+' 0 '+(a1-a0>Math.PI?1:0)+' 1 '+p(a1)}
+function scope(){return S.sel<0?'T':V[S.sel].code}
+function yearVal(sc,ix,yi){return SER[sc][ix].y[yi]}
+
+/* ---------- filters ---------- */
+var FL=[
+  {k:'v',label:'Qishloq',wide:true,search:true,
+   opts:function(){return [{v:-1,t:'Butun tuman',s:f(T.ha)+' ga'}].concat(byName.map(function(v){return {v:v.i,t:v.name,s:f(v.ha)+' ga'}}))},
+   cur:function(){return S.sel},show:function(){return S.sel<0?'Butun tuman':V[S.sel].name},set:function(v){select(v)}},
+  {k:'y',label:'Yil',opts:function(){return YEARS.map(function(y,i){return {v:i,t:String(y)}}).reverse()},
+   cur:function(){return S.y},show:function(){return String(YEARS[S.y])},set:function(v){S.y=v;render()}},
+  {k:'m',label:'Oy',opts:function(){return [{v:0,t:'Yillik',s:'butun yil'}].concat(MONUZ.map(function(m,i){return {v:i+1,t:m,s:MON[i]}}))},
+   cur:function(){return S.m},show:function(){return S.m?MONUZ[S.m-1]:'Yillik'},set:function(v){S.m=v;render()}},
+  {k:'i',label:'Index',opts:function(){return IDX.map(function(x){return {v:x,t:x.toUpperCase(),c:ICOL[x]}})},
+   cur:function(){return S.ix},show:function(){return S.ix.toUpperCase()},dot:function(){return ICOL[S.ix]},set:function(v){S.ix=v;render()}}
+];
+var chev='<svg viewBox="0 0 10 10" aria-hidden="true"><path d="m2 3.5 3 3 3-3"/></svg>';
+$('filters').innerHTML=FL.map(function(x){return '<div class="fl" data-k="'+x.k+'"><button class="fbtn" aria-haspopup="listbox" aria-expanded="false" aria-label="'+x.label+'"><span class="k">'+x.label+'</span>'+(x.dot?'<i></i>':'')+'<b></b>'+chev+'</button></div>'}).join('');
+function syncFilters(){
+  FL.forEach(function(x){
+    var el=document.querySelector('.fl[data-k="'+x.k+'"]'),b=el.querySelector('.fbtn');
+    b.querySelector('b').textContent=x.show();
+    if(x.dot)b.querySelector('i').style.background=x.dot();
+    b.classList.toggle('on',S.open===x.k);
+    b.setAttribute('aria-expanded',String(S.open===x.k));
+  });
+}
+function closeMenu(){var m=document.querySelector('.menu');if(m)m.remove();var k=S.open;S.open=null;syncFilters();if(k){var b=document.querySelector('.fl[data-k="'+k+'"] .fbtn');if(b)b.focus()}}
+function openMenu(k){
+  var x=FL.filter(function(z){return z.k===k})[0],el=document.querySelector('.fl[data-k="'+k+'"]');
+  var m=document.createElement('div');m.className='menu'+(x.wide?' wide':'');
+  m.innerHTML=(x.search?'<input type="search" placeholder="Qishloq nomini yozing" aria-label="Qishloq qidirish">':'')+'<div class="opts" role="listbox" aria-label="'+x.label+'"></div>';
+  el.appendChild(m);S.open=k;syncFilters();
+  var box=m.querySelector('.opts'),inp=m.querySelector('input');
+  function fill(q){
+    var o=x.opts().filter(function(z){return !q||z.t.toLowerCase().indexOf(q)>=0});
+    box.innerHTML=o.length?o.map(function(z){return '<button role="option" data-v="'+z.v+'" aria-selected="'+(String(z.v)===String(x.cur()))+'">'+(z.c?'<i style="background:'+z.c+'"></i>':'')+'<span>'+z.t+'</span>'+(z.s?'<small>'+z.s+'</small>':'')+'</button>'}).join(''):'<p>Bunday qishloq topilmadi.</p>';
+  }
+  fill('');
+  var cur=box.querySelector('[aria-selected="true"]');if(cur)cur.scrollIntoView({block:'nearest'});
+  (inp||cur||box.querySelector('button')).focus();
+  if(inp)inp.oninput=function(){fill(inp.value.trim().toLowerCase())};
+  box.onclick=function(e){var b=e.target.closest('button');if(!b)return;var v=b.dataset.v;closeMenu();x.set(k==='v'||k==='y'||k==='m'?+v:v)};
+  m.onkeydown=function(e){
+    var bs=[].slice.call(box.querySelectorAll('button')),i=bs.indexOf(document.activeElement);
+    if(e.key==='ArrowDown'){e.preventDefault();(bs[i+1]||bs[0]).focus()}
+    else if(e.key==='ArrowUp'){e.preventDefault();if(i<=0&&inp)inp.focus();else (bs[i-1]||bs[bs.length-1]).focus()}
+    else if(e.key==='Escape'){e.stopPropagation();closeMenu()}
+  };
+}
+$('filters').onclick=function(e){var b=e.target.closest('.fbtn');if(!b)return;var k=b.parentNode.dataset.k,was=S.open;closeMenu();if(was!==k)openMenu(k)};
+document.addEventListener('pointerdown',function(e){if(S.open&&!e.target.closest('.fl'))closeMenu()});
+
+/* ---------- panels ---------- */
+function render(){
+  var c=S.sel<0?T:V[S.sel], isV=S.sel>=0, sc=scope(), gh=sum(c.hha,5,7)/c.ha, gs=sum(c.h,0,2)/c.n, gsh=sum(c.hha,0,2)/c.ha;
+  $('title').textContent=isV?c.name:'Minbu tumani';
+  $('coord').textContent=isV?c.code+' · '+c.c[1].toFixed(3)+'°N '+c.c[0].toFixed(3)+'°E':'Magway viloyati, Myanma · ekin konturlari tahlili';
+  $('back').hidden=!isV;
+  $('s-n').textContent=f(c.n); $('s-n2').textContent=f(c.dens)+' kontur / 100 ga ekin';
+  $('s-ha').innerHTML=f(c.ha)+' <small>ga</small>'; $('s-ha2').textContent='hududning '+pct(c.share)+'i';
+  $('s-r-l').textContent=isV?'Maydon reytingi':'Qishloq traktlari';
+  $('s-r').innerHTML=isV?c.rank+' <small>/ 70</small>':f(T.nvil);
+  $('s-r2').textContent=isV?'ulush bo\'yicha '+c.srank+'-o\'rin':'barchasi xaritada';
+  var cv=S.m?SER[sc][S.ix].m[S.y][S.m-1]:yearVal(sc,S.ix,S.y), tv=S.m?SER.T[S.ix].m[S.y][S.m-1]:yearVal('T',S.ix,S.y);
+  $('s-i-l').textContent=S.ix.toUpperCase()+' · '+YEARS[S.y]+(S.m?' '+MON[S.m-1]:'');
+  $('s-i').textContent=iv(cv);
+  $('s-i2').textContent=isV?(cv==null||tv==null?'tuman bilan solishtirib bo\'lmaydi':'tuman: '+iv(tv)+' ('+(cv>=tv?'+':'')+f(cv-tv,3)+')'):(S.m?'oylik o\'rtacha':'yillik qiymat');
+  gauge(c);slegend();
+  $('r-name').textContent=isV?c.name:'Butun tuman'; $('r-sub').textContent=isV?'Tanlangan qishloq trakti':'Tanlash uchun qishloqni bosing';
+  $('r-share').textContent=pct(c.share,1);
+  $('r-a').textContent=f(c.vha)+' ga'; $('r-m').textContent=f(c.med,2)+' ga'; $('r-x').textContent=f(c.max,c.max<10?2:1)+' ga';
+  $('c-sub').textContent=isV?'Tuman = ×1,00':'Qishloq tanlang';
+  $('cmp').innerHTML=[['Ulush','share'],['Median','med'],['Zichlik','dens']].map(function(x){
+    var r=c[x[1]]/T[x[1]],k=r>=1.15?'up':r<=.85?'dn':'eq',w=!isV?'tuman':r>=1.15?'yuqori':r<=.85?'past':'o\'rtacha';
+    return '<div><label>'+x[0]+'</label><span class="num">×'+f(r,2)+'</span><em class="'+(isV?k:'eq')+'">'+w+'</em></div>';
+  }).join('');
+  $('p-v').textContent=pct(gh); $('p-i').style.width=(gh*100).toFixed(1)+'%';
+  $('insight').innerHTML='Konturlarning <b>'+pct(gs)+'</b>i 0,25 ga dan kichik, ammo maydonning '+pct(gsh)+'ini beradi. Maydonning <b>'+pct(gh)+'</b>i 2 ga dan yirik konturlarda.';
+  $('n-all').setAttribute('aria-pressed',String(!isV&&$('drawer').hidden&&S.mode==='size'));
+  syncFilters();chart1();chart2();donut();list();paint();applyCls();
+}
+function gauge(c){
+  var a0=-Math.PI/2,a1=a0+Math.max(.02,Math.min(.999,c.share))*2*Math.PI;
+  $('gauge').innerHTML='<defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7fd06c"/><stop offset="1" stop-color="#f0c744"/></linearGradient></defs><circle cx="56" cy="56" r="46" fill="none" stroke="rgba(120,180,120,.16)" stroke-width="10"/><path d="'+arc(56,56,46,a0,a1)+'" fill="none" stroke="url(#gg)" stroke-width="10" stroke-linecap="round"/><text x="56" y="62" text-anchor="middle" font-family="Sora,sans-serif" font-weight="300" font-size="26" fill="#ecf4e6">'+f(c.share*100)+'</text><text x="56" y="77" text-anchor="middle" font-family="Manrope,sans-serif" font-size="10.5" fill="#a5b9a2">% ekin</text>';
+  $('glegend').innerHTML=SB.map(function(b){var on=S.sel>=0&&c.share>=b[1]&&c.share<b[2];return '<div><i style="background:'+b[3]+'"></i><span'+(on?' style="font-weight:700"':'')+'>'+b[0]+'</span><b>'+b.n+'</b></div>'}).join('');
+}
+function period(){return YEARS[S.y]+' · '+(S.m?MON[S.m-1]:'yillik')}
+function slegend(){
+  var a=STA[scope()][S.ix][S.y][S.m],names=S.ix==='ndmi'?STN_M:STN,t=a.reduce(function(p,q){return p+q},0)||1;
+  $('m-sub').textContent='Konturlar: '+S.ix.toUpperCase()+' statusi, '+period();
+  $('slegend').innerHTML=a.map(function(x,i){if(i===4&&!x)return '';var k=i===4?5:i+1;return '<div data-k="'+k+'" class="'+(S.fs===k?'act':S.fs?'off':'')+'" title="Faqat shu konturlarni ko\'rsatish"><i style="background:'+STC[i]+'"></i><span>'+names[i]+'</span><b>'+f(x)+' ga</b><em>'+pct(x/t)+'</em></div>'}).join('');
+}
+function setFs(k){S.fs=S.fs===k?0:k;render();paint()}
+
+function size(box){return {w:box.clientWidth,h:box.clientHeight}}
+function tipAt(box,html,x,y){
+  var t=box.querySelector('.tip');if(!t){t=document.createElement('div');t.className='tip';box.appendChild(t)}
+  t.innerHTML=html;t.hidden=false;
+  var w=box.clientWidth,tw=t.offsetWidth,th=t.offsetHeight;
+  t.style.left=Math.max(-4,Math.min(w-tw+4,x-tw/2))+'px';t.style.top=Math.max(-6,y-th-10)+'px';
+}
+function hideTip(box){var t=box.querySelector('.tip');if(t)t.hidden=true}
+function months(X,h,iw){
+  var cw=iw/12,fs=cw>=26?10:cw>=19?8.5:7.5,s='';
+  MON.forEach(function(m,i){s+='<text x="'+X(i).toFixed(1)+'" y="'+(h-4)+'" text-anchor="middle" font-size="'+fs+'" fill="'+(S.m===i+1?'#ecf4e6':'#a5b9a2')+'" font-weight="'+(S.m===i+1?700:400)+'" font-family="Manrope,sans-serif">'+(cw<15?m.charAt(0):m)+'</text>'});
+  return s;
+}
+/* smooth curve through the non-null points of each run (same feel as the old size curve) */
+function runs(pts){var out=[],cur=[];pts.forEach(function(q){if(q==null){if(cur.length)out.push(cur);cur=[]}else cur.push(q)});if(cur.length)out.push(cur);return out}
+function smooth(run){var p='M'+run[0][0].toFixed(1)+' '+run[0][1].toFixed(1);for(var i=1;i<run.length;i++){var m=(run[i-1][0]+run[i][0])/2;p+=' C'+m.toFixed(1)+' '+run[i-1][1].toFixed(1)+' '+m.toFixed(1)+' '+run[i][1].toFixed(1)+' '+run[i][0].toFixed(1)+' '+run[i][1].toFixed(1)}return p}
+function curve(pts,base,o){
+  var s='';runs(pts).forEach(function(r){
+    if(o.area&&r.length>1)s+='<path d="'+smooth(r)+' L'+r[r.length-1][0].toFixed(1)+' '+base+' L'+r[0][0].toFixed(1)+' '+base+'Z" fill="url(#'+o.area+')"/>';
+    if(r.length>1)s+='<path d="'+smooth(r)+'" fill="none" stroke="'+o.col+'" stroke-width="'+o.w+'" stroke-opacity="'+o.op+'" stroke-linecap="round"/>';
+    if(o.dots||r.length===1)r.forEach(function(q){s+='<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="'+(o.dots?2.8:2)+'" fill="'+(o.dot||'#7fd06c')+'" fill-opacity="'+(o.dots?1:o.op)+'" stroke="#ecf4e6" stroke-opacity="'+(o.dots?1:o.op)+'"/>'});
+  });return s;
+}
+var GRAD='<linearGradient id="ag" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#7fd06c" stop-opacity=".32"/><stop offset="1" stop-color="#7fd06c" stop-opacity="0"/></linearGradient>';
+function peak(box,x,y,txt){
+  var g=box.querySelector('svg'),d=box.querySelector('.pk');
+  if(!d){d=document.createElementNS('http://www.w3.org/2000/svg','circle');d.setAttribute('class','pk');d.setAttribute('r','5');d.setAttribute('fill','#f0c744');d.setAttribute('stroke','#0e2215');d.setAttribute('stroke-width','2');g.appendChild(d)}
+  d.setAttribute('cx',x);d.setAttribute('cy',y);d.style.visibility='visible';
+  tipAt(box,txt,x,y);
+}
+function unpeak(box){hideTip(box);var d=box.querySelector('.pk');if(d)d.style.visibility='hidden'}
+
+/* Panel 1: every index for the chosen year, months on the x axis; the chosen index is the bright curve */
+function chart1(){
+  var sc=scope(),yi=S.y,box=$('c1'),cur=S.hl||S.ix;
+  $('c1-year').textContent=YEARS[yi]+(S.m?' · '+MON[S.m-1]:'');
+  $('ileg').innerHTML=IDX.map(function(x){return '<button data-i="'+x+'" class="'+(x===S.ix?'on':'')+'" aria-pressed="'+(x===S.ix)+'"><i style="background:'+(x===cur?'#ecf4e6':'rgba(236,244,230,.32)')+'"></i>'+x.toUpperCase()+'</button>'}).join('');
+  var z=size(box),w=z.w,h=z.h;if(!w||!h)return;
+  var all=[];IDX.forEach(function(x){SER[sc][x].m[yi].forEach(function(v){if(v!=null)all.push(v)})});
+  if(!all.length){box.innerHTML='<p class="dnote" style="padding:20px">Bu yil uchun ma\'lumot yo\'q.</p>';return}
+  var lo=Math.min.apply(null,all),hi=Math.max.apply(null,all),pad=(hi-lo)*.14||.05;lo-=pad;hi+=pad;
+  var l=6,r=6,t=10,b=18,iw=w-l-r,ih=h-t-b,base=t+ih;
+  function X(i){return l+iw*(i+.5)/12} function Y(v){return t+ih*(1-(v-lo)/(hi-lo))}
+  var s='<defs>'+GRAD+'</defs>';
+  [.5,1].forEach(function(q){var yy=t+ih*(1-q);s+='<line x1="'+l+'" x2="'+(w-r)+'" y1="'+yy+'" y2="'+yy+'" stroke="#a5b9a2" stroke-opacity=".16" stroke-dasharray="3 4"/>'});
+  if(S.m)s+='<rect x="'+(X(S.m-1)-iw/24)+'" y="'+t+'" width="'+(iw/12)+'" height="'+ih+'" fill="#7fd06c" fill-opacity=".07"/>';
+  s+=months(X,h,iw);
+  IDX.forEach(function(x){if(x!==cur)s+=curve(SER[sc][x].m[yi].map(function(v,i){return v==null?null:[X(i),Y(v)]}),base,{col:'#ecf4e6',w:1,op:.22})});
+  s+=curve(SER[sc][cur].m[yi].map(function(v,i){return v==null?null:[X(i),Y(v)]}),base,{col:'#ecf4e6',w:1.6,op:1,area:'ag',dots:true});
+  box.innerHTML='<svg role="img" aria-label="'+YEARS[yi]+' yil, '+cur.toUpperCase()+' va boshqa indekslar oylar bo\'yicha">'+s+'</svg>';
+  function show(q){
+    var v=SER[sc][cur].m[yi][q];
+    if(v==null){unpeak(box);tipAt(box,MON[q]+': '+cur.toUpperCase()+' ma\'lumoti yo\'q',X(q),base-20);return}
+    peak(box,X(q),Y(v),cur.toUpperCase()+' · '+MON[q]+' '+YEARS[yi]+': '+iv(v));
+  }
+  var vals=SER[sc][cur].m[yi],pk=-1,mx=-1e9;vals.forEach(function(v,i){if(v!=null&&v>mx){mx=v;pk=i}});
+  if(pk>=0)show(S.m&&vals[S.m-1]!=null?S.m-1:pk);
+  box.onpointermove=function(e){var rc=box.getBoundingClientRect();show(Math.max(0,Math.min(11,Math.floor((e.clientX-rc.left-l)/iw*12))))};
+  box.onpointerleave=function(){if(pk>=0)show(S.m&&vals[S.m-1]!=null?S.m-1:pk);else unpeak(box)};
+}
+
+/* Panel 2: chosen index, one curve per year (2022 at the bottom, 2026 on top), chosen year bright */
+function chart2(){
+  var sc=scope(),x=S.ix,box=$('c2');
+  $('c2-idx').textContent=x.toUpperCase();
+  var z=size(box),w=z.w,h=z.h;if(!w||!h)return;
+  var M2=SER[sc][x].m,all=[];M2.forEach(function(r){r.forEach(function(v){if(v!=null)all.push(v)})});
+  if(!all.length){box.innerHTML='';return}
+  var lo=Math.min.apply(null,all),hi=Math.max.apply(null,all);if(hi-lo<1e-6){hi+=.05;lo-=.05}
+  var l=40,r=44,t=4,b=18,iw=w-l-r,ih=h-t-b,n=YEARS.length,rh=ih/n;
+  function X(i){return l+iw*(i+.5)/12}
+  function base(k){return t+rh*(n-k)}
+  function Y(k,v){return base(k)-3-(rh-6)*(v-lo)/(hi-lo)}
+  var s='<defs>'+GRAD+'</defs>';
+  if(S.m)s+='<rect x="'+(X(S.m-1)-iw/24)+'" y="'+t+'" width="'+(iw/12)+'" height="'+ih+'" fill="#7fd06c" fill-opacity=".07"/>';
+  for(var k=0;k<n;k++){
+    var on=k===S.y,bb=base(k),pts=M2[k].map(function(v,i){return v==null?null:[X(i),Y(k,v)]});
+    s+='<line x1="'+l+'" x2="'+(w-r)+'" y1="'+bb+'" y2="'+bb+'" stroke="#a5b9a2" stroke-opacity="'+(on?.3:.12)+'" stroke-dasharray="3 4"/>';
+    s+='<text x="'+(l-8)+'" y="'+(bb-rh/2+4)+'" text-anchor="end" font-size="'+(on?12:10.5)+'" font-family="Sora,sans-serif" font-weight="'+(on?500:300)+'" fill="'+(on?'#ecf4e6':'#a5b9a2')+'">'+YEARS[k]+'</text>';
+    s+=curve(pts,bb,on?{col:'#ecf4e6',w:1.6,op:1,area:'ag',dots:true}:{col:'#ecf4e6',w:1,op:.3});
+    var yv=SER[sc][x].y[k];
+    s+='<text x="'+(w-r+6)+'" y="'+(bb-rh/2+4)+'" font-size="10" font-family="Manrope,sans-serif" fill="'+(on?'#ecf4e6':'#a5b9a2')+'" font-weight="'+(on?600:400)+'">'+(yv==null?'—':f(yv,2))+'</text>';
+  }
+  s+='<text x="'+(w-r+6)+'" y="'+(h-4)+'" font-size="9" font-family="Manrope,sans-serif" fill="#a5b9a2">yillik</text>';
+  s+=months(X,h,iw);
+  box.innerHTML='<svg role="img" aria-label="'+x.toUpperCase()+' yillar bo\'yicha, har bir yil alohida chiziq">'+s+'</svg>';
+  function show(k,q){
+    var v=M2[k][q];
+    if(v==null){unpeak(box);tipAt(box,MON[q]+' '+YEARS[k]+': ma\'lumot yo\'q',X(q),base(k)-rh/2);return}
+    peak(box,X(q),Y(k,v),MON[q]+' '+YEARS[k]+': '+iv(v));
+  }
+  function def(){var r0=M2[S.y],pk=-1,mx=-1e9;r0.forEach(function(v,i){if(v!=null&&v>mx){mx=v;pk=i}});if(S.m&&r0[S.m-1]!=null)pk=S.m-1;if(pk>=0)show(S.y,pk);else unpeak(box)}
+  def();
+  function at(e){var rc=box.getBoundingClientRect();return [Math.max(0,Math.min(n-1,n-1-Math.floor((e.clientY-rc.top-t)/rh))),Math.max(0,Math.min(11,Math.floor((e.clientX-rc.left-l)/iw*12)))]}
+  box.onpointermove=function(e){var a=at(e);show(a[0],a[1])};
+  box.onpointerleave=def;
+  box.onclick=function(e){var k=at(e)[0];if(k!==S.y){S.y=k;render();paint()}};
+}
+
+/* Panel 3: area by status for index / year / month */
+function donut(){
+  var sc=scope(),x=S.ix,a=STA[sc][x][S.y][S.m],names=x==='ndmi'?STN_M:STN,tot=a.reduce(function(p,q){return p+q},0);
+  $('d-sub').textContent=x.toUpperCase()+' statusi, gektar';
+  $('d-chip').textContent=YEARS[S.y]+' · '+(S.m?MON[S.m-1]:'yillik');
+  if(!tot){$('donut').innerHTML='';$('dtab').innerHTML='<p class="dnote">Bu davr uchun ma\'lumot yo\'q.</p>';$('dnote').textContent='';return}
+  var prev=S.y>0?STA[sc][x][S.y-1][S.m]:null,ptot=prev?prev.reduce(function(p,q){return p+q},0):0;
+  var s='',ang=-Math.PI/2,gap=.03;
+  a.forEach(function(v,i){var d=v/tot*2*Math.PI,k=i===4?5:i+1;if(d>gap*1.5)s+='<path data-k="'+k+'" style="cursor:pointer" d="'+arc(64,64,52,ang+gap/2,ang+d-gap/2)+'" fill="none" stroke="'+STC[i]+'" stroke-width="'+(S.fs===k?16:13)+'" stroke-opacity="'+(S.fs&&S.fs!==k?.35:1)+'"/>';ang+=d});
+  var good=(a[0]+a[1])/tot;
+  s+='<text x="64" y="60" text-anchor="middle" font-family="Sora,sans-serif" font-weight="300" font-size="17" fill="#ecf4e6">'+f(tot)+'</text><text x="64" y="75" text-anchor="middle" font-family="Manrope,sans-serif" font-size="10.5" fill="#a5b9a2">ga, jami</text>';
+  $('donut').innerHTML=s;
+  var mx=Math.max.apply(null,a);
+  $('dtab').innerHTML=a.map(function(v,i){
+    if(i===4&&!v)return '';
+    var p=v/tot,d='';
+    if(prev&&ptot&&i<4){var dp=(p-prev[i]/ptot)*100;d=(Math.abs(dp)<.05?'±0':(dp>0?'▲ ':'▼ ')+f(Math.abs(dp),1))+' pp'}
+    var good_i=i<2,dc=d.indexOf('▲')===0?(good_i?'up':'dn'):d.indexOf('▼')===0?(good_i?'dn':'up'):'';
+    var k=i===4?5:i+1;
+    return '<div class="r '+(S.fs===k?'act':S.fs?'off':'')+'" data-k="'+k+'" role="button" tabindex="0" aria-pressed="'+(S.fs===k)+'" title="Xaritada faqat shu konturlarni ko\'rsatish"><i style="background:'+STC[i]+'"></i><span class="nm">'+names[i]+(d?'<span class="d '+dc+'" title="O\'tgan yilga nisbatan">'+d+'</span>':'')+'</span><span class="bar"><b style="width:'+(v/mx*100).toFixed(1)+'%;background:'+STC[i]+'"></b></span><span class="ha">'+f(v)+'</span><span class="pc">'+pct(p)+'</span></div>';
+  }).join('');
+  if(S.fs){$('dnote').innerHTML='Xaritada faqat <b>'+names[S.fs===5?4:S.fs-1]+'</b> konturlar ko\'rsatilmoqda. <button class="btn" id="fclear" style="padding:2px 8px;margin-left:4px">Hammasini ko\'rsatish</button>';$('fclear').onclick=function(){S.fs=0;render()};return}
+  $('dnote').innerHTML='<b>'+pct(good)+'</b> maydon '+(x==='ndmi'?'nam':'yaxshi')+' yoki undan yuqori holatda'+(prev&&ptot?'; o\'tgan yil '+pct((prev[0]+prev[1])/ptot)+' edi (pp, o\'tgan yilga nisbatan).':'.');
+}
+function list(){
+  if($('drawer').hidden)return;
+  var k=S.sort,key=function(v){return k==='ix'?(yearVal(v.code,S.ix,S.y)||0):v[k]},a=V.slice().sort(function(x,y){return key(y)-key(x)}),mx=key(a[0])||1;
+  $('list').innerHTML=a.map(function(v,i){
+    var val=k==='ha'?f(v.ha)+' ga':k==='share'?pct(v.share):k==='n'?f(v.n):S.ix.toUpperCase()+' '+iv(yearVal(v.code,S.ix,S.y));
+    return '<button data-v="'+v.i+'"'+(v.i===S.sel?' aria-current="true"':'')+'><span class="rk">'+(i+1)+'</span><span>'+v.name+'</span><span class="v">'+val+'</span><span class="sub"><i style="width:'+(Math.max(0,key(v))/mx*100).toFixed(1)+'%"></i></span></button>';
+  }).join('');
+}
+function openList(on){$('drawer').hidden=!on;$('n-list').setAttribute('aria-pressed',String(on));if(on){list();$('d-close').focus()}render()}
+
+$('ileg').onclick=function(e){var b=e.target.closest('button');if(b){S.ix=b.dataset.i;S.hl=null;render();paint()}};
+[$('dtab'),$('donut'),$('slegend')].forEach(function(el){
+  el.onclick=function(e){var r=e.target.closest('[data-k]');if(r)setFs(+r.dataset.k)};
+  el.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){var r=e.target.closest('[data-k]');if(r){e.preventDefault();setFs(+r.dataset.k)}}};
+});
+$('bm').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.bm=b.dataset.b;
+  [].forEach.call($('bm').querySelectorAll('button'),function(x){x.setAttribute('aria-pressed',String(x===b))});basemap()};
+$('ileg').onpointerover=function(e){var b=e.target.closest('button');var v=b?b.dataset.i:null;if(v!==S.hl){S.hl=v;chart1()}};
+$('ileg').onpointerleave=function(){if(S.hl){S.hl=null;chart1()}};
+document.querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){
+  S.sort=b.dataset.s;document.querySelectorAll('[data-s]').forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});list();
+}});
+$('list').onclick=function(e){var b=e.target.closest('button');if(b){select(+b.dataset.v);if(innerWidth<=900)openList(false)}};
+$('n-list').onclick=function(){openList($('drawer').hidden)};
+$('more').onclick=function(){openList(true)};
+$('d-close').onclick=function(){openList(false)};
+$('n-all').onclick=function(){setMode('size');openList(false);select(-1)};
+$('back').onclick=function(){select(-1)};
+$('n-size').onclick=function(){setMode('size')};
+$('n-share').onclick=function(){setMode('share')};
+addEventListener('keydown',function(e){if(e.key==='Escape'){if(S.open)closeMenu();else if(!$('drawer').hidden)openList(false);$('res').hidden=true}});
+$('q').oninput=function(){
+  var q=this.value.trim().toLowerCase(),r=$('res');
+  if(!q){r.hidden=true;return}
+  var m=byHa.filter(function(v){return v.name.toLowerCase().indexOf(q)>=0}).slice(0,6);
+  r.innerHTML=m.length?m.map(function(v){return '<button data-v="'+v.i+'">'+v.name+'<span>'+f(v.ha)+' ga</span></button>'}).join(''):'<p style="padding:8px 10px;margin:0">Bunday qishloq topilmadi. Boshqa nom bilan urinib ko\'ring.</p>';
+  r.hidden=false;
+};
+$('res').onclick=function(e){var b=e.target.closest('button');if(b){select(+b.dataset.v);$('res').hidden=true;$('q').value=''}};
+var rz;addEventListener('resize',function(){clearTimeout(rz);rz=setTimeout(function(){render();if(map)fit(true)},150)});
+render();
+
+/* ---------- map ---------- */
+var map=null,reduced=matchMedia('(prefers-reduced-motion:reduce)').matches,pins=[],selPin=null;
+function padding(){
+  if(innerWidth<=900)return {top:16,bottom:16,left:16,right:16};
+  var m=$('map').getBoundingClientRect(),h=$('hole').getBoundingClientRect();
+  if(h.width<140||h.height<140)return {top:16,bottom:16,left:16,right:16};
+  return {top:h.top-m.top+22,bottom:m.bottom-h.bottom+6,left:h.left-m.left+6,right:m.right-h.right+6};
+}
+var TB=[[Math.min.apply(null,V.map(function(v){return v.b[0]})),Math.min.apply(null,V.map(function(v){return v.b[1]}))],[Math.max.apply(null,V.map(function(v){return v.b[2]})),Math.max.apply(null,V.map(function(v){return v.b[3]}))]];
+function fit(now){
+  var b=S.sel<0?TB:[[V[S.sel].b[0],V[S.sel].b[1]],[V[S.sel].b[2],V[S.sel].b[3]]];
+  map.fitBounds(b,{padding:padding(),duration:(reduced||now)?0:800,maxZoom:15});
+}
+function pinSvg(col){return '<svg width="26" height="33" viewBox="0 0 26 33" aria-hidden="true"><path d="M13 32S24 21 24 12.5A11 11 0 0 0 2 12.5C2 21 13 32 13 32z" fill="'+col+'" stroke="#0e2215" stroke-width="1.2"/><circle cx="13" cy="12.5" r="5" fill="#0e2215"/><path d="M10.5 14c2.8.2 4.5-1.3 5-4-2.8 0-4.8 1.2-5 4z" fill="'+col+'"/></svg>'}
+function pinFor(v,col,lab){
+  var b=document.createElement('button');b.className='pin';b.setAttribute('aria-label',v.name+', '+f(v.ha)+' ga');b.innerHTML=pinSvg(col)+(lab?'<span class="lab"><b>'+v.name+'</b><em>'+f(v.ha)+' ga · ulush '+pct(v.share)+'</em></span>':'');
+  b.addEventListener('click',function(e){e.stopPropagation();select(v.i)});
+  return new maplibregl.Marker({element:b,anchor:'bottom'}).setLngLat(v.c);
+}
+/* per-contour status: files cls/{index}_{year}.bin, 13 slots (0 yearly, 1..12 months) x nf bytes */
+var CLS={},clsKey=null,clsBusy=null;
+function loadCls(ix,y){
+  var key=ix+'_'+y;
+  if(CLS[key])return Promise.resolve(CLS[key]);
+  return getCls(ix,y)
+    .then(function(t){var bin=atob(t.trim()),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+      return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('deflate'))).arrayBuffer()})
+    .then(function(b){CLS[key]=new Uint8Array(b);return CLS[key]});
+}
+function applyCls(){
+  if(!map||!map.getSource('parcels'))return;
+  var ix=S.ix,y=YEARS[S.y],m=S.m,want=ix+'_'+y+'_'+m;
+  if(clsKey===want)return;
+  clsBusy=want;
+  loadCls(ix,y).then(function(a){
+    if(clsBusy!==want)return;
+    var nf=M.nf,o=m*nf;
+    for(var n=0;n<nf;n++)map.setFeatureState({source:'parcels',id:n},{k:a[o+n]});
+    clsKey=want;
+  }).catch(function(e){if(window.console)console.warn('status fayli ochilmadi',e)});
+}
+function basemap(){
+  if(!map||!map.getLayer('bm-sat'))return;
+  map.setLayoutProperty('bm-sat','visibility',S.bm==='sat'?'visible':'none');
+  map.setLayoutProperty('bm-topo','visibility',S.bm==='topo'?'visible':'none');
+  map.setPaintProperty('land','fill-opacity',S.bm==='dark'?1:0);
+  document.querySelector('.vig').style.opacity=S.bm==='dark'?1:.45;
+}
+function paint(){
+  if(!map||!map.getLayer('parcel-fill'))return;
+  var s=S.sel,size=S.mode==='size';
+  var vill=s<0?1:['case',['==',['get','v'],s],1,.28];
+  map.setPaintProperty('parcel-fill','fill-opacity',S.fs?['case',['==',['coalesce',['feature-state','k'],0],S.fs===5?0:S.fs],vill,0]:vill);
+  map.setPaintProperty('parcel-line','line-opacity',S.fs?['case',['==',['coalesce',['feature-state','k'],0],S.fs===5?0:S.fs],.6,0]:.6);
+  map.setFilter('sel-line',['==',['get','v'],s]);
+  map.setFilter('sel-rings',['==',['get','v'],s]);
+  map.setLayoutProperty('parcel-fill','visibility',size?'visible':'none');
+  map.setLayoutProperty('parcel-line','visibility',size?'visible':'none');
+  map.setLayoutProperty('vill-share','visibility',size?'none':'visible');
+  map.setPaintProperty('vill-share','fill-opacity',s<0?1:['case',['==',['get','v'],s],1,.4]);
+  if(selPin){selPin.remove();selPin=null}
+  pins.forEach(function(p){p.m.getElement().hidden=p.v.i===s});
+  if(s>=0)selPin=pinFor(V[s],'#f0c744',true).addTo(map);
+}
+function select(i){S.sel=i;render();paint();if(map)fit()}
+function setMode(m){S.mode=m;$('n-size').setAttribute('aria-pressed',String(m==='size'&&!$('n-all').matches('[aria-pressed="true"]')));$('n-share').setAttribute('aria-pressed',String(m==='share'));render();paint()}
+
+function decode(){
+  var bin=atob(PARCELS),u=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+  var ds=new Blob([u]).stream().pipeThrough(new DecompressionStream('deflate'));
+  return new Response(ds).arrayBuffer().then(function(buf){
+    var nf=M.nf,nr=M.nr,nv=M.nv,o=0;
+    var area=new Float32Array(buf,0,nf);o=4*nf;
+    var fr=new Uint16Array(buf,o,nf);o+=2*nf;
+    var rl=new Uint16Array(buf,o,nr);o+=2*nr;
+    var vi=new Uint8Array(buf,o,nf);o+=nf;
+    var st=new Uint8Array(buf,o,nf);o+=nf;o+=(4-o%4)%4;
+    var co=new Uint16Array(buf,o,2*nv);
+    var R=6378137,K=180/Math.PI,feats=new Array(nf),ri=0,k=0;
+    for(var n=0;n<nf;n++){
+      var polys=[],sign=0;
+      for(var j=0;j<fr[n];j++){
+        var len=rl[ri++],ring=new Array(len),px=0,py=0,sa=0,lx=0,ly=0;
+        for(var q=0;q<len;q++){
+          px=(px+co[k++])&65535;py=(py+co[k++])&65535;
+          sa+=lx*py-px*ly;lx=px;ly=py;
+          var mx=M.xmin+px,my=M.ymin+py;
+          ring[q]=[mx/R*K,(2*Math.atan(Math.exp(my/R))-Math.PI/2)*K];
+        }
+        if(!polys.length){polys.push([ring]);sign=sa}
+        else if(sa*sign>0)polys.push([ring]);
+        else polys[polys.length-1].push(ring);
+      }
+      feats[n]={type:'Feature',id:n,properties:{v:vi[n],s:st[n],a:Math.round(area[n]*100)/100},
+        geometry:polys.length===1?{type:'Polygon',coordinates:polys[0]}:{type:'MultiPolygon',coordinates:polys}};
+    }
+    return {type:'FeatureCollection',features:feats};
+  });
+}
+function fail(msg){var d=document.createElement('div');d.className='mapmsg';d.textContent=msg;$('map').appendChild(d)}
+
+if(!window.maplibregl){fail('Xarita kutubxonasi yuklanmadi. Internetni tekshirib, sahifani yangilang.');return}
+D.bound.features.forEach(function(x){x.properties.sh=V[x.properties.v].share});
+try{
+map=new maplibregl.Map({container:'map',attributionControl:false,bounds:TB,fitBoundsOptions:{padding:padding()},maxBounds:[[TB[0][0]-.8,TB[0][1]-.8],[TB[1][0]+.8,TB[1][1]+.8]],dragRotate:false,pitchWithRotate:false,
+  style:{version:8,sources:{},layers:[{id:'bg',type:'background',paint:{'background-color':'#0c1b12'}}]}});
+}catch(e){map=null;fail('Bu qurilmada WebGL ishlamayapti, xarita ko\'rsatilmaydi. Panellar ishlashda davom etadi.');return}
+
+map.touchZoomRotate.disableRotation();
+map.on('load',function(){
+  decode().then(function(gj){
+    map.addSource('parcels',{type:'geojson',data:gj,tolerance:.35,buffer:16,maxzoom:15});
+    map.addSource('bound',{type:'geojson',data:D.bound});
+    map.addSource('rings',{type:'geojson',data:D.rings});
+    map.addSource('bm-sat',{type:'raster',tileSize:256,maxzoom:19,attribution:'Esri, Maxar, Earthstar Geographics',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}']});
+    map.addSource('bm-topo',{type:'raster',tileSize:256,maxzoom:19,attribution:'Esri',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}']});
+    map.addLayer({id:'bm-sat',type:'raster',source:'bm-sat',layout:{visibility:'none'}});
+    map.addLayer({id:'bm-topo',type:'raster',source:'bm-topo',layout:{visibility:'none'}});
+    map.addLayer({id:'land',type:'fill',source:'bound',paint:{'fill-color':'#1b3522'}});
+    map.addLayer({id:'vill-share',type:'fill',source:'bound',layout:{visibility:'none'},paint:{'fill-color':['interpolate',['linear'],['get','sh'],0,'#e58a4e',.2,'#f0c744',.4,'#a9c046',.6,'#7fd06c',.8,'#3f8f49']}});
+    map.addLayer({id:'parcel-fill',type:'fill',source:'parcels',paint:{'fill-color':['match',['coalesce',['feature-state','k'],0],1,STC[0],2,STC[1],3,STC[2],4,STC[3],STC[4]]}});
+    map.addLayer({id:'parcel-line',type:'line',source:'parcels',minzoom:11.5,paint:{'line-color':'#0c1b12','line-opacity':.6,'line-width':.6}});
+    map.addLayer({id:'bound-line',type:'line',source:'bound',paint:{'line-color':'#ecf4e6','line-opacity':.3,'line-width':.7}});
+    map.addLayer({id:'vill-hit',type:'fill',source:'bound',paint:{'fill-color':'#000','fill-opacity':0}});
+    map.addLayer({id:'sel-rings',type:'line',source:'rings',filter:['==',['get','v'],-1],paint:{'line-color':'#ffffff','line-opacity':.75,'line-width':.9}});
+    map.addLayer({id:'sel-line',type:'line',source:'bound',filter:['==',['get','v'],-1],paint:{'line-color':'#f0c744','line-width':2}});
+    map.addLayer({id:'p-hover',type:'line',source:'parcels',filter:['==',['id'],-1],paint:{'line-color':'#ffffff','line-width':1.6}});
+    byHa.slice(0,5).forEach(function(v,i){var m=pinFor(v,i?'#7fd06c':'#f0c744',false).addTo(map);pins.push({v:v,m:m})});
+    window.__atlasReady=true;paint();applyCls();basemap();
+    var hov=$('hover'),raf=0,lastPt=null;
+    map.on('mousemove',function(e){lastPt=e;if(raf)return;raf=requestAnimationFrame(function(){raf=0;
+      var e2=lastPt,fs=map.queryRenderedFeatures(e2.point,{layers:S.mode==='size'?['parcel-fill','vill-hit']:['vill-hit']}),
+          pf=fs.filter(function(x){return x.layer.id==='parcel-fill'})[0],vf=fs.filter(function(x){return x.layer.id==='vill-hit'})[0];
+      map.setFilter('p-hover',['==',['id'],pf?pf.id:-1]);
+      map.getCanvas().style.cursor=vf?'pointer':'';
+      if(!vf){hov.hidden=true;return}
+      var v=V[vf.properties.v];
+      var kk=pf?(map.getFeatureState({source:'parcels',id:pf.id}).k||0):0,nm=S.ix==='ndmi'?STN_M:STN;
+      hov.textContent=v.name+' · '+(pf?f(pf.properties.a,2)+' ga · '+S.ix.toUpperCase()+': '+(kk?nm[kk-1]:nm[4]):'ulush '+pct(v.share));
+      hov.hidden=false;
+      var w=$('map').clientWidth,tw=hov.offsetWidth;
+      hov.style.left=Math.min(w-tw-8,e2.point.x+12)+'px';hov.style.top=Math.max(4,e2.point.y-34)+'px';
+    })});
+    map.getCanvas().addEventListener('mouseleave',function(){hov.hidden=true;map.setFilter('p-hover',['==',['id'],-1])});
+    map.on('click',function(e){var vf=map.queryRenderedFeatures(e.point,{layers:['vill-hit']})[0];if(vf)select(vf.properties.v)});
+  }).catch(function(e){fail('Kontur ma\'lumoti ochilmadi: '+e.message)});
+});
+map.on('error',function(e){if(window.console)console.warn(e&&e.error)});
+};
+</script>
+<script>
+(function(){
+var PORTAL='https://land-tiiame.maps.arcgis.com',CLIENT='NEaTrETkaryGwhW7',IDS={"data": "0a345e7052434403b9638d6cc9c3ba95", "parcels": "4e541b92a3964aa7886a8914173f4db5", "cls_ndvi": "03ca9258502542ce9883024b61dd3866", "cls_ndre": "7479206975b94d489e89a521d9410ef4", "cls_rvi": "3ba85e4de9094cdda6dc832e91847bdd", "cls_ci": "e2a92ab2e2764e1d80823f40937f5f34", "cls_ndmi": "463c50bb53d94c81af0e0c656d46f1a9", "cls_nbr": "499b2c2065e54b68a10abe92fa28a2f9", "cls_lai": "20c1136e1855418787e9ee3dcc3b6b88"};
+var BASE=location.origin+location.pathname.replace(/[^\/]*$/,''),REDIRECT=BASE+'callback.html';
+var $=function(i){return document.getElementById(i)},msg=$('gmsg'),btn=$('signin');
+function b64url(a){var s='',u=new Uint8Array(a);for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function rnd(n){var a=new Uint8Array(n);crypto.getRandomValues(a);return b64url(a)}
+function store(k,v){try{v==null?sessionStorage.removeItem(k):sessionStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function load(k){try{return JSON.parse(sessionStorage.getItem(k)||'null')}catch(e){return null}}
+var mem={};
+function setTok(t){mem.tok=t;store('minbu_tok',t)}
+function getTok(){var t=mem.tok||load('minbu_tok');return t&&t.exp>Date.now()+60000?t:null}
+function fail(t){msg.textContent=t;msg.className='err';btn.disabled=false;btn.textContent='Qayta urinish'}
+function exchange(code,state){
+  var p=load('minbu_pkce_'+state);store('minbu_pkce_'+state,null);
+  if(!p){fail('Kirish seansi topilmadi. Qayta urinib ko\'ring.');return}
+  msg.className='';msg.textContent='Kirish tasdiqlanmoqda…';
+  fetch(PORTAL+'/sharing/rest/oauth2/token',{method:'POST',body:new URLSearchParams({client_id:CLIENT,grant_type:'authorization_code',code:code,redirect_uri:REDIRECT,code_verifier:p.v})})
+    .then(function(r){return r.json()}).then(function(j){
+      if(!j.access_token){fail('ArcGIS kirishni rad etdi: '+((j.error&&j.error.message)||j.error_description||'noma\'lum xato'));return}
+      setTok({t:j.access_token,u:j.username,exp:Date.now()+(j.expires_in||7200)*1000});boot();
+    }).catch(function(){fail('ArcGIS Online bilan bog\'lanib bo\'lmadi. Internetni tekshiring.')});
+}
+function signin(){
+  btn.disabled=true;btn.textContent='Kutilmoqda…';
+  var w=null;try{w=window.open('','minbu_login','width=520,height=700')}catch(e){}
+  var v=rnd(48),st=rnd(16);store('minbu_pkce_'+st,{v:v});
+  crypto.subtle.digest('SHA-256',new TextEncoder().encode(v)).then(function(h){
+    var url=PORTAL+'/sharing/rest/oauth2/authorize?client_id='+CLIENT+'&response_type=code&expiration=20160&redirect_uri='+encodeURIComponent(REDIRECT)+'&code_challenge='+b64url(h)+'&code_challenge_method=S256&state='+st+'&locale=uz';
+    if(w&&!w.closed){w.location=url}else{location.href=url}
+  });
+}
+window.addEventListener('message',function(e){
+  if(e.origin!==location.origin||!e.data||!e.data.minbu)return;
+  if(e.data.error){fail('Kirish bekor qilindi.');return}
+  exchange(e.data.code,e.data.state);
+});
+function item(id,tok){
+  return fetch(PORTAL+'/sharing/rest/content/items/'+id+'/data?token='+encodeURIComponent(tok)).then(function(r){
+    if(r.status===403||r.status===401)throw new Error('ruxsat');
+    if(!r.ok)throw new Error(r.status);return r.text()}).then(function(s){
+    if(s.charAt(0)==='{'&&s.indexOf('"error"')>0&&s.length<600)throw new Error('ruxsat');return s});
+}
+function boot(){
+  var t=getTok();if(!t)return;
+  msg.className='';msg.textContent='Ma\'lumotlar ArcGIS Online\'dan yuklanmoqda…';btn.hidden=true;
+  var CL={};
+  function getCls(ix,y){
+    var p=CL[ix]||(CL[ix]=item(IDS['cls_'+ix],t.t).then(function(s){return s.split('\n')}));
+    return p.then(function(a){return a[y-2022]||''});
+  }
+  Promise.all([item(IDS.data,t.t),item(IDS.parcels,t.t)]).then(function(r){
+    var D=JSON.parse(r[0]);
+    $('gate').hidden=true;
+    var who=$('who');who.hidden=false;who.textContent=(t.u||'')+' · Chiqish';
+    who.onclick=function(){setTok(null);location.reload()};
+    window.__start(D,r[1].trim(),getCls);
+  }).catch(function(e){
+    btn.hidden=false;
+    if(String(e.message)==='ruxsat'){setTok(null);fail('Bu akkauntda Minbu Portal ma\'lumotlarini ko\'rish ruxsati yo\'q.')}
+    else fail('Ma\'lumot yuklanmadi ('+e.message+'). Qayta urinib ko\'ring.');
+  });
+}
+btn.onclick=signin;
+var q=new URLSearchParams(location.search);
+if(q.get('code')&&q.get('state')){history.replaceState(null,'',location.pathname);exchange(q.get('code'),q.get('state'))}
+else boot();
+})();
+</script>
+
+</html>
