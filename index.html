@@ -1098,7 +1098,8 @@ function gauge(c){
 }
 function period(){return S.p5?'2022–2026 · '+L('5 yillik o\'rtacha'):YEARS[S.y]+' · '+(S.m?MON[S.m-1]:L('yillik'))}
 function slegend(){
-  var a=staA(scope(),S.ix),names=S.ix==='ndmi'?STN_M:STN,t=a.reduce(function(p,q){return p+q},0)||1;
+  /* only the 4 statuses: contours without a value for the period ("no data") are left out */
+  var a=staA(scope(),S.ix).slice(0,4),names=S.ix==='ndmi'?STN_M:STN,t=a.reduce(function(p,q){return p+q},0)||1;
   $('m-sub').textContent=L('Konturlar: {0} statusi, {1}',S.ix.toUpperCase(),period());
   $('slegend').innerHTML=a.map(function(x,i){if(i===4&&!x)return '';var k=i===4?5:i+1;return '<div data-k="'+k+'" class="'+(S.fs===k?'act':S.fs?'off':'')+'" title="'+L('Faqat shu konturlarni ko\'rsatish')+'"><i style="background:'+STC[i]+'"></i><span>'+names[i]+'</span><b>'+f(x)+' '+L('ga')+'</b><em>'+pct(x/t)+'</em></div>'}).join('');
 }
@@ -1205,11 +1206,11 @@ function chart2(){
 
 /* Panel 3: area by status for index / year / month */
 function donut(){
-  var sc=scope(),x=S.ix,a=staA(sc,x),names=x==='ndmi'?STN_M:STN,tot=a.reduce(function(p,q){return p+q},0);
+  var sc=scope(),x=S.ix,a=staA(sc,x).slice(0,4),names=x==='ndmi'?STN_M:STN,tot=a.reduce(function(p,q){return p+q},0);
   $('d-sub').textContent=L('{0} statusi, gektar',x.toUpperCase());
   $('d-chip').textContent=S.p5?'2022–2026':YEARS[S.y]+' · '+(S.m?MON[S.m-1]:L('yillik'));
   if(!tot){$('donut').innerHTML='';$('dtab').innerHTML='<p class="dnote">'+L('Bu davr uchun ma\'lumot yo\'q.')+'</p>';$('dnote').textContent='';return}
-  var prev=!S.p5&&S.y>0?STA[sc][x][S.y-1][S.m]:null,ptot=prev?prev.reduce(function(p,q){return p+q},0):0;
+  var prev=!S.p5&&S.y>0?STA[sc][x][S.y-1][S.m].slice(0,4):null,ptot=prev?prev.reduce(function(p,q){return p+q},0):0;
   var s='',ang=-Math.PI/2,gap=.03;
   a.forEach(function(v,i){var d=v/tot*2*Math.PI,k=i===4?5:i+1;if(d>gap*1.5)s+='<path data-k="'+k+'" style="cursor:pointer" d="'+arc(64,64,52,ang+gap/2,ang+d-gap/2)+'" fill="none" stroke="'+STC[i]+'" stroke-width="'+(S.fs===k?16:13)+'" stroke-opacity="'+(S.fs&&S.fs!==k?.35:1)+'"/>';ang+=d});
   var good=(a[0]+a[1])/tot;
@@ -1280,7 +1281,7 @@ var RNAME={ndvi:'NDVI',ndre:'NDRE',rvi:'RVI',ci:'CI',ndmi:'NDMI',nbr:'NBR',lai:'
 function hex(h){return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]}
 function rPer(){return !S.p5&&S.m?YEARS[S.y]+'-'+(S.m<10?'0':'')+S.m:'5y'}
 function rLabel(p){return p==='5y'?L('5 yillik o\'rtacha · 2022–2026'):YEARS[S.y]+' · '+MONUZ[S.m-1]}
-RAS.get('meta.json').then(function(r){return r.json()}).then(function(m){RM=m;rasterPanel()}).catch(function(e){RM=false;rasterPanel();if(window.console)console.warn('raster meta',e)});
+RAS.get('meta.json').then(function(r){return r.json()}).then(function(m){RM=m;rasterPanel();if(typeof clsKey!=='undefined'){clsKey=null;applyCls()}}).catch(function(e){RM=false;rasterPanel();if(window.console)console.warn('raster meta',e)});
 function loadThumbs(p){
   if(TH[p]||!RM||!RM.periods[p])return;TH[p]={};
   RAS.get('t/'+p+'.json').then(function(r){return r.json()}).then(function(t){TH[p]=t;if(R.per===p)rasterPanel()}).catch(function(){delete TH[p]});
@@ -1504,16 +1505,36 @@ function loadCls(ix,y){
    file {ix}_5y = status[nf] + uint16 value[nf] (value*10000; category indices: class code; 65535 = none),
    status by the raster's own thresholds, so a contour and the raster beneath it always agree */
 function loadCls5(ix){return loadCls(ix,'5y')}
-function val5(ix,id){var a=CLS[ix+'_5y'];if(!a||id<0)return undefined;var o=M.nf+id*2,v=a[o]|(a[o+1]<<8);if(v===65535)return null;
-  var C=typeof rcat==='function'&&rcat(ix,'5y');return C?{cat:C,code:v}:v/10000}
+function val5(ix,id){var a=CLS[ix+'_5y'];if(!a||id<0)return undefined;var o=M.nf+id*2,x=a[o]|(a[o+1]<<8);if(x===65535)return null;
+  var v=x/10000-1,C=typeof rcat==='function'&&rcat(ix,'5y');
+  if(C&&ix==='nbr')return {cat:C,code:Math.round(v)+1};
+  if(C&&ix==='ndmi')return {cat:C,code:v<0?1:v<.1?2:v<.2?3:v<.3?4:5,v:v};
+  return v}
 /* Parcel styling uses ONLY feature-state (k = status 1..4, h = 0 shown / 1 dimmed / 2 hidden, hv = hover, ps = picked).
    The layer expressions never change, so no tile is ever rebuilt; only features whose state really changed are touched. */
 var VI=null,KS=null,KE=null,HS=null,PAREA=null;
 /* feature-state k = status + 10 x index number (0 = no data), so one fixed colour expression covers every index */
 var IXN={ndvi:1,ndre:2,rvi:3,ci:4,ndmi:5,nbr:6,lai:7};
-function setK(a,o,ix){
-  var nf=M.nf,b=10*(IXN[ix]||1);if(!KS){KS=new Uint8Array(nf);KE=new Uint8Array(nf).fill(255)}
-  for(var n=0;n<nf;n++){var k=a[o+n],e=k&&k<5?b+k:0;KS[n]=k;if(KE[n]!==e){KE[n]=e;map.setFeatureState({source:'parcels',id:n},{k:e})}}
+/* contour colour = the raster palette colour of the contour's own value (from the tables), with the raster's stretch:
+   feature-state cc = IXN*64 + ramp index 1..50 (category rasters: moisture 8*64+code, burn 9*64+code), 0 = use status colour */
+var RCOL={"color":{"ci":[null,"#f09000","#f09502","#f19a05","#f19f07","#f2a40a","#f2a80c","#f2ad0f","#f3b211","#f3b714","#f4bc16","#f4c118","#f4c61b","#f5cb1d","#f5ce1c","#f4d11a","#f4d417","#f3d715","#f3da12","#f3dd10","#f2e00d","#f2e30b","#f1e609","#f1e906","#f1ec04","#f0ef01","#edf000","#e7ef00","#e1ee00","#dbed00","#d6ec00","#d0eb00","#caea00","#c4e900","#bee800","#b8e700","#b2e600","#ace500","#a6e200","#9cdb00","#92d400","#88cc00","#7ec500","#74be00","#6ab700","#60af00","#56a800","#4ca100","#429a00","#389200","#2e8b00"],"lai":[null,"#ffffcc","#fcfec9","#f9fdc6","#f6fbc2","#f3fabf","#f0f9bb","#edf8b8","#eaf7b5","#e7f5b2","#e3f4ae","#e0f3ab","#ddf2a7","#daf0a4","#d4eea1","#cbea9d","#c3e79a","#bce396","#b4e093","#abdc8f","#a3d98c","#9cd588","#94d285","#8dcf82","#83cb7e","#7cc87b","#75c377","#6ebe73","#66b86e","#5fb369","#59ae65","#52a861","#4ba35d","#439d58","#3d9853","#36934f","#2f8e4b","#278746","#228242","#1f7d40","#1d783e","#1a733c","#176e3a","#146938","#116436","#0e5f34","#0b5931","#08542f","#054f2d","#034a2b","#004529"],"nbr":[null,"#4d1a02","#551d03","#5e2103","#662404","#6f2805","#792c06","#812f06","#893307","#923608","#9c3a09","#a43e09","#ad410a","#b5450b","#bc4e12","#c25d1e","#c86929","#cd7533","#d3823e","#d9904b","#df9d55","#e4a960","#eab56a","#efc275","#f6d181","#fbdd8c","#fbe38f","#f4e28c","#ebe189","#e4e086","#dedf83","#d7df80","#d0de7d","#c7dd79","#c1dc76","#badb73","#b3da70","#aada6c","#a2d769","#97d266","#8ccd62","#81c75f","#74c15b","#69bc58","#5eb755","#53b152","#46ab4e","#3ba64b","#30a147","#259b44","#1a9641"],"ndmi":[null,"#8c510a","#925911","#986018","#9e681f","#a47027","#ab792f","#b18136","#b7883d","#bd9045","#c4994d","#caa154","#d0a95b","#d6b063","#dab66a","#dcbb73","#dfbf7a","#e1c381","#e3c789","#e6cc92","#e9d099","#ebd4a0","#edd9a8","#f0ddaf","#f2e2b8","#f5e6bf","#f0e6c2","#e4e2c0","#d5ddbe","#c9d9bc","#bcd5bb","#b0d1b9","#a4cdb7","#95c8b5","#89c4b3","#7dc0b1","#71bcaf","#62b7ad","#58b2aa","#51aca4","#4aa69e","#43a098","#3a9890","#33928a","#2c8c84","#25867e","#1d7e76","#167870","#0f726a","#086c64","#01665e"],"ndre":[null,"#ffffd9","#fdfed5","#fbfed1","#f9fdcd","#f8fcc9","#f6fbc5","#f4fbc1","#f2fabc","#f0f9b8","#eef9b4","#ecf8b1","#e8f6b1","#e4f5b2","#e1f3b2","#ddf2b2","#d9f0b3","#d5efb3","#d1edb3","#cdebb4","#c9eab4","#c3e7b4","#b9e4b5","#afe0b6","#a6dcb7","#9cd8b8","#92d4b9","#88d1ba","#7fcdbb","#76cabc","#6ec7be","#65c3bf","#5dc0c0","#54bdc1","#4cbac2","#44b7c4","#3eb2c4","#39adc3","#34a8c3","#2fa3c2","#2a9ec1","#2599c1","#2094c0","#1d8fbf","#1e88bc","#1f81b8","#1f7ab5","#2073b2","#216caf","#2165ab","#225ea8"],"ndvi":[null,"#d7191c","#da221f","#dd2c21","#e03524","#e33f26","#e74829","#ea522c","#ed5b2e","#f06531","#f36e34","#f67836","#f98139","#fc8b3b","#fd933d","#fc9b3f","#fca340","#fbab42","#fbb344","#fabb45","#fac447","#f9cc49","#f9d44a","#f8dc4c","#f8e44e","#f7ec4f","#f3ee4f","#eaeb4e","#e1e84c","#d8e54a","#d0e149","#c7de47","#bedb45","#b5d844","#add442","#a4d140","#9bce3f","#93ca3d","#8ac63c","#80bf3a","#76b738","#6cb037","#62a935","#59a133","#4f9a32","#459330","#3b8b2f","#31842d","#287d2b","#1e752a","#146e28"],"rvi":[null,"#780000","#7c0400","#800800","#840c00","#881000","#8c1400","#901800","#951d00","#992100","#9d2500","#a12900","#a53001","#aa3703","#ae3e04","#b34505","#b74c06","#bc5308","#c05a09","#c5610a","#c9680b","#cd6f0c","#d0780a","#d38109","#d68908","#d99207","#db9a05","#dea304","#e1ab03","#e4b402","#e7bd00","#e8c40d","#e7ca22","#e7d137","#e6d84c","#e5de62","#e5e577","#e4eb8c","#e0ee99","#d0e88e","#bfe182","#afdb77","#9fd46b","#8ece60","#7ec755","#6ec149","#58b142","#42a13c","#2c9136","#168030","#00702a"]},"cat":{"moisture":[null,"#8C510A","#D8B365","#F6E8C3","#5AB4AC","#01665E"],"burn":[null,"#F2F2F2","#FEE391","#FE9929","#D95F0E","#993404","#4D1A02"]}},CATN={moisture:8,burn:9},KC=null;
+function ccArr(a,ix){
+  var nf=M.nf,o=new Uint16Array(nf);if(typeof RM==='undefined'||!RM||!RM.legend||!RM.legend[ix])return o;
+  var p=rPer(),C=rcat(ix,p),s=rst(ix,p),cat=C&&RM.periods[p]&&RM.periods[p][ix]&&RM.periods[p][ix].cat,base=(C?CATN[cat]:IXN[ix])*64;
+  var lg=RM.legend[ix],fr=[];for(var q=1;q<51;q++)fr.push(lg[q]&&lg[q][0]!=null?lg[q][0]:Infinity);
+  var off=(13+S.m-1)*nf;
+  for(var n=0;n<nf;n++){var c=0;
+    if(S.p5){var x=a[nf+2*n]|(a[nf+2*n+1]<<8);if(x!==65535){var v=x/10000-1;
+      if(C)c=cat==='burn'?Math.round(v)+1:(v<0?1:v<.1?2:v<.2?3:v<.3?4:5);
+      else{var lo=0,hi=49;while(lo<hi){var md=(lo+hi+1)>>1;if(fr[md]<=v)lo=md;else hi=md-1}c=lo+1}}}
+    else if(S.m&&a.length>=off+nf)c=a[off+n];
+    if(c)o[n]=C?base+c:base+1+Math.round((s[1]>s[0]?Math.min(1,Math.max(0,(c-s[0])/(s[1]-s[0]))):0)*49);
+  }
+  return o;
+}
+function setK(a,o,ix,cc){
+  var nf=M.nf,b=10*(IXN[ix]||1);if(!KS){KS=new Uint8Array(nf);KE=new Uint8Array(nf).fill(255);KC=new Uint16Array(nf).fill(65535)}
+  for(var n=0;n<nf;n++){var k=a[o+n],e=k&&k<5?b+k:0,c=cc?cc[n]:0;KS[n]=k;if(KE[n]!==e||KC[n]!==c){KE[n]=e;KC[n]=c;map.setFeatureState({source:'parcels',id:n},{k:e,cc:c})}}
 }
 function applyVis(){
   if(!map||!map.getSource('parcels')||!VI)return;
@@ -1528,7 +1549,7 @@ function applyCls(){
   clsBusy=want;
   (p5?loadCls5(ix):loadCls(ix,y)).then(function(a){
     if(clsBusy!==want)return;
-    setK(a,p5?0:m*M.nf,ix);clsKey=want;applyVis();if(p5){donut();slegend()}
+    setK(a,p5?0:m*M.nf,ix,ccArr(a,ix));clsKey=want;applyVis();if(p5){donut();slegend()}
     if(PS>=0)pcard();
   }).catch(function(e){if(window.console)console.warn('status fayli ochilmadi',e)});
 }
@@ -1545,7 +1566,7 @@ function pcard(){
   var nm=S.ix==='ndmi'?STN_M:STN,v=V[VI[id]],k=KS?KS[id]:0,a=PAREA?PAREA[id]:0;
   /* the contour's own index value for the chosen year / month (series block), when loaded */
   var P=SER.P&&SER.P.id===id?SER.P[S.ix]:null,val=S.p5?val5(S.ix,id):P?(S.m?P.m[S.y][S.m-1]:P.y[S.y]):undefined;
-  var vtxt=val===undefined?'…':val&&val.cat?L(val.cat.n[val.code]||''):iv(val);
+  var vtxt=val===undefined?'…':val&&val.cat?(val.v!=null?iv(val.v)+' · ':'')+L(val.cat.n[val.code]||''):iv(val);
   el.innerHTML='<button class="x" aria-label="'+L('Yopish')+'">&times;</button><div class="t">'+L('Kontur')+' #'+(id+1)+'</div>'+
     '<div class="v">'+v.name+' · '+f(a,2)+' '+L('ga')+'</div>'+
     '<div class="s"><i style="background:'+(k&&k<5?STC[k-1]:STC[4])+'"></i>'+S.ix.toUpperCase()+' · '+period()+': <b>'+(k&&k<5?nm[k-1]:nm[4])+'</b></div>'+
@@ -1827,10 +1848,16 @@ map.on('load',function(){
     Object.keys(IXN).forEach(function(ix){PAL[ix].forEach(function(c,i){var e=IXN[ix]*10+i+1;MF.push(e,c);MD.push(e,rgba(c,.28))})});
     MF.push(STC[4]);MD.push(rgba(STC[4],.28));
     var ML=MF.slice(0,-1).concat(['#7d8f80']);
+    /* raster-palette colours (cc), status colours only as a fallback while the palette is not known */
+    var CC=['coalesce',['feature-state','cc'],0],PC=['match',CC],PD=['match',CC];
+    if(RCOL){Object.keys(IXN).forEach(function(ix){var r=RCOL.color[ix]||[];for(var q=1;q<51;q++)if(r[q]){PC.push(IXN[ix]*64+q,r[q]);PD.push(IXN[ix]*64+q,rgba(r[q],.28))}});
+      Object.keys(CATN).forEach(function(k){(RCOL.cat[k]||[]).forEach(function(c,q){if(c&&q){PC.push(CATN[k]*64+q,c);PD.push(CATN[k]*64+q,rgba(c,.28))}})})}
+    PC.push('#7d8f80');PD.push(rgba('#7d8f80',.28));
+    var HAS=['>',CC,0],FC=PC.length>3?['case',HAS,PC,MF]:MF,FD=PC.length>3?['case',HAS,PD,MD]:MD,FL=PC.length>3?['case',HAS,PC,ML]:ML;
     map.addLayer({id:'parcel-fill',type:'fill',source:'parcels',paint:{'fill-opacity':S.fop,
-      'fill-color':['case',['==',HF,2],'rgba(0,0,0,0)',['==',HF,1],MD,MF]}});
+      'fill-color':['case',['==',HF,2],'rgba(0,0,0,0)',['==',HF,1],FD,FC]}});
     map.addLayer({id:'parcel-line',type:'line',source:'parcels',layout:{'line-join':'round'},paint:{
-      'line-color':['case',ON,'#ffffff',['==',HF,2],'rgba(0,0,0,0)',['==',HF,1],MD,ML],
+      'line-color':['case',ON,'#ffffff',['==',HF,2],'rgba(0,0,0,0)',['==',HF,1],FD,FL],
       'line-width':['interpolate',['linear'],['zoom'],9,['case',ON,1.6,.45],12,['case',ON,2.4,1],14,['case',ON,3,1.6],17,['case',ON,3.8,2.4]]}});
     map.addLayer({id:'vill-hit',type:'fill',source:'bound',paint:{'fill-color':'#000','fill-opacity':0}});
     labels();map.on('moveend',cull);map.on('zoomend',cull);
