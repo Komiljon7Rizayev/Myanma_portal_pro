@@ -475,7 +475,7 @@ h1,h2,p{margin:0}
   <aside class="rail">
     <nav class="nav" aria-label="Bo'limlar">
       <button id="n-all" aria-pressed="true"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="6" rx="1.4"/><rect x="9" y="2" width="5" height="3.5" rx="1.2"/><rect x="2" y="10" width="5" height="4" rx="1.2"/><rect x="9" y="7.5" width="5" height="6.5" rx="1.4"/></svg>Boshqaruv paneli</button>
-      <button id="n-list" aria-pressed="false"><svg viewBox="0 0 16 16"><path d="M2 14V8.2L5.5 5 9 8.2V14M2 14h12M9 14V9.6l2.5-2.3 2.5 2.3V14M4.6 14v-2.6h1.8V14"/></svg>Qishloq traktlari</button>
+      <button id="n-list" aria-pressed="false"><svg viewBox="0 0 16 16"><path d="M2 14V8.2L5.5 5 9 8.2V14M2 14h12M9 14V9.6l2.5-2.3 2.5 2.3V14M4.6 14v-2.6h1.8V14"/></svg>Qishloqlar</button>
       <button id="n-size" aria-pressed="false"><svg viewBox="0 0 16 16"><path d="M2.2 4.5 6 2.5l3.2 2.2-.6 4L4.4 10 2 7.6zM9.6 5.8l4.2-.6.4 4.4-3.6 3.4-2.4-2.6zM3.6 11.6 6.4 11l1.4 3H3.4z"/></svg>Kontur holati</button>
       <button id="n-share" aria-pressed="false"><svg viewBox="0 0 16 16"><path d="M8 2a6 6 0 1 0 6 6H8z"/><path d="M10 1.6A6 6 0 0 1 14.4 6H10z"/></svg>Ekin yeri ulushi</button>
     </nav>
@@ -694,7 +694,7 @@ var D={
 "Kontur medianasi":["Median contour","Медиана контура","ကွက် အလယ်ကိန်း"],
 "Eng katta kontur":["Largest contour","Крупнейший контур","အကြီးဆုံး ကွက်"],
 "Yirik konturlar (2 ga+) ulushi":["Share of large contours (2 ha+)","Доля крупных контуров (2 га+)","ကွက်ကြီးများ (၂ ဟက်တာ+) အချိုး"],
-"Qishloq trakti · yer fondi ko'rsatkichlari":["Village tract · land indicators","Сельский тракт · показатели земельного фонда","ကျေးရွာအုပ်စု · မြေ ညွှန်ကိန်းများ"],
+"Qishloq · yer fondi ko'rsatkichlari":["Village · land indicators","Деревня · показатели земельного фонда","ရွာ · မြေ ညွှန်ကိန်းများ"],
 "Tuman · yer fondi ko'rsatkichlari":["Township · land indicators","Район · показатели земельного фонда","မြို့နယ် · မြေ ညွှန်ကိန်းများ"],
 "76 709 ekin konturi":["76,709 crop contours","76 709 контуров посевов","သီးနှံကွက် ၇၆,၇၀၉"],
 "Minbu Water Management havolasi hali qo'shilmagan.":["The Minbu Water Management link has not been added yet.","Ссылка на Minbu Water Management ещё не добавлена.","Minbu Water Management လင့်ခ်ကို မထည့်ရသေးပါ။"],
@@ -780,14 +780,14 @@ var D={
 "{0} kontur / 100 ga ekin":["{0} parcels / 100 ha of crops","{0} контуров / 100 га посевов","စိုက်ပျိုးမြေ ၁၀၀ ဟက်တာလျှင် မြေကွက် {0}"],
 "hududning {0}i":["{0} of the area","{0} территории","ဧရိယာ၏ {0}"],
 "Maydon reytingi":["Area rank","Рейтинг по площади","ဧရိယာ အဆင့်"],
-"Qishloq traktlari":["Village tracts","Сельские округа","ကျေးရွာအုပ်စုများ"],
+
 "ulush bo'yicha {0}-o'rin":["#{0} by share","{0}-е место по доле","ဝေစုအလိုက် အဆင့် {0}"],
 "barchasi xaritada":["all shown on the map","все на карте","အားလုံး မြေပုံပေါ်တွင်"],
 "tuman bilan solishtirib bo'lmaydi":["cannot be compared with the township","нельзя сравнить с районом","မြို့နယ်နှင့် နှိုင်းယှဉ်၍ မရပါ"],
 "tuman: {0} ({1})":["township: {0} ({1})","район: {0} ({1})","မြို့နယ်: {0} ({1})"],
 "oylik o'rtacha":["monthly mean","среднее за месяц","လစဉ် ပျမ်းမျှ"],
 "yillik qiymat":["yearly value","годовое значение","နှစ်စဉ် တန်ဖိုး"],
-"Tanlangan qishloq trakti":["Selected village tract","Выбранный сельский округ","ရွေးချယ်ထားသော ကျေးရွာအုပ်စု"],
+"Tanlangan qishloq":["Selected village","Выбранная деревня","ရွေးချယ်ထားသော ရွာ"],
 "Tanlash uchun qishloqni bosing":["Click a village to select it","Нажмите на деревню, чтобы выбрать","ရွေးရန် ရွာကို နှိပ်ပါ"],
 "Tuman = ×1,00":["Township = ×1.00","Район = ×1,00","မြို့နယ် = ×1,00"],
 "Qishloq tanlang":["Select a village","Выберите деревню","ရွာတစ်ရွာ ရွေးပါ"],
@@ -1039,7 +1039,7 @@ function render(){
   $('back').hidden=!isV;
   $('s-n').textContent=f(c.n); $('s-n2').textContent=L('{0} kontur / 100 ga ekin',f(c.dens));
   $('s-ha').innerHTML=f(c.ha)+' <small>'+L('ga')+'</small>'; $('s-ha2').textContent=L('hududning {0}i',pct(c.share));
-  $('s-r-l').textContent=isV?L('Maydon reytingi'):L('Qishloq traktlari');
+  $('s-r-l').textContent=isV?L('Maydon reytingi'):L('Qishloqlar');
   $('s-r').innerHTML=isV?c.rank+' <small>/ 70</small>':f(T.nvil);
   $('s-r2').textContent=isV?L('ulush bo\'yicha {0}-o\'rin',c.srank):L('barchasi xaritada');
   var cv=S.m?SER[sc][S.ix].m[S.y][S.m-1]:yearVal(sc,S.ix,S.y), tv=S.m?SER.T[S.ix].m[S.y][S.m-1]:yearVal('T',S.ix,S.y);
@@ -1047,7 +1047,7 @@ function render(){
   $('s-i').textContent=iv(cv);
   $('s-i2').textContent=isV?(cv==null||tv==null?L('tuman bilan solishtirib bo\'lmaydi'):L('tuman: {0} ({1})',iv(tv),(cv>=tv?'+':'')+f(cv-tv,3))):(S.m?L('oylik o\'rtacha'):L('yillik qiymat'));
   gauge(c);slegend();
-  $('r-name').textContent=isV?c.name:L('Butun tuman'); $('r-sub').textContent=isV?L('Qishloq trakti · yer fondi ko\'rsatkichlari'):L('Tuman · yer fondi ko\'rsatkichlari');
+  $('r-name').textContent=isV?c.name:L('Butun tuman'); $('r-sub').textContent=isV?L('Qishloq · yer fondi ko\'rsatkichlari'):L('Tuman · yer fondi ko\'rsatkichlari');
   $('r-share').textContent=pct(c.share,1);
   $('r-a').textContent=f(c.vha)+' '+L('ga'); $('r-m').textContent=f(c.med,2)+' '+L('ga'); $('r-x').textContent=f(c.max,c.max<10?2:1)+' '+L('ga');
   $('p-v').textContent=pct(gh); $('p-i').style.width=(gh*100).toFixed(1)+'%';
