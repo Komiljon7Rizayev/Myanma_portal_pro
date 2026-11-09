@@ -419,6 +419,10 @@ h1,h2,p{margin:0}
 .gate .fine{font-size:11px;color:var(--tx-2);opacity:.8}
 .who{flex:none;height:30px;padding:0 10px;border-radius:8px;background:var(--glass-2);border:1px solid var(--line);font-size:12px;color:var(--tx-2)}
 .who:hover{color:var(--tx)}
+.rsm{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:250;display:flex;align-items:center;gap:12px;padding:14px 20px;border-radius:14px;background:rgba(12,27,18,.92);border:1px solid var(--line);box-shadow:0 18px 50px rgba(0,0,0,.5);color:var(--tx);font-size:14px}
+.rsm i{width:18px;height:18px;border-radius:50%;border:2px solid rgba(127,208,108,.25);border-top-color:#7fd06c;animation:rsp .8s linear infinite}
+@keyframes rsp{to{transform:rotate(360deg)}}
+.rsm button{height:32px;padding:0 12px;border-radius:8px;background:#3f8f49;color:#fff;font-weight:600}
 .soq{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:16px;background:rgba(4,10,6,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);animation:sof .18s ease}
 @keyframes sof{from{opacity:0}to{opacity:1}}
 .sob{width:min(360px,100%);background:#10231a;border:1px solid var(--line);border-radius:16px;padding:22px 22px 18px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.55);animation:sop .2s ease}
@@ -636,6 +640,9 @@ var D={
 "Portaldan chiqasizmi?":["Sign out of the portal?","Выйти из портала?","ပေါ်တယ်မှ ထွက်မလား။"],
 "Qayta kirish uchun login va parol kerak bo'ladi.":["You will need your username and password to sign in again.","Для повторного входа понадобятся логин и пароль.","ပြန်ဝင်ရန် အသုံးပြုသူအမည်နှင့် စကားဝှက် လိုအပ်မည်။"],
 "Kirish muddati tugadi. Login va parolni qayta kiriting.":["Your session has expired. Enter your username and password again.","Сеанс истёк. Введите логин и пароль снова.","ဝင်ရောက်ချိန် ကုန်ဆုံးပြီ။ အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ပြန်ထည့်ပါ။"],
+"Yil tanlang: oylar kesimida ko'rinadi":["Pick a year to see it month by month","Выберите год — данные по месяцам","နှစ်ရွေးပါ — လအလိုက် ပြမည်"],
+"Portal yangilanmoqda…":["Refreshing the portal…","Портал обновляется…","ပေါ်တယ် ပြန်လည်ဖွင့်နေသည်…"],
+"Qayta urinish":["Try again","Повторить","ထပ်ကြိုးစားရန်"],
 "Bekor qilish":["Cancel","Отмена","မလုပ်တော့ပါ"],
 "Yuklanmoqda…":["Loading…","Загрузка…","ရယူနေသည်…"],
 "Ma'lumotlar yuklanmoqda…":["Loading data…","Загрузка данных…","ဒေတာ ရယူနေသည်…"],
@@ -1004,7 +1011,10 @@ function curVal(sc,ix){var o=SER[sc]&&SER[sc][ix];if(!o)return null;return S.p5?
 function firstM(yi){if(typeof RM!=='undefined'&&RM&&RM.periods){for(var m=1;m<=12;m++)if(RM.periods[YEARS[yi]+'-'+(m<10?'0':'')+m])return m}return 1}
 function setYear(yi){S.p5=false;S.y=yi;S.m=firstM(yi);render()}
 function setP5(){S.p5=true;S.y=YEARS.length-1;S.m=0;render()}
-function staA(sc,x){if(!S.p5)return STA[sc][x][S.y][S.m];var r=null;YEARS.forEach(function(_,yi){var a=STA[sc][x][yi][0];if(!r)r=a.map(function(){return 0});a.forEach(function(v,i){r[i]+=v/YEARS.length})});return r}
+function staA(sc,x){if(!S.p5)return STA[sc][x][S.y][S.m];
+  /* 5-year area by status = the same per-contour statuses that colour the map (raster under each contour) */
+  if(typeof clsKey!=='undefined'&&clsKey===x+'_5y'&&KS&&PAREA){var q=[0,0,0,0,0],sel=S.sel;for(var n=0;n<KS.length;n++){if(sel>=0&&VI[n]!==sel)continue;var k=KS[n];q[k>=1&&k<=4?k-1:4]+=PAREA[n]}return q}
+  var r=null;YEARS.forEach(function(_,yi){var a=STA[sc][x][yi][0];if(!r)r=a.map(function(){return 0});a.forEach(function(v,i){r[i]+=v/YEARS.length})});return r}
 function perTxt(){return S.p5?'2022–2026':YEARS[S.y]+(S.m?' '+MON[S.m-1]:'')}
 
 /* ---------- filters ---------- */
@@ -1490,16 +1500,12 @@ function loadCls(ix,y){
       return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('deflate'))).arrayBuffer()})
     .then(function(b){CLS[key]=new Uint8Array(b);return CLS[key]});
 }
-/* 5-year status of each contour = rounded mean of its yearly statuses 2022–2026 (years without data are skipped),
-   so the contour colours describe the same period as the 5-year mean raster under them */
-function loadCls5(ix){
-  var key=ix+'_5y';if(CLS[key])return Promise.resolve(CLS[key]);
-  return Promise.all(YEARS.map(function(y){return loadCls(ix,y).catch(function(){return null})})).then(function(arr){
-    var nf=M.nf,o=new Uint8Array(nf);
-    for(var n=0;n<nf;n++){var s=0,c=0;for(var j=0;j<arr.length;j++){var a=arr[j];if(!a)continue;var k=a[n];if(k>=1&&k<=4){s+=k;c++}}o[n]=c?Math.round(s/c):0}
-    return CLS[key]=o;
-  });
-}
+/* 5-year contour values are taken from the 5-year raster UNDER each contour (built by p_cls5y.py):
+   file {ix}_5y = status[nf] + uint16 value[nf] (value*10000; category indices: class code; 65535 = none),
+   status by the raster's own thresholds, so a contour and the raster beneath it always agree */
+function loadCls5(ix){return loadCls(ix,'5y')}
+function val5(ix,id){var a=CLS[ix+'_5y'];if(!a||id<0)return undefined;var o=M.nf+id*2,v=a[o]|(a[o+1]<<8);if(v===65535)return null;
+  var C=typeof rcat==='function'&&rcat(ix,'5y');return C?{cat:C,code:v}:v/10000}
 /* Parcel styling uses ONLY feature-state (k = status 1..4, h = 0 shown / 1 dimmed / 2 hidden, hv = hover, ps = picked).
    The layer expressions never change, so no tile is ever rebuilt; only features whose state really changed are touched. */
 var VI=null,KS=null,KE=null,HS=null,PAREA=null;
@@ -1522,7 +1528,7 @@ function applyCls(){
   clsBusy=want;
   (p5?loadCls5(ix):loadCls(ix,y)).then(function(a){
     if(clsBusy!==want)return;
-    setK(a,p5?0:m*M.nf,ix);clsKey=want;applyVis();
+    setK(a,p5?0:m*M.nf,ix);clsKey=want;applyVis();if(p5){donut();slegend()}
     if(PS>=0)pcard();
   }).catch(function(e){if(window.console)console.warn('status fayli ochilmadi',e)});
 }
@@ -1538,12 +1544,13 @@ function pcard(){
   var el=$('pcard'),id=PS;if(id<0)return;
   var nm=S.ix==='ndmi'?STN_M:STN,v=V[VI[id]],k=KS?KS[id]:0,a=PAREA?PAREA[id]:0;
   /* the contour's own index value for the chosen year / month (series block), when loaded */
-  var P=SER.P&&SER.P.id===id?SER.P[S.ix]:null,val=P?(S.p5?y5(P.y):S.m?P.m[S.y][S.m-1]:P.y[S.y]):undefined;
+  var P=SER.P&&SER.P.id===id?SER.P[S.ix]:null,val=S.p5?val5(S.ix,id):P?(S.m?P.m[S.y][S.m-1]:P.y[S.y]):undefined;
+  var vtxt=val===undefined?'…':val&&val.cat?L(val.cat.n[val.code]||''):iv(val);
   el.innerHTML='<button class="x" aria-label="'+L('Yopish')+'">&times;</button><div class="t">'+L('Kontur')+' #'+(id+1)+'</div>'+
     '<div class="v">'+v.name+' · '+f(a,2)+' '+L('ga')+'</div>'+
     '<div class="s"><i style="background:'+(k&&k<5?STC[k-1]:STC[4])+'"></i>'+S.ix.toUpperCase()+' · '+period()+': <b>'+(k&&k<5?nm[k-1]:nm[4])+'</b></div>'+
-    '<div class="pv">'+L('Qiymat')+': <b>'+(val===undefined?'…':iv(val))+'</b></div>'+
-    '<div class="yrs" id="pc-yrs">'+YEARS.map(function(y,i){return '<button data-y="'+i+'"'+(!S.p5&&i===S.y?' class="on"':'')+' title="'+y+'"><i></i>'+y+'</button>'}).join('')+'</div>'+
+    '<div class="pv">'+L('Qiymat')+': <b>'+vtxt+'</b></div>'+
+    '<div class="yrs" id="pc-yrs" title="'+L('Yil tanlang: oylar kesimida ko\'rinadi')+'">'+YEARS.map(function(y,i){return '<button data-y="'+i+'"'+(!S.p5&&i===S.y?' class="on"':'')+'>'+y+'</button>'}).join('')+'</div>'+
     '<button class="vb">'+L('Qishloqni tanlash')+'</button>';
   el.hidden=false;
   var W=$('map').clientWidth,H=$('map').clientHeight,p=PSpt||{x:W/2,y:H/2},w=el.offsetWidth,h=el.offsetHeight;
@@ -1552,11 +1559,7 @@ function pcard(){
   el.querySelector('.vb').onclick=function(){var vi=VI[id];pickParcel(-1);select(vi)};
   /* year chips: switch the whole portal to that year, the contour stays picked */
   $('pc-yrs').onclick=function(e){var b=e.target.closest('button');if(!b)return;var yi=+b.dataset.y;if(!S.p5&&yi===S.y)setP5();else setYear(yi)};
-  var ix=S.ix;
-  Promise.all(YEARS.map(function(y){return loadCls(ix,y)})).then(function(arr){
-    if(PS!==id||S.ix!==ix)return;var sp=$('pc-yrs').children;
-    arr.forEach(function(a,i){var kk=a[id];sp[i].querySelector('i').style.background=kk&&kk<5?STC[kk-1]:STC[4];sp[i].title=YEARS[i]+' · '+(kk&&kk<5?nm[kk-1]:nm[4])});
-  });
+  /* yearly-average statuses are hidden for now: the chips only open that year's months */
 }
 /* ArcGIS Online (Esri) basemaps; the chosen one feeds the "Sun'iy yo'ldosh" and "3D" modes and is masked to the township */
 var ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/',WB='https://wayback.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/WMTS/1.0.0/default028mm/MapServer/tile/44710/';
@@ -2568,13 +2571,18 @@ function item(id,tok){
     if(!r.ok)throw new Error(r.status);return r.text()}).then(function(s){
     if(s.charAt(0)==='{'&&s.indexOf('"error"')>0&&s.length<600)throw new Error(/"code"\s*:\s*49[89]/.test(s)?'eskirgan':'ruxsat');return s});
 }
-function boot(){
+function boot(resume){
   var t=getTok();if(!t){un.focus();return}
   busy(true);say('Ma\'lumotlar ArcGIS Online\'dan yuklanmoqda…');
+  /* page refresh while signed in: stay in the portal window (no sign-in screen), only a small loader */
+  var ld=null;
+  if(resume){$('gate').hidden=true;if(window.__stopAgri)window.__stopAgri();
+    ld=document.createElement('div');ld.className='rsm';ld.setAttribute('role','status');ld.innerHTML='<i></i><span>'+L('Portal yangilanmoqda…')+'</span>';document.body.appendChild(ld)}
+  function unload(){if(ld){ld.remove();ld=null}}
   var CL={};
   function getCls(ix,y){
     var p=CL[ix]||(CL[ix]=item(IDS['cls_'+ix],t.t).then(function(s){return s.split('\n')}));
-    return p.then(function(a){return a[y-2022]||''});
+    return p.then(function(a){return a[y==='5y'?5:y-2022]||''});
   }
   Promise.all([item(IDS.data,t.t),item(IDS.parcels,t.t)]).then(function(r){
     var D=JSON.parse(r[0]);
@@ -2599,9 +2607,13 @@ function boot(){
     window.__PSER={get:function(p){
       return fetch(PORTAL+'/sharing/rest/content/items/'+IDS.rasters+'/resources/p/'+p+'?token='+encodeURIComponent(t.t)).then(function(r){if(!r.ok)throw new Error(r.status+' '+p);return r});
     }};
-    window.__start(D,r[1].trim(),getCls);
+    window.__start(D,r[1].trim(),getCls);unload();
   }).catch(function(e){
     busy(false);
+    if(ld){var em=String(e.message);
+      if(em==='eskirgan'||em==='ruxsat'||/Invalid token|498/.test(em)){setTok(null);location.reload();return}
+      ld.innerHTML='<span>'+L('Ma\'lumot yuklanmadi ({0}). Qayta urinib ko\'ring.',em)+'</span><button type="button">'+L('Qayta urinish')+'</button>';
+      ld.querySelector('button').onclick=function(){location.reload()};return}
     if(String(e.message)==='eskirgan'||/Invalid token|498/.test(String(e.message))){setTok(null);$('gform').classList.remove('step1');say('Kirish muddati tugadi. Login va parolni qayta kiriting.',true);un.focus()}
     else if(String(e.message)==='ruxsat'){setTok(null);$('gform').classList.remove('step1');say('Bu akkauntda Minbu Portal ma\'lumotlarini ko\'rish ruxsati yo\'q.',true)}
     else say('Ma\'lumot yuklanmadi ({0}). Qayta urinib ko\'ring.',true,e.message);
@@ -2609,7 +2621,7 @@ function boot(){
 }
 var q=new URLSearchParams(location.search);
 if(q.get('code')&&q.get('state')){history.replaceState(null,'',location.pathname);exchange(q.get('code'),q.get('state'))}
-else boot();
+else boot(!!getTok());
 })();
 </script>
 
