@@ -419,6 +419,19 @@ h1,h2,p{margin:0}
 .gate .fine{font-size:11px;color:var(--tx-2);opacity:.8}
 .who{flex:none;height:30px;padding:0 10px;border-radius:8px;background:var(--glass-2);border:1px solid var(--line);font-size:12px;color:var(--tx-2)}
 .who:hover{color:var(--tx)}
+.soq{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:16px;background:rgba(4,10,6,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);animation:sof .18s ease}
+@keyframes sof{from{opacity:0}to{opacity:1}}
+.sob{width:min(360px,100%);background:#10231a;border:1px solid var(--line);border-radius:16px;padding:22px 22px 18px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.55);animation:sop .2s ease}
+@keyframes sop{from{transform:translateY(8px) scale(.98)}to{transform:none}}
+.sob .soi{width:46px;height:46px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;background:rgba(229,138,78,.14);color:#e58a4e}
+.sob .soi svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sob h3{margin:0 0 6px;font:500 18px var(--display);color:var(--tx)}
+.sob p{margin:0 0 16px;font-size:13px;color:var(--tx-2);line-height:1.45}
+.sob .sbt{display:flex;gap:10px}
+.sob .sbt button{flex:1;height:40px;border-radius:10px;font-weight:600;font-size:14px}
+.sob .sno{background:var(--glass-2);border:1px solid var(--line);color:var(--tx)}
+.sob .syes{background:#c8643a;color:#fff}
+.sob .sno:hover{border-color:var(--leaf-2)}.sob .syes:hover{background:#d8713f}
 .gate{place-items:end center;padding-bottom:max(8vh,24px)}
 .gate .box{width:min(480px,100%)!important;padding:30px 30px 24px!important;gap:14px!important}
 .gate .gico{width:64px;height:64px;margin:0 auto -2px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.55))}
@@ -448,7 +461,7 @@ h1,h2,p{margin:0}
   <div class="ghead"><img class="gico" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAYXUlEQVR42u2beZSdVZnuf3vvbzhjnapTQ6rICCTMAWIYJECTOKCigCCJ3hZsp4vcFmntZnmlGzpBbO+ybXupywlnwAY7ARVouMxJmKKQQCAkQMZKUpWqpIZTZ/zGvff9Iwk3rXjbYKR7rZvnr2+daX/v873Tfvdz4DAO478crLUCi/j/0vildql6vdeW2+WOtVZYa6W1Vi61S9XrffZg4fxXMXo96y1LYJFYpL86dGu+8cqWaMn8JXoFK9QCsSA90EEO5dr/qQQstovlEpZYIYTe/9qddtVH2yl+udI77S4hxGeA9C771IcylIoe8hcRZmqWbhszen6d3fNg9M8XiUWBtVYIIQ6aHPGmxPO/W1CAwC61Vi3aZ/gv7VPfSYLWcWEcCIWZv+6Oezn18ktpKxy30BLMaqXDX27s2I7qmlTVrUYpGp+wOYnIzjp6cFwFx1zJRQFY3ggBzp/C4GUgYRmLxCLzejd1s73ZXSRE8jP76PQyHd9upCPvffLr36VWGaM6XrUdlYbtBzH1ne9cVq2Nse62X9hSvaHTrq6SjeqMDw2ZM//iA8jpM176VO6iVodd+hqZ/ykE7Dd6Iew3+LWbqVjbPrHvuh1YC40FQiTL7BMfL1K84Tcr7pmx+se3p1O8nEjTkFSnaijnC/X0b6g+/ZwdS5WZ1dupks4upx4EtqU1HZ0dtmf+2c6DX9+bBJctW68A80ZyxCEPgVes7drEyxdYgve36qOT6xOjs/R4BasUmVyO/JS+oYzX8WqQjF/yyDduZvOvV6dHFNsdKVzaXNDSsKFao+i4zC6WcKxk0CiOKbexbawKKqHH883kS98nim+Zs7X/N+vO++XS2/ewBtasWZO+qQTsj++fhw9M785MnxMSXjUxuPXMtDpWGn1qNaMbtrB1eDdOZMgWXWIHir19FKcewa4tW+ymrdvspFJJZo1ACCh4kqLjs7lVo5omzCuVwUgqqcBTgmLOI/AlffkuxoZG9JxrP6niaX0PXqHe/r65c+d6a9asifZ5gn1TCFhulzsLxIL0X+2jv3KrycW/ufMuRpevIq23tOsosioLWDkYxfS2ZxixklarZa0KrednVOwo2qWiniR0uC5ZxyE1FsdRxKnFaoiMZU65nVorYCCJSDOCI0p9dBhQXe3m+Ks/aVc9vfa9X37b5x5euHChs2zZsuRgCHjDOWDx4sVyPvP13JvnullK6FJTb7t/uTbCuk5bVgkhMa6HNYacUniOoGChlpFCeAUUgiwCgcLDUm0pnKxPmCY4kUPOA6Mg0CHVqEU541FJNVpb0tRiHEE8OIRNWsprz5cBuSe3Rx7SJGitFStYoQBWsMKcyBIBsH7FCrFk/ny9aNmJ7k1X3v6tsf5XL1q37E7TVi56JjUESUJqNIlIsUA9DEk9n4wrSK2mDYGUik5ZIDUa13FxHY92XzMhHYROsamgmPGY0lZgdxQzHISUXUHGy3Dq9F4eX/uCLV24QA6P1xs/vuJLOyiViv0r+oN9Xv3He8Bia6UQwgAHdGE3vna1YTHeFUue+1F15+bLH/3i/zJ6oqoKnSUCa8g6Lr6QOEqyc6JJKe8hPEEtScj7ChxJj1skigxNHdPuKxLbYkcjxHcVRc/BMQ4Ciy9dJmcVtVaETVKaJmSw3qDeXmbW3Dk8/Pnvih3rd/j09Hjbt2+PDzasnd/35IUQZql9ZHInkz+mScsxwckO3k6P3CNN6r5P4RNDO5+fd/91NxrfGNlW7iBJYpQSaGNxpCAIYvKOT5KBKIkwCjpyOYRxiRNNJWrRSjWxNigXWlaDNmSVj+9kiHXE5kbK0cUCZc9DxSmpo9g0PIHb28OkIyZT/tQC+JeVWaJqFggBeTCJ0Hm9vlwIoe+0y9/vmcz3X3j+0e7q0Ah7NmxGeS7T33rqR4sd7ZiRCi/ef5+RSSoT3yOMUwSC1GhSRxIYg9Ya6xtiq0E6lLI+7SqH0AkjOsF1JVNyktharDD4SiCNoOi00e561HVE4ihSK/Bcl211i8ClPwx4y9E5occrpnjM1MyCmz501PIbfv5Kb2+vNzw8fFBh4LxOWTNL7dNZif3ar7727e5Vt98bZ/NZ6Xu+UNbaZ37xsHA9JXsyjsnlfZXP56mGIZUkot3PghCUpEczCNGuJHE00ig6c0VajYSQFn0FyaSCR6BcJudcUuESmZTN4zVqaYqjHMoZj7HAp+A4ZKQg50pmdGQJrWK4pumb1IcXGGQSq2xPsQ2QJmvkHxUCQgi7l4Q2HUeD1Vx7wXq5rFPsKkujNa6SFKTEldDUWrnKJ58K8o5D0xoCHeNJhUkMHV6Wmk1IrKaUb8dPEnJC40iXnHLpykoCK4mMQz6XxSQJvXno8mOU0aBjip5H3vfwRYIrBcpxCWOLMDEDQ8Nm2uT3SDMysf2pL//qZTfv+q2RljnYKvA7ZWMZyEXipHh47eY9k084SrgCq6zFExJpAGMQVjO5mCOJU0aaCcq6+MohBbS1CCxNmRC7cEznDAoWdJLgZT2UgKzjsDuAwAiUgD3VOlknpSuvkEgcmZKakKwn8BxFamB7rcWmekTLGKYIbU0ailGS9EfvuP571e0jFc8r2Eajsb8TtG+IAGutXCSEua15/+nHnHnWW7esesEIx5G4Co1BAlIIjBWMN0KyyiGIQiotjSOy5ByXvOciFKQCjmyfzMj4GJXKOBhLalIm4pjxKKHgSKLE4FhLLQppJYZGpPGEIadAK4NVliBssH68xlAcM6s9T1kKEoOIh/fg1Zvi2h8sWQCEzUqlPvuc2cydO/eNE7BkyRIQ2N8sfaI+Xhn0p550vCDVhJUm2YyHmxEkWiOEwkpBNYrIeh5BHDDRbOIoj1y2RNYrMKOzl7hZR4kY13NxXEFiLK6EVqLxlaDNgUCndGU9dCsijVOOKGYouJIkTkjikKIvcX1F3lHUmiFh0ARXUB0aFQ9ce5M4Yc5R59889m+fP+9TF8t1T66rrFmzJtk/PXojrbBECNN1zrF9n7zl6vXHu1M7ms2KfeLHd4mhdRuYNqmTRAtqzRoSB21SpDEoJbBW01PIMr13KmEc0QxqtKIAXynqiaYj55KmBoykLZuhzXcpF3xeHQk5ql1RMDHKcYiBsN6kaQRGusQZn/WVBqeUCqSpJgxDfAFRro3GSBV/Spc599pPyTBXHBLZwv3QWvIBsWDggHJuDyoHYIzIYTKRMerRX97FSz+6n4tuuIbjzp9HoxKglIdBEpmEINUICUpKpHKRjqLVqrOnOkE9CIisQCqHctanlUKqLcZoLOC5kj21iKQVUo0ttRTQKVEUIpRASAfpeowFLXLWgIHR0BBIh0QbTByQ62oj2TMu13/zJ2bk5/f2tQ8MfiKK7ZqH7Ytf/cHE0vL/TeoH0QcsBnHjExvNyKpXTX5aDw9d808EScR511/BspXPUZ8YQ0iHUi6DsJpqK2RKZwf1VpMwhV3VCZLYks0Isq5DM4ooOD6lrEcUpRhjibTBAC6WrCeJUwuuYjDUJEbQl1FoBENJTE2ndHkeidE4ArpLBYJWQKsZ4uJiHIGujsjVa+tWVCKt8l6PfNdZ1/bMmHHebaP3v2MJSxrW/v5pkfztDc6NQpgPP/h3xx572TvbBx9fr/M9BbHxsTWMvbqLS769GCEt1bFxhmtN/EyOnJ+h2gwpZHxcqYg1CKWpN0OSMEE6Dondu1A245H3fVwlsUCCwHUUItXsqmtGW5qcEMQJ1BNDkBrKboZJWY+cI8k5ijgxhBq0tjhRi3oMtUgz3TbE7tFNztb+7faOf/xOtHVg8+kdnZ1fuFHcaFasWKH+0BAwCxcuVGka9NuM2NJ92rGqFUXpxFDF3v6BLzCxaZCLFn+eKbOPAR2zbc9urBTEiWasHpHLe2QdiZQOnudSCxKssTTShCi1uAIc5WARRElKPUgwOiGIE6y1ZF2XQLjsiAQNFKViBh2muEZjjEFiSJKEcs5laptCRzE5pbDSQzo+uaBO1BwUGULH27DexOhTAFasWPF7t/7/jpmVK1fCiTgr/u6e8SRuPjb3s5ecO/3803rrg6OiNTDO4OqXaO/u5IzLLuKoc05m6/Jf04wS8pks0zuKjNbqpMbiYnAchQWaUUp3zkO7BTpcS5xa8tkMYRKjrcDu6x2UtEhlqUUp1hiU69GWzRI3QxIhcKUkMRAkFs93yTuGIEppWfDzPs1QUxc+LilttQn8jCfbznhLa2etdcvAqvVm+/btrzsu+x3XGNkwYvvm9vkblq6prbvj8QdO+PCC6uy/vPD4+uDuzODDL4idz7wo1t35IGdeuZD2Se3sWrWWxFEoCR1ZjyBJCLXFRaIcQdHz8F0X3yaEqQUERliSOEJIcByJjiMEFk8JUm2JjSF1ocvzsRiUcgjTvQ+xkPORgCs0tUAjEk3WcQhjg6NjvKhF7AoxsH2XmXHu6X2zzp777Peu+crLCxcvdDes3GD+4yoAdmjNUNzd3W3Cwdr4t066+qsvPfD0P5xwzXuVyXhWZLO0gph7rvlHZl/yLqa95Th8oxlvxeyqBmDBUwqkICsVUjmESYoxgkYCWmviKKYexcQmIQgDQqFoIJFC4lgoeh59pSKVekiYWBSCnOsgpKSc9/Fcl0j4pCgcYXEsHHtED3klKHou3e3tdPl5E77wCm3dbR+z1qqJLRPu64XB700OrVZLl8tl0zenL7PpgReG5nzmgpOPXnTujJd/8kiqw5TxrbtE2+RuJs8+ko0PrcJtK2C0RWuDpzyk52KsJUpStNnb5fmug0NMog2xNVghaSQJMRaJJUwTtBVkc1l812Oi2qIt55JoS4qg4HuEqSExECaGQsbdu57r4OUyJFJipEPJaPKeJ0a3DNG54K3Tu4/uXb70pp9tWbhwobthwwb9hxBgAdtsNvX4jnGDyCWPXXfrsvO+/OE50844eeboxgHRGBqzIk7E2X9zOY1N/UwMDGMdB0cJWmGM5ylyGReEA0aTmpQ41VhpqcYJnqPAahraYlONQaDQ2ETT1lli60iFdlcR6b33K5WD7ynCMMJ3JOW2PEZIXGVROsFREk86VGohjXpITidC1AOrervd0y7+wLlzFp722PMjT4+e8ekzxIZlG+x/6AEHVobStKwod5dFY/fo8zMufKue9YH5nT3nHdux7pv32EzWE2df/XEyk0pseeYFHCUpeGBNjEVgLOQcMNaSJoZsxiNIU1ra0Eg1sZUUMw6elFih6O0uo1yoVOp4SiEEuFKiXEkYRdTiFN9RFH2HWhRTCTWe7+C1FbCOR2oNmXIHpdNm4/V2i/yZc3j14V+3P3jLff+ycrBzV/eKPWL79u3mYKbCYh9RPuACmUmnTJl21dpv/XTjN391/NrP/dTMevcc+c4lnybTl+Pea76ITmJKxQwl3yewijhOKHuKKE1pJZZ8ThAkKQ1tyCpQUpFzHfLZPJ0Fj227xsg4au8w1cvhSajGKZ4CoRRHdhbprwc4zRbetKnMuOoKdq1+mWxXiZ4TZlIfHmV02y4mn3WyHd2wRdzy3r+urh8O5sXQD8T7Dm7sH+oB+6H7+vpEz+yj3IHVm6puQfXP/dwlF1Se3+zufm4TL95+nzjpsndw5Lw5bHnsaVzXIUwtrqOwaUqCxbGGKNWgHLCGnAOuVBgLqYFyIcPgeAsdRhil0FqjhMJVgsBYykWPJNLEQUS1WqM0dQqzrr2KNXc8zN1/+VW2Pb6W7U+8wDM/uJtnv7GMet5QLwrRf8fTqe7tXNqsNsf3jcvMwRJgARqNhqkM7E56T53pvXjbyo1zP/vuScqauVv/9WmTm9wtN977BGd9+r8hlGZ03ctk8jmETfFdRTOxhGFKW0YRhBFGeXi+i6ccHN9F+ZJJ7VnqjZDQCpSUxFoTm4RQG3rai1RH6rRNnkThxJnIcgfHXHsla259iJVfuQWnrUASJ4z37yJNNLKYp9G/m+O+cKkYeGJ9+Ora7T+nUJggjtN9g96D9oDXyDjp3GO0zmpTmt6nj75g7p8PP71RVrfu1sFEXTZ3j3D6/7iMV+5+BMdRNGKDsQKdajwJOc+lFScoC/mMR5DsnfUn+3qHvCdoBDGJtRghiCy0uTBej2ifexLHfvovaPhFJp15Bqt/cg+PLPk+2vWIWpFJEo1wlIij1IaNyNY27xGFo3vs3Os/kqmPTTw8vH5wa+eRRROMBenBJMHfwcCGAZM3ebf/sbUjx13+Z3L2Jy480e/JZ0dWb7GVTQPi1A+dT7ZcZPfajbhZDweD77i4am+VkGJvTy+1RijI5X0yQtEIUlCCVAiU1QgsqRHksi5eXzfnXncDT/5wKb/6+Jd49b4n2LLyefAz2LyP110SqpARWoDbURCTzjtJ5KZ3i5mX/5lIjHP3q/evfqA5MFT1Qz9qtVqvecAbPRoTgFsulzPj4+N6wRcXnXfu33zw+vrAzrMeOPs6M/vdZ8oL/vkzPHj19ejKBNrLMqm7E4MmSizKxiSpJdYG31E4OZe43iBSLlIneBj8YhuOqxgZrTPvb6/GiV1atRoPffGH1HZXcDIujeGqLcyeZs/9+bWmNjC2VWXdXMfUnilhrTluPWdzvqNtZlCrb/tq58evAqrkqdGkdkAi/KPOBiXgHnH6cYVdz77iAtm/je9YVlm+Ye7yi28yVz35HTm+aSt+3kMP72Hw8dW0WhFO1tm7qrak2kCa0moGzFp4ATPPmYdJQjaveJqR1c9DvUbvgnkcfekl3PauvyKsN4k0RK3YCKzIHd1n3nP/EtX/0tb7bltw44/zR3R4Z/73d3e9cOeT28fW7xzrOLq7GOyp10xkKkqpRhAEtX1nB+n+4/Q/VmRk67tGk+mnTBdepp0dj7/01DnXXzE/qIx31p7rN6d95FIx+PwWjr74fI56z9sIBgao7RyFoIUxhkypSGFqL0e96+3M/uAlPHDddxhe38+8v/okHSfOYPj5l5hz5Ud49cHVvHT34wjpoCa1M2n+SSI3uUu8/d7r5K4Ng3f/9NwbbvHzfjUYb+zatvKll4KR2qjXVWw1ByvDaZxWtNbNNE0bv10CD4U+QOzvE6bNnlbYsW5HuvDfPr9oxskzbn7kjP8p2vva5cTAHtp6Ozn1wxdw1pULGV2/nrBepTRjCloqwomQ5s5x1t3zMK88+AxKSTqmT+LSn9yAbkVElRaP/fPP2PbMy2b6+8/klC9dLlMhNuULhXL/qpcevPUdN33XyWaTNAgqQKPQ1xc3Wq2UatXQ2Wlxxgy70fsMN799anSoBBISUKVp0wrVHTty1zVuW7H12/fP3PSN+43XWZQ2TogrVaaedjynXPYugmaDgWc3UNmyk8bucaJmgPB9rO8hhEAkKdmcD8YS7ssNmaN6ueyRb/Dcg8vvuf3d//DT0uSyrA6O78h35MNmpVkDGvvcO3kdtYj9res/iUJETpkyxR8YGPA/9L//7j1HnTXz+/ed+te5xq6K8dtyKtdRENJodKMFQiAcB+l7yH27vMZ43UZxKjDGOo4kX8oL5Tok9YDTb70Gt6unXygzdvenvvedwRe2bUwbYdUv+Y2oGjWBYJ/hycFKZQ4lAQJQ5Zkzc+ObN/OFiZ8+1v/D5XNFzqW6cRf9y540yliRLxf3iogSTRonNg0SG1Yb9oTPXqSmXXg2Ogrpv/MpBu971sbjDXPkh89hztc+Nv61viv/PqoFW4EJoLIvowcHxLU+2EORQ5EEfwcnzDtSHjH/iGjS7GPbZ1w4b5aaXr5rxoVnTjvmg/PzIy9sFXue35oG1ZaNo0Q4pbwoHjtZHPuR8+XJN34oeubWR7/eakbPzlt8xaz2k6fkdjz0ojzrnz4qx3ZXH3j2Ww880DG9p2nDdERrXSGhBUQHZvQ3IqI81CKp/RsnFyiUT+jtHt8w3Jp04uQjL77lc++fcsJRH9165/K2qN6i49QjcTsLDZnJDhDIbWuXPbRq+d8vexJIprzt+K4r7r7uK/FoS7rZ7K5V37r3tpVfufsZPyfrUTWaOMDlDX+kcvRPIZQU+8btDuCUZ01pG9804AB63rXvO/Ocz1x2Qb1Vi7Ytf3Hj+qWrhnauWD8GVIHIbc+TUTKqj9XjfE++GDdjkmYS7HPvFKgfSuP/lErRvZ4wc6Zi82ZJGben1JPds23P/vcz+7bXyvM8m5lUSpKmjoLx8b1NSqkkqFYB3K5pXSqMw7Qx3Ij2xfshM/5PLZUVB/y+BFT3Cd2um+/0TZLKeq0uxJ6maTQa+5/ugbUaZiLZ/Nr37QE1/JAZ/6ZohX+LDLGPDHGAisMeYOCBiUy83pb8UKvF3+w/JYj/17zhMA7jMA7jMA7jMA7jMA7jMA7jzcL/AZgegRnBFPUqAAAAAElFTkSuQmCC" alt="" width="44" height="44"><h1>Minbu Portal</h1></div>
   <p id="gmsg">ArcGIS Online akkauntingiz bilan kiring.</p>
   <label for="un">Login</label>
-  <input id="un" name="username" autocomplete="username" required spellcheck="false" autocapitalize="off">
+  <input id="un" name="username" autocomplete="username" required spellcheck="false" autocapitalize="off" placeholder="ism_land_tiiame">
   <label for="pw">Parol</label>
   <div class="pwrap"><input type="password" id="pw" name="password" autocomplete="current-password" required>
     <button class="eye" id="eye" type="button" aria-label="Parolni ko'rsatish" aria-pressed="false" title="Parolni ko'rsatish"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
@@ -611,6 +624,7 @@ var D={
 "Parolni yashirish":["Hide password","Скрыть пароль","စကားဝှက်ဖျောက်ရန်"],
 "Tekshirilmoqda…":["Checking…","Проверка…","စစ်ဆေးနေသည်…"],
 "ArcGIS Online bilan tekshirilmoqda…":["Checking with ArcGIS Online…","Проверка в ArcGIS Online…","ArcGIS Online ဖြင့် စစ်ဆေးနေသည်…"],
+"Login sifatida email emas, ArcGIS foydalanuvchi nomini yozing (…_land_tiiame).":["Enter your ArcGIS username (…_land_tiiame), not your e-mail.","Введите имя пользователя ArcGIS (…_land_tiiame), а не e-mail.","အီးမေးလ် မဟုတ်ဘဲ ArcGIS အသုံးပြုသူအမည် (…_land_tiiame) ကို ထည့်ပါ။"],
 "Login yoki parol noto'g'ri.":["Wrong username or password.","Неверный логин или пароль.","အသုံးပြုသူအမည် သို့မဟုတ် စကားဝှက် မှားနေသည်။"],
 "ArcGIS kirishni rad etdi.":["ArcGIS refused the sign-in.","ArcGIS отклонил вход.","ArcGIS က ဝင်ရောက်မှုကို ငြင်းပယ်သည်။"],
 "ArcGIS Online bilan bog'lanib bo'lmadi. Internetni tekshiring.":["Could not reach ArcGIS Online. Check your internet connection.","Не удалось связаться с ArcGIS Online. Проверьте интернет.","ArcGIS Online နှင့် ချိတ်ဆက်၍မရပါ။ အင်တာနက်ကို စစ်ဆေးပါ။"],
@@ -619,6 +633,10 @@ var D={
 "Bu akkauntda Minbu Portal ma'lumotlarini ko'rish ruxsati yo'q.":["This account has no access to the Minbu Portal data.","У этой учётной записи нет доступа к данным Minbu Portal.","ဤအကောင့်တွင် Minbu Portal ဒေတာကို ကြည့်ခွင့်မရှိပါ။"],
 "Ma'lumot yuklanmadi ({0}). Qayta urinib ko'ring.":["Data did not load ({0}). Please try again.","Данные не загрузились ({0}). Попробуйте ещё раз.","ဒေတာ မရယူနိုင်ပါ ({0})။ ထပ်ကြိုးစားပါ။"],
 "Chiqish":["Sign out","Выйти","ထွက်ရန်"],
+"Portaldan chiqasizmi?":["Sign out of the portal?","Выйти из портала?","ပေါ်တယ်မှ ထွက်မလား။"],
+"Qayta kirish uchun login va parol kerak bo'ladi.":["You will need your username and password to sign in again.","Для повторного входа понадобятся логин и пароль.","ပြန်ဝင်ရန် အသုံးပြုသူအမည်နှင့် စကားဝှက် လိုအပ်မည်။"],
+"Kirish muddati tugadi. Login va parolni qayta kiriting.":["Your session has expired. Enter your username and password again.","Сеанс истёк. Введите логин и пароль снова.","ဝင်ရောက်ချိန် ကုန်ဆုံးပြီ။ အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ပြန်ထည့်ပါ။"],
+"Bekor qilish":["Cancel","Отмена","မလုပ်တော့ပါ"],
 "Yuklanmoqda…":["Loading…","Загрузка…","ရယူနေသည်…"],
 "Ma'lumotlar yuklanmoqda…":["Loading data…","Загрузка данных…","ဒေတာ ရယူနေသည်…"],
 "Portalga kirish uchun tugmani bosing.":["Press the button to enter the portal.","Нажмите кнопку, чтобы войти в портал.","ပေါ်တယ်သို့ ဝင်ရန် ခလုတ်ကို နှိပ်ပါ။"],
@@ -626,6 +644,7 @@ var D={
 /* ---------- rasters, map controls ---------- */
 "Rasterlar":["Rasters","Растры","ရာစတာများ"],
 "Shaffoflik":["Opacity","Прозрачность","ပွင့်လင်းမှု"],
+"5 yillik o'rtacha":["5-year mean","Среднее за 5 лет","၅ နှစ်ပျမ်းမျှ"],
 "5 yillik o'rtacha · 2022–2026":["5-year mean · 2022–2026","Среднее за 5 лет · 2022–2026","၅ နှစ်ပျမ်းမျှ · ၂၀၂၂–၂၀၂၆"],
 "xaritaga qo'shish":["add to map","добавить на карту","မြေပုံသို့ ထည့်ရန်"],
 "Bu davr uchun raster yo'q":["No raster for this period","Нет растра за этот период","ဤကာလအတွက် ရာစတာ မရှိပါ"],
@@ -916,7 +935,7 @@ var STN=['Juda yaxshi','Yaxshi',"O'rtacha",'Yomon',"Ma'lumot yo'q"];
 var STN_M=['Juda nam','Nam',"O'rtacha",'Quruq',"Ma'lumot yo'q"];
 var STN0=STN.slice(),STNM0=STN_M.slice();
 var EDGE=[.1,.25,.5,1,2,5];
-var S={sel:-1,y:YEARS.length-1,m:0,ix:'ndvi',mode:'size',sort:'ha',open:null,hl:null,fs:0,bm:'dark',full:false,d3:false,showP:true,showB:true,fop:.55};
+var S={sel:-1,y:YEARS.length-1,m:0,p5:true,ix:'ndvi',mode:'size',sort:'ha',open:null,hl:null,fs:0,bm:'dark',full:false,d3:false,showP:true,showB:true,fop:.55};
 /* "Minbu Water Management" opens the sister portal in this same tab (like one portal); set its address here */
 var WATER_URL='';
 $('wm').onclick=function(e){e.preventDefault();
@@ -979,16 +998,24 @@ function loadPser(id){
   });
 }
 function yearVal(sc,ix,yi){return SER[sc][ix].y[yi]}
+/* period: S.p5 = 5-year mean 2022–2026 (default); otherwise one month of one year (there is no yearly raster) */
+function y5(a){var s=0,n=0;for(var i=0;i<a.length;i++)if(a[i]!=null){s+=a[i];n++}return n?s/n:null}
+function curVal(sc,ix){var o=SER[sc]&&SER[sc][ix];if(!o)return null;return S.p5?y5(o.y):S.m?o.m[S.y][S.m-1]:o.y[S.y]}
+function firstM(yi){if(typeof RM!=='undefined'&&RM&&RM.periods){for(var m=1;m<=12;m++)if(RM.periods[YEARS[yi]+'-'+(m<10?'0':'')+m])return m}return 1}
+function setYear(yi){S.p5=false;S.y=yi;S.m=firstM(yi);render()}
+function setP5(){S.p5=true;S.y=YEARS.length-1;S.m=0;render()}
+function staA(sc,x){if(!S.p5)return STA[sc][x][S.y][S.m];var r=null;YEARS.forEach(function(_,yi){var a=STA[sc][x][yi][0];if(!r)r=a.map(function(){return 0});a.forEach(function(v,i){r[i]+=v/YEARS.length})});return r}
+function perTxt(){return S.p5?'2022–2026':YEARS[S.y]+(S.m?' '+MON[S.m-1]:'')}
 
 /* ---------- filters ---------- */
 var FL=[
   {k:'v',label:'Qishloq',wide:true,search:true,
    opts:function(){return [{v:-1,t:L('Butun tuman'),s:f(T.ha)+' '+L('ga')}].concat(byName.map(function(v){return {v:v.i,t:v.name,s:f(v.ha)+' '+L('ga')}}))},
-   cur:function(){return S.sel},show:function(){return S.sel<0?L('Butun tuman'):V[S.sel].name},set:function(v){select(v)}},
-  {k:'y',label:'Yil',opts:function(){return YEARS.map(function(y,i){return {v:i,t:String(y)}}).reverse()},
-   cur:function(){return S.y},show:function(){return String(YEARS[S.y])},set:function(v){S.y=v;render()}},
-  {k:'m',label:'Oy',opts:function(){return [{v:0,t:L('Yillik'),s:L('butun yil')}].concat(MONUZ.map(function(m,i){return {v:i+1,t:m,s:MON[i]}}))},
-   cur:function(){return S.m},show:function(){return S.m?MONUZ[S.m-1]:L('Yillik')},set:function(v){S.m=v;render()}},
+   cur:function(){return S.sel},show:function(){return S.sel<0?L('Butun tuman'):V[S.sel].name},set:function(v){select(v>=0&&v===S.sel?-1:v)}},
+  {k:'y',label:'Yil',opts:function(){return [{v:-1,t:'2022–2026',s:L('5 yillik o\'rtacha')}].concat(YEARS.map(function(y,i){return {v:i,t:String(y)}}).reverse())},
+   cur:function(){return S.p5?-1:S.y},show:function(){return S.p5?'2022–2026':String(YEARS[S.y])},set:function(v){if(v<0||(!S.p5&&v===S.y))setP5();else setYear(v)}},
+  {k:'m',label:'Oy',opts:function(){return MONUZ.map(function(m,i){return {v:i+1,t:m,s:MON[i]}})},
+   cur:function(){return S.p5?0:S.m},show:function(){return S.p5?L('5 yillik o\'rtacha'):MONUZ[S.m-1]},set:function(v){if(!S.p5&&v===S.m)setP5();else{S.p5=false;S.m=v;render()}}},
   {k:'i',label:'Index',opts:function(){return IDX.map(function(x){return {v:x,t:x.toUpperCase(),c:ICOL[x]}})},
    cur:function(){return S.ix},show:function(){return S.ix.toUpperCase()},dot:function(){return ICOL[S.ix]},set:function(v){S.ix=v;render()}}
 ];
@@ -1042,10 +1069,10 @@ function render(){
   $('s-r-l').textContent=isV?L('Maydon reytingi'):L('Qishloqlar');
   $('s-r').innerHTML=isV?c.rank+' <small>/ 70</small>':f(T.nvil);
   $('s-r2').textContent=isV?L('ulush bo\'yicha {0}-o\'rin',c.srank):L('barchasi xaritada');
-  var cv=S.m?SER[sc][S.ix].m[S.y][S.m-1]:yearVal(sc,S.ix,S.y), tv=S.m?SER.T[S.ix].m[S.y][S.m-1]:yearVal('T',S.ix,S.y);
-  $('s-i-l').textContent=S.ix.toUpperCase()+' · '+YEARS[S.y]+(S.m?' '+MON[S.m-1]:'');
+  var cv=curVal(sc,S.ix), tv=curVal('T',S.ix);
+  $('s-i-l').textContent=S.ix.toUpperCase()+' · '+perTxt();
   $('s-i').textContent=iv(cv);
-  $('s-i2').textContent=isV?(cv==null||tv==null?L('tuman bilan solishtirib bo\'lmaydi'):L('tuman: {0} ({1})',iv(tv),(cv>=tv?'+':'')+f(cv-tv,3))):(S.m?L('oylik o\'rtacha'):L('yillik qiymat'));
+  $('s-i2').textContent=isV?(cv==null||tv==null?L('tuman bilan solishtirib bo\'lmaydi'):L('tuman: {0} ({1})',iv(tv),(cv>=tv?'+':'')+f(cv-tv,3))):(S.p5?L('5 yillik o\'rtacha'):S.m?L('oylik o\'rtacha'):L('yillik qiymat'));
   gauge(c);slegend();
   $('r-name').textContent=isV?c.name:L('Butun tuman'); $('r-sub').textContent=isV?L('Qishloq · yer fondi ko\'rsatkichlari'):L('Tuman · yer fondi ko\'rsatkichlari');
   $('r-share').textContent=pct(c.share,1);
@@ -1059,9 +1086,9 @@ function gauge(c){
   $('gauge').innerHTML='<defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7fd06c"/><stop offset="1" stop-color="#f0c744"/></linearGradient></defs><circle cx="56" cy="56" r="46" fill="none" stroke="rgba(120,180,120,.16)" stroke-width="10"/><path d="'+arc(56,56,46,a0,a1)+'" fill="none" stroke="url(#gg)" stroke-width="10" stroke-linecap="round"/><text x="56" y="62" text-anchor="middle" font-family="Sora,sans-serif" font-weight="300" font-size="26" fill="#ecf4e6">'+f(c.share*100)+'</text><text x="56" y="77" text-anchor="middle" font-family="Manrope,sans-serif" font-size="10.5" fill="#a5b9a2">'+L('% ekin yeri')+'</text>';
   $('glegend').innerHTML=SB.map(function(b){var on=S.sel>=0&&c.share>=b[1]&&c.share<b[2];return '<div><i style="background:'+b[3]+'"></i><span'+(on?' style="font-weight:700"':'')+'>'+b[0]+'</span><b title="'+L('{0} ta qishloq',b.n)+'">'+b.n+'</b></div>'}).join('');
 }
-function period(){return YEARS[S.y]+' · '+(S.m?MON[S.m-1]:L('yillik'))}
+function period(){return S.p5?'2022–2026 · '+L('5 yillik o\'rtacha'):YEARS[S.y]+' · '+(S.m?MON[S.m-1]:L('yillik'))}
 function slegend(){
-  var a=STA[scope()][S.ix][S.y][S.m],names=S.ix==='ndmi'?STN_M:STN,t=a.reduce(function(p,q){return p+q},0)||1;
+  var a=staA(scope(),S.ix),names=S.ix==='ndmi'?STN_M:STN,t=a.reduce(function(p,q){return p+q},0)||1;
   $('m-sub').textContent=L('Konturlar: {0} statusi, {1}',S.ix.toUpperCase(),period());
   $('slegend').innerHTML=a.map(function(x,i){if(i===4&&!x)return '';var k=i===4?5:i+1;return '<div data-k="'+k+'" class="'+(S.fs===k?'act':S.fs?'off':'')+'" title="'+L('Faqat shu konturlarni ko\'rsatish')+'"><i style="background:'+STC[i]+'"></i><span>'+names[i]+'</span><b>'+f(x)+' '+L('ga')+'</b><em>'+pct(x/t)+'</em></div>'}).join('');
 }
@@ -1163,16 +1190,16 @@ function chart2(){
   function at(e){var rc=box.getBoundingClientRect();return [Math.max(0,Math.min(n-1,n-1-Math.floor((e.clientY-rc.top-t)/rh))),Math.max(0,Math.min(11,Math.floor((e.clientX-rc.left-l)/iw*12)))]}
   box.onpointermove=function(e){var a=at(e);show(a[0],a[1])};
   box.onpointerleave=def;
-  box.onclick=function(e){var k=at(e)[0];if(k!==S.y){S.y=k;render();paint()}};
+  box.onclick=function(e){var k=at(e)[0];if(!S.p5&&k===S.y)setP5();else setYear(k);paint()};
 }
 
 /* Panel 3: area by status for index / year / month */
 function donut(){
-  var sc=scope(),x=S.ix,a=STA[sc][x][S.y][S.m],names=x==='ndmi'?STN_M:STN,tot=a.reduce(function(p,q){return p+q},0);
+  var sc=scope(),x=S.ix,a=staA(sc,x),names=x==='ndmi'?STN_M:STN,tot=a.reduce(function(p,q){return p+q},0);
   $('d-sub').textContent=L('{0} statusi, gektar',x.toUpperCase());
-  $('d-chip').textContent=YEARS[S.y]+' · '+(S.m?MON[S.m-1]:L('yillik'));
+  $('d-chip').textContent=S.p5?'2022–2026':YEARS[S.y]+' · '+(S.m?MON[S.m-1]:L('yillik'));
   if(!tot){$('donut').innerHTML='';$('dtab').innerHTML='<p class="dnote">'+L('Bu davr uchun ma\'lumot yo\'q.')+'</p>';$('dnote').textContent='';return}
-  var prev=S.y>0?STA[sc][x][S.y-1][S.m]:null,ptot=prev?prev.reduce(function(p,q){return p+q},0):0;
+  var prev=!S.p5&&S.y>0?STA[sc][x][S.y-1][S.m]:null,ptot=prev?prev.reduce(function(p,q){return p+q},0):0;
   var s='',ang=-Math.PI/2,gap=.03;
   a.forEach(function(v,i){var d=v/tot*2*Math.PI,k=i===4?5:i+1;if(d>gap*1.5)s+='<path data-k="'+k+'" style="cursor:pointer" d="'+arc(64,64,52,ang+gap/2,ang+d-gap/2)+'" fill="none" stroke="'+STC[i]+'" stroke-width="'+(S.fs===k?16:13)+'" stroke-opacity="'+(S.fs&&S.fs!==k?.35:1)+'"/>';ang+=d});
   var good=(a[0]+a[1])/tot;
@@ -1192,9 +1219,9 @@ function donut(){
 }
 function list(){
   if($('drawer').hidden)return;
-  var k=S.sort,key=function(v){return k==='ix'?(yearVal(v.code,S.ix,S.y)||0):v[k]},a=V.slice().sort(function(x,y){return key(y)-key(x)}),mx=key(a[0])||1;
+  var k=S.sort,key=function(v){return k==='ix'?(curVal(v.code,S.ix)||0):v[k]},a=V.slice().sort(function(x,y){return key(y)-key(x)}),mx=key(a[0])||1;
   $('list').innerHTML=a.map(function(v,i){
-    var val=k==='ha'?f(v.ha)+' '+L('ga'):k==='share'?pct(v.share):k==='n'?f(v.n):S.ix.toUpperCase()+' '+iv(yearVal(v.code,S.ix,S.y));
+    var val=k==='ha'?f(v.ha)+' '+L('ga'):k==='share'?pct(v.share):k==='n'?f(v.n):S.ix.toUpperCase()+' '+iv(curVal(v.code,S.ix));
     return '<button data-v="'+v.i+'"'+(v.i===S.sel?' aria-current="true"':'')+'><span class="rk">'+(i+1)+'</span><span>'+v.name+'</span><span class="v">'+val+'</span><span class="sub"><i style="width:'+(Math.max(0,key(v))/mx*100).toFixed(1)+'%"></i></span></button>';
   }).join('');
 }
@@ -1215,7 +1242,7 @@ $('ileg').onpointerleave=function(){if(S.hl){S.hl=null;chart1()}};
 document.querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){
   S.sort=b.dataset.s;document.querySelectorAll('[data-s]').forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});list();
 }});
-$('list').onclick=function(e){var b=e.target.closest('button');if(b){select(+b.dataset.v);if(innerWidth<=900)openList(false)}};
+$('list').onclick=function(e){var b=e.target.closest('button');if(b){select(+b.dataset.v===S.sel?-1:+b.dataset.v);if(innerWidth<=900)openList(false)}};
 $('n-list').onclick=function(){openList($('drawer').hidden)};
 $('d-close').onclick=function(){openList(false)};
 $('n-all').onclick=function(){setMode('size');openList(false);select(-1)};
@@ -1241,7 +1268,7 @@ var RAS=window.__RAS||{get:function(p){return fetch('rasters2/'+p).then(function
 var RM=null,TH={},RC={},RCV={},R={on:null,per:null,op:.9,g:null,busy:null};
 var RNAME={ndvi:'NDVI',ndre:'NDRE',rvi:'RVI',ci:'CI',ndmi:'NDMI',nbr:'NBR',lai:'LAI'};
 function hex(h){return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]}
-function rPer(){return S.m?YEARS[S.y]+'-'+(S.m<10?'0':'')+S.m:'5y'}
+function rPer(){return !S.p5&&S.m?YEARS[S.y]+'-'+(S.m<10?'0':'')+S.m:'5y'}
 function rLabel(p){return p==='5y'?L('5 yillik o\'rtacha · 2022–2026'):YEARS[S.y]+' · '+MONUZ[S.m-1]}
 RAS.get('meta.json').then(function(r){return r.json()}).then(function(m){RM=m;rasterPanel()}).catch(function(e){RM=false;rasterPanel();if(window.console)console.warn('raster meta',e)});
 function loadThumbs(p){
@@ -1356,7 +1383,11 @@ function showRaster(ix){
     (function next(){if(i<rest.length&&R.per===p)codes(p,rest[i++]).then(next,next)})();
   }).catch(function(e){R.busy=null;if(R.on===ix)R.on=null;rasterPanel();if(window.console)console.warn('raster',e)});
 }
-function rasterLayerOff(){if(!map)return;if(map.getLayer('ras'))map.removeLayer('ras');if(map.getSource('ras'))map.removeSource('ras')}
+/* boundaries (township edge, village lines, picked village) sit ABOVE a shown raster and below the contours;
+   without a raster they go back under the contour fill */
+var BLAY=['town-glow','town-edge','bound-line','sel-fill','sel-glow','sel-line'];
+function boundsOverRaster(on){if(!map)return;BLAY.forEach(function(id){if(map.getLayer(id))try{map.moveLayer(id,on?'parcel-line':(id.indexOf('town')===0?(map.getLayer('vill-share')?'vill-share':'parcel-fill'):'parcel-fill'))}catch(e){}})}
+function rasterLayerOff(){if(!map)return;if(map.getLayer('ras'))map.removeLayer('ras');if(map.getSource('ras'))map.removeSource('ras');boundsOverRaster(false)}
 function drawRaster(){
   if(!R.g||!map||!map.getLayer('parcel-line'))return;
   var g=R.g,c=document.createElement('canvas');c.width=g.w;c.height=g.h;
@@ -1368,6 +1399,7 @@ function drawRaster(){
   rasterLayerOff();
   map.addSource('ras',{type:'canvas',canvas:c,coordinates:RM.bounds,animate:false});
   map.addLayer({id:'ras',type:'raster',source:'ras',paint:{'raster-opacity':R.op,'raster-resampling':'nearest','raster-fade-duration':0}},'parcel-line');
+  boundsOverRaster(true);
 }
 function rasterOff(){R.on=null;R.g=null;R.busy=null;rasterLayerOff();$('rtip').hidden=true;rasterPanel()}
 $('rgrid').onclick=function(e){var b=e.target.closest('.rt');if(!b||b.disabled)return;var ix=b.dataset.r;if(R.on===ix){rasterOff();return}
@@ -1445,7 +1477,7 @@ function fit(now){
 function pinSvg(col){return '<svg width="26" height="33" viewBox="0 0 26 33" aria-hidden="true"><path d="M13 32S24 21 24 12.5A11 11 0 0 0 2 12.5C2 21 13 32 13 32z" fill="'+col+'" stroke="#0e2215" stroke-width="1.2"/><circle cx="13" cy="12.5" r="5" fill="#0e2215"/><path d="M10.5 14c2.8.2 4.5-1.3 5-4-2.8 0-4.8 1.2-5 4z" fill="'+col+'"/></svg>'}
 function pinFor(v,col,lab){
   var b=document.createElement('button');b.className='pin';b.setAttribute('aria-label',v.name+', '+f(v.ha)+' '+L('ga'));b.innerHTML=pinSvg(col)+(lab?'<span class="lab"><b>'+v.name+'</b><em>'+f(v.ha)+' '+L('ga')+' · '+L('ekin yeri')+' '+pct(v.share)+'</em></span>':'');
-  b.addEventListener('click',function(e){e.stopPropagation();select(v.i)});
+  b.addEventListener('click',function(e){e.stopPropagation();select(v.i===S.sel?-1:v.i)});
   return new maplibregl.Marker({element:b,anchor:'bottom'}).setLngLat(v.c);
 }
 /* per-contour status: files cls/{index}_{year}.bin, 13 slots (0 yearly, 1..12 months) x nf bytes */
@@ -1457,6 +1489,16 @@ function loadCls(ix,y){
     .then(function(t){var bin=atob(t.trim()),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
       return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('deflate'))).arrayBuffer()})
     .then(function(b){CLS[key]=new Uint8Array(b);return CLS[key]});
+}
+/* 5-year status of each contour = rounded mean of its yearly statuses 2022–2026 (years without data are skipped),
+   so the contour colours describe the same period as the 5-year mean raster under them */
+function loadCls5(ix){
+  var key=ix+'_5y';if(CLS[key])return Promise.resolve(CLS[key]);
+  return Promise.all(YEARS.map(function(y){return loadCls(ix,y).catch(function(){return null})})).then(function(arr){
+    var nf=M.nf,o=new Uint8Array(nf);
+    for(var n=0;n<nf;n++){var s=0,c=0;for(var j=0;j<arr.length;j++){var a=arr[j];if(!a)continue;var k=a[n];if(k>=1&&k<=4){s+=k;c++}}o[n]=c?Math.round(s/c):0}
+    return CLS[key]=o;
+  });
 }
 /* Parcel styling uses ONLY feature-state (k = status 1..4, h = 0 shown / 1 dimmed / 2 hidden, hv = hover, ps = picked).
    The layer expressions never change, so no tile is ever rebuilt; only features whose state really changed are touched. */
@@ -1475,12 +1517,12 @@ function applyVis(){
 }
 function applyCls(){
   if(!map||!map.getSource('parcels'))return;
-  var ix=S.ix,y=YEARS[S.y],m=S.m,want=ix+'_'+y+'_'+m;
+  var ix=S.ix,y=YEARS[S.y],m=S.m,p5=S.p5,want=ix+'_'+(p5?'5y':y+'_'+m);
   if(clsKey===want)return;
   clsBusy=want;
-  loadCls(ix,y).then(function(a){
+  (p5?loadCls5(ix):loadCls(ix,y)).then(function(a){
     if(clsBusy!==want)return;
-    setK(a,m*M.nf,ix);clsKey=want;applyVis();
+    setK(a,p5?0:m*M.nf,ix);clsKey=want;applyVis();
     if(PS>=0)pcard();
   }).catch(function(e){if(window.console)console.warn('status fayli ochilmadi',e)});
 }
@@ -1496,12 +1538,12 @@ function pcard(){
   var el=$('pcard'),id=PS;if(id<0)return;
   var nm=S.ix==='ndmi'?STN_M:STN,v=V[VI[id]],k=KS?KS[id]:0,a=PAREA?PAREA[id]:0;
   /* the contour's own index value for the chosen year / month (series block), when loaded */
-  var P=SER.P&&SER.P.id===id?SER.P[S.ix]:null,val=P?(S.m?P.m[S.y][S.m-1]:P.y[S.y]):undefined;
+  var P=SER.P&&SER.P.id===id?SER.P[S.ix]:null,val=P?(S.p5?y5(P.y):S.m?P.m[S.y][S.m-1]:P.y[S.y]):undefined;
   el.innerHTML='<button class="x" aria-label="'+L('Yopish')+'">&times;</button><div class="t">'+L('Kontur')+' #'+(id+1)+'</div>'+
     '<div class="v">'+v.name+' · '+f(a,2)+' '+L('ga')+'</div>'+
     '<div class="s"><i style="background:'+(k&&k<5?STC[k-1]:STC[4])+'"></i>'+S.ix.toUpperCase()+' · '+period()+': <b>'+(k&&k<5?nm[k-1]:nm[4])+'</b></div>'+
     '<div class="pv">'+L('Qiymat')+': <b>'+(val===undefined?'…':iv(val))+'</b></div>'+
-    '<div class="yrs" id="pc-yrs">'+YEARS.map(function(y,i){return '<button data-y="'+i+'"'+(i===S.y?' class="on"':'')+' title="'+y+'"><i></i>'+y+'</button>'}).join('')+'</div>'+
+    '<div class="yrs" id="pc-yrs">'+YEARS.map(function(y,i){return '<button data-y="'+i+'"'+(!S.p5&&i===S.y?' class="on"':'')+' title="'+y+'"><i></i>'+y+'</button>'}).join('')+'</div>'+
     '<button class="vb">'+L('Qishloqni tanlash')+'</button>';
   el.hidden=false;
   var W=$('map').clientWidth,H=$('map').clientHeight,p=PSpt||{x:W/2,y:H/2},w=el.offsetWidth,h=el.offsetHeight;
@@ -1509,7 +1551,7 @@ function pcard(){
   el.querySelector('.x').onclick=function(){pickParcel(-1)};
   el.querySelector('.vb').onclick=function(){var vi=VI[id];pickParcel(-1);select(vi)};
   /* year chips: switch the whole portal to that year, the contour stays picked */
-  $('pc-yrs').onclick=function(e){var b=e.target.closest('button');if(!b)return;var yi=+b.dataset.y;if(yi===S.y)return;S.y=yi;render()};
+  $('pc-yrs').onclick=function(e){var b=e.target.closest('button');if(!b)return;var yi=+b.dataset.y;if(!S.p5&&yi===S.y)setP5();else setYear(yi)};
   var ix=S.ix;
   Promise.all(YEARS.map(function(y){return loadCls(ix,y)})).then(function(arr){
     if(PS!==id||S.ix!==ix)return;var sp=$('pc-yrs').children;
@@ -1812,7 +1854,7 @@ map.on('load',function(){
     /* "Tozalash": back to the default view (all picks, filters, layers, raster and basemap reset) */
     $('breset').onclick=function(){
       stopAuto();pickParcel(-1);rasterOff();closeMenu();
-      S.fs=0;S.ix='ndvi';S.hl=null;S.y=YEARS.length-1;S.m=0;S.showP=true;S.showB=true;S.fop=.55;
+      S.fs=0;S.ix='ndvi';S.hl=null;S.y=YEARS.length-1;S.m=0;S.p5=true;S.showP=true;S.showB=true;S.fop=.55;
       $('t-parcel').checked=true;$('t-bound').checked=true;$('t-op').value=55;$('t-opv').textContent='55%';map.setPaintProperty('parcel-fill','fill-opacity',S.fop);
       if(S.full)setFull(false);if(S.ebm!=='wayback')setEsri('wayback');S.bm='dark';basemap();
       if(!$('drawer').hidden)openList(false);
@@ -1840,10 +1882,11 @@ map.on('load',function(){
     /* click: a contour under the pointer is picked first; empty ground selects the village */
     map.on('click',function(e){
       var pf=hitParcel(e.point);
-      if(pf){pickParcel(pf.id,e.point,e.lngLat);return}
+      /* a second click on the same contour / village returns to the default view */
+      if(pf){if(pf.id===PS)pickParcel(-1);else pickParcel(pf.id,e.point,e.lngLat);return}
       pickParcel(-1);
       var vf=map.queryRenderedFeatures(e.point,{layers:['vill-hit']})[0];
-      if(vf){if(vf.properties.v!==S.sel)select(vf.properties.v);return}
+      if(vf){select(vf.properties.v===S.sel?-1:vf.properties.v);return}
       /* click outside the township: drop every pick and go back to the district view, without moving the map */
       if(S.sel>=0||S.fs){S.sel=-1;S.fs=0;render();paint()}});
     map.on('movestart',function(){if(PS>=0)$('pcard').hidden=true});
@@ -2471,8 +2514,11 @@ function rnd(n){var a=new Uint8Array(n);crypto.getRandomValues(a);return b64url(
 function store(k,v){try{v==null?sessionStorage.removeItem(k):sessionStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function load(k){try{return JSON.parse(sessionStorage.getItem(k)||'null')}catch(e){return null}}
 var mem={};
-function setTok(t){mem.tok=t;store('minbu_tok',t)}
-function getTok(){var t=mem.tok||load('minbu_tok');return t&&t.exp>Date.now()+60000?t:null}
+/* the sign-in survives a page refresh (and other tabs) for 1 hour: kept in localStorage with its own 1-hour limit */
+var KEEP=3600e3;
+function setTok(t){mem.tok=t;try{if(t){t.keep=t.keep||Date.now()+KEEP;localStorage.setItem('minbu_tok',JSON.stringify(t))}else localStorage.removeItem('minbu_tok')}catch(e){}store('minbu_tok',null)}
+function getTok(){var t=mem.tok;if(!t){try{t=JSON.parse(localStorage.getItem('minbu_tok')||'null')}catch(e){t=null}}
+  if(t&&t.exp>Date.now()+60000&&(!t.keep||t.keep>Date.now()))return t;if(t)setTok(null);return null}
 var last=null;function say(k,err){var a=[].slice.call(arguments,2);last=[k,err].concat(a);msg.textContent=L.apply(null,[k].concat(a));msg.className=err?'err':''}
 window.__relangGate=function(){var wh=$('who');if(wh&&!wh.hidden)wh.textContent=(window.__whoUser||'')+' · '+L('Chiqish');if(last)say.apply(null,last);busy(btn.disabled);var e=$('eye');if(e){var sh=pw.type==='text';e.setAttribute('aria-label',L(sh?'Parolni yashirish':'Parolni ko\'rsatish'));e.title=e.getAttribute('aria-label')}};
 I18N.mount($('gate'));I18N.apply($('gate'));
@@ -2482,11 +2528,13 @@ $('gform').onsubmit=function(e){
   e.preventDefault();
   if(this.classList.contains('step1')){this.classList.remove('step1');setTimeout(function(){un.focus()},30);return}
   var u=un.value.trim(),p=pw.value;if(!u){un.focus();return}if(!p){pw.focus();return}
+  /* browsers often autofill the e-mail; ArcGIS needs the username (org accounts end in _land_tiiame) */
+  var fromMail=false;if(u.indexOf('@')>0){u=u.split('@')[0].replace(/[^A-Za-z0-9_.\-]/g,'')+'_land_tiiame';un.value=u;fromMail=true}
   busy(true);say('ArcGIS Online bilan tekshirilmoqda…');
   fetch(PORTAL+'/sharing/rest/generateToken',{method:'POST',body:new URLSearchParams({username:u,password:p,client:'referer',referer:location.origin,expiration:'480',f:'json'})})
     .then(function(r){return r.json()}).then(function(j){
       pw.value='';
-      if(!j.token){busy(false);say(j.error&&/password|username|invalid/i.test(j.error.message+' '+(j.error.details||''))?'Login yoki parol noto\'g\'ri.':'ArcGIS kirishni rad etdi.',true);pw.focus();return}
+      if(!j.token){busy(false);say(fromMail?'Login sifatida email emas, ArcGIS foydalanuvchi nomini yozing (…_land_tiiame).':j.error&&/password|username|invalid/i.test(j.error.message+' '+(j.error.details||''))?'Login yoki parol noto\'g\'ri.':'ArcGIS kirishni rad etdi.',true);pw.focus();return}
       setTok({t:j.token,u:u,exp:j.expires||Date.now()+8*3600e3});boot();
     }).catch(function(){busy(false);say('ArcGIS Online bilan bog\'lanib bo\'lmadi. Internetni tekshiring.',true)});
 };
@@ -2515,9 +2563,10 @@ $('arc').onclick=function(){
 window.addEventListener('message',function(e){if(e.origin===location.origin&&e.data&&e.data.minbu&&e.data.code)exchange(e.data.code,e.data.state)});
 function item(id,tok){
   return fetch(PORTAL+'/sharing/rest/content/items/'+id+'/data?token='+encodeURIComponent(tok)).then(function(r){
+    if(r.status===498||r.status===499)throw new Error('eskirgan');
     if(r.status===403||r.status===401)throw new Error('ruxsat');
     if(!r.ok)throw new Error(r.status);return r.text()}).then(function(s){
-    if(s.charAt(0)==='{'&&s.indexOf('"error"')>0&&s.length<600)throw new Error('ruxsat');return s});
+    if(s.charAt(0)==='{'&&s.indexOf('"error"')>0&&s.length<600)throw new Error(/"code"\s*:\s*49[89]/.test(s)?'eskirgan':'ruxsat');return s});
 }
 function boot(){
   var t=getTok();if(!t){un.focus();return}
@@ -2531,7 +2580,16 @@ function boot(){
     var D=JSON.parse(r[0]);
     $('gate').hidden=true;if(window.__stopAgri)window.__stopAgri();
     var who=$('who');who.hidden=false;who.textContent=(t.u||'')+' · '+L('Chiqish');window.__whoUser=t.u||'';
-    who.onclick=function(){setTok(null);location.reload()};
+    who.onclick=function(){
+      if(document.querySelector('.soq'))return;
+      var d=document.createElement('div');d.className='soq';d.setAttribute('role','alertdialog');d.setAttribute('aria-modal','true');
+      d.innerHTML='<div class="sob"><div class="soi"><svg viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg></div>'+
+        '<h3>'+L('Portaldan chiqasizmi?')+'</h3><p>'+L('Qayta kirish uchun login va parol kerak bo\'ladi.')+'</p>'+
+        '<div class="sbt"><button class="sno">'+L('Bekor qilish')+'</button><button class="syes">'+L('Chiqish')+'</button></div></div>';
+      function close(){d.remove();removeEventListener('keydown',esc);who.focus()}function esc(e){if(e.key==='Escape')close()}
+      d.onclick=function(e){if(e.target===d||e.target.closest('.sno'))close();else if(e.target.closest('.syes')){setTok(null);location.reload()}};
+      addEventListener('keydown',esc);document.body.appendChild(d);d.querySelector('.sno').focus();
+    };
     /* rasters: one private item, meta = item data, PNGs + thumbnails = item resources */
     window.__RAS={get:function(p){
       var base=PORTAL+'/sharing/rest/content/items/'+IDS.rasters,u=base+'/resources/'+(p.charAt(0)==='r'?'r/'+p.slice(2).replace('/','_'):p);
@@ -2544,7 +2602,8 @@ function boot(){
     window.__start(D,r[1].trim(),getCls);
   }).catch(function(e){
     busy(false);
-    if(String(e.message)==='ruxsat'){setTok(null);say('Bu akkauntda Minbu Portal ma\'lumotlarini ko\'rish ruxsati yo\'q.',true)}
+    if(String(e.message)==='eskirgan'||/Invalid token|498/.test(String(e.message))){setTok(null);$('gform').classList.remove('step1');say('Kirish muddati tugadi. Login va parolni qayta kiriting.',true);un.focus()}
+    else if(String(e.message)==='ruxsat'){setTok(null);$('gform').classList.remove('step1');say('Bu akkauntda Minbu Portal ma\'lumotlarini ko\'rish ruxsati yo\'q.',true)}
     else say('Ma\'lumot yuklanmadi ({0}). Qayta urinib ko\'ring.',true,e.message);
   });
 }
