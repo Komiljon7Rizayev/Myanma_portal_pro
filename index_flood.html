@@ -1565,7 +1565,12 @@ function readHash() {
   clampCam(); groundTarget(); applyCam();
 }
 let hashT = 0;
+// Kamera holati endi manzilga yozilmaydi: aks holda ulashilgan havola (#x,z,...) boshqa kompyuterda
+// xaritani eski joyda, ekran chetida ochardi. Yozish faqat ?korinish=1 rejimida.
+const HASH_YOZ = /[?&]korinish=1/.test(location.search);
+if (!HASH_YOZ && location.hash) history.replaceState(null, "", location.pathname + location.search);
 function writeHash() {
+  if (!HASH_YOZ) return;
   clearTimeout(hashT);
   hashT = setTimeout(() => history.replaceState(null, "", "#" + [Math.round(cam.t.x), Math.round(cam.t.z), Math.round(cam.dist),
     Math.round(cam.az * 180 / Math.PI), Math.round(cam.pol * 180 / Math.PI), S.mode, S.exag].join(",")), 400);
@@ -2084,7 +2089,8 @@ function boshJoy() {
   const j = { l: px("--rail") + 2 * px("--gap") + 300, r: w - px("--rc") - 2 * px("--gap") - 56, t: px("--top") + px("--kh"),
     b: h - px("--brow") - 2 * px("--gap") };
   // kichik ekranlarda (noutbuk) panellar orasida joy qolmaydi (hatto manfiy) -> xarita butun ekran markaziga qo'yiladi
-  if (j.r - j.l < Math.max(320, w * .3)) { j.l = px("--rail"); j.r = w; }
+  { const cx = w / 2, half = Math.min(cx - j.l, j.r - cx); j.l = cx - half; j.r = cx + half; }  // gorizontal: ekran o'rtasi
+  if (j.r - j.l < Math.max(320, w * .3)) { j.l = 0; j.r = w; }
   if (j.b - j.t < Math.max(240, h * .35)) { j.t = px("--top"); j.b = h; }
   return j;
 }
