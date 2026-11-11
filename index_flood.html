@@ -195,7 +195,9 @@ html,body{background:var(--bg);font-family:Inter,"Segoe UI",system-ui,-apple-sys
 .kpi b{display:block;font-size:24px;font-weight:600;margin-top:5px;font-variant-numeric:tabular-nums;letter-spacing:-.3px;white-space:nowrap}
 .kpi b small{font-size:13px;font-weight:500;color:var(--tx2);margin-left:3px}
 .kpi .ks{font-size:11px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#ldon{left:var(--gap);top:var(--kh);width:318px}
+#brow #ldon{position:static;width:auto}
+/* o'rta ekran: pastki 4 karta siqiladi -> doiraviy diagrammalar va legendalar ixchamroq */
+@media (max-width:1500px){ #brow .donrow{gap:8px} #brow .donrow svg{width:86px;height:86px} #brow .dleg{font-size:10.5px;gap:2px} #brow .dleg b{padding-left:5px} #brow .card h3 small{display:none} }
 .donrow{display:flex;align-items:center;gap:12px;margin-top:8px}
 .donrow svg{flex:0 0 auto}
 .dleg{flex:1;display:flex;flex-direction:column;gap:3px;font-size:11.5px;min-width:0;font-variant-numeric:tabular-nums}
@@ -206,6 +208,21 @@ html,body{background:var(--bg);font-family:Inter,"Segoe UI",system-ui,-apple-sys
 #rcol{position:absolute;right:var(--gap);top:4px;width:var(--rc);bottom:calc(var(--brow) + 2*var(--gap));display:flex;flex-direction:column;gap:10px;
   overflow:auto;scrollbar-width:none}
 #rcol .card{position:static}
+#cNis{display:none!important}
+#rcol{bottom:auto;max-height:calc(100% - var(--brow) - 3*var(--gap));overflow-y:auto}
+/* --- "Minbu tumani" kartasi (yangi ko'rinish) --- */
+#cJoy{background:linear-gradient(155deg,rgba(37,99,235,.20),rgba(34,211,238,.05) 45%,rgba(0,0,0,0) 70%),var(--card);border-color:rgba(96,165,250,.30)}
+.jh{display:flex;align-items:center;gap:10px}
+.jh h3{margin:0}
+.jic{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#1d4ed8,#22d3ee);display:grid;place-items:center;flex:0 0 auto;box-shadow:0 4px 12px rgba(37,99,235,.35)}
+.jic svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.jk .big{margin-top:12px}
+.jbar{position:relative;height:8px;border-radius:4px;margin:12px 2px 4px;background:linear-gradient(90deg,#1e40af,#0ea5e9 25%,#22c55e 50%,#eab308 75%,#f97316)}
+.jbar i{position:absolute;top:-4px;width:3px;height:16px;border-radius:2px;background:#fff;transform:translateX(-50%);box-shadow:0 0 0 2px rgba(6,10,17,.7)}
+.jbar i.md{width:2px;background:#a5f3fc}
+.jlab{display:flex;justify-content:space-between;font-size:10px;color:var(--tx3);font-variant-numeric:tabular-nums}
+.jk .mini div{border:1px solid var(--panel-b);border-top:2px solid var(--c);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 14%,transparent),transparent 70%),#0b1524}
+.jk .mini em{color:var(--c)}
 .big{font-size:34px;font-weight:600;letter-spacing:-.5px;font-variant-numeric:tabular-nums;margin-top:8px;line-height:1}
 .big small{font-size:12px;font-weight:400;color:var(--tx2);margin-left:6px;letter-spacing:0}
 .mini{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:11px}
@@ -218,7 +235,7 @@ html,body{background:var(--bg);font-family:Inter,"Segoe UI",system-ui,-apple-sys
 .barl{display:flex;justify-content:space-between;font-size:11px;color:var(--tx2);margin-top:5px}
 .barl b{color:var(--tx)}
 .ehint{font-size:11.5px;color:var(--tx3);margin-top:8px;line-height:1.4}
-#brow{position:absolute;left:var(--gap);right:var(--gap);bottom:var(--gap);height:var(--brow);display:grid;grid-template-columns:1fr 1.55fr 1.05fr;gap:10px}
+#brow{position:absolute;left:var(--gap);right:var(--gap);bottom:var(--gap);height:var(--brow);display:grid;grid-template-columns:minmax(300px,.95fr) 1fr 1.35fr minmax(260px,1fr);gap:10px}
 #brow .card{position:static;display:flex;flex-direction:column;min-width:0;overflow:hidden}
 .rank{display:flex;flex-direction:column;gap:4px;margin-top:8px;flex:1;min-height:0}
 .rank button{display:grid;grid-template-columns:22px 1fr auto;gap:9px;align-items:center;border:1px solid transparent;background:#0b1524;color:var(--tx);
@@ -262,21 +279,13 @@ html,body{background:var(--bg);font-family:Inter,"Segoe UI",system-ui,-apple-sys
 #side .sec.och:first-of-type{border-top:0;margin-top:4px}
 #side .src{display:none}
 #side .src.och{display:block}
-#tools{right:calc(var(--rc) + 2*var(--gap));top:calc(var(--top) + var(--kh));z-index:2}
+#tools{right:var(--gap);top:auto;bottom:calc(var(--brow) + 2*var(--gap));flex-direction:row;z-index:2}
 #profil{bottom:calc(var(--brow) + 2*var(--gap));z-index:4}
 #modeHint{top:calc(var(--top) + 8px)}
 #pop{z-index:6;background:rgba(8,13,22,.95)}
 #pop.kichik{min-width:0;padding:5px 26px 5px 10px;font-size:12px;white-space:nowrap}
 #pop.kichik b{font-weight:600}#pop.kichik span{color:var(--tx2);margin-left:6px}
 #cBat{display:none}
-/* o'ng ustundagi bo'sh joy: hududlar sel ulushi bo'yicha (nuqta tanlanib "Batafsil" chiqsa yashiriladi) */
-#cUlush{flex:1 1 0;min-height:110px;display:flex;flex-direction:column;overflow:hidden}
-#cBat[style*="block"] ~ #cUlush{display:none}
-#cUlush .rank{overflow-y:auto;justify-content:flex-start;padding-right:2px}
-#cUlush .rank::-webkit-scrollbar{width:6px}#cUlush .rank::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
-#cUlush .rank button.rb{grid-template-columns:18px minmax(60px,38%) 1fr 40px;flex:0 0 auto}
-#cUlush .rank em{font-style:normal;font-size:10px;color:var(--tx3);text-align:right}
-#cUlush .rank button.on{background:rgba(220,38,38,.22)}
 #cBat table{border-collapse:collapse;margin-top:6px;font-size:11.5px;font-variant-numeric:tabular-nums;width:100%}
 #cBat td{padding:2px 0;vertical-align:top}#cBat td:first-child{color:var(--tx3);padding-right:10px;white-space:nowrap}
 #cBat td.sh{color:var(--tx);font-weight:600;padding-top:7px}
@@ -286,9 +295,9 @@ html,body{background:var(--bg);font-family:Inter,"Segoe UI",system-ui,-apple-sys
 /* panellar yashirilgan */
 body.nopan #dash{display:none}
 body.nopan #side{top:calc(var(--top) + var(--gap));max-height:calc(100% - var(--top) - 2*var(--gap))}
-body.nopan #tools{right:var(--gap);top:calc(var(--top) + var(--gap))}
+body.nopan #tools{right:var(--gap);top:auto;bottom:var(--gap)}
 body.nopan #profil{bottom:var(--gap)}
-body.drawer #ldon{display:none}
+
 
 @media (max-width:1180px){ :root{--rc:260px} }
 /* --- ixcham KPI kartalari: keng ekranda sarlavha qatorida, o'ng tarafda yonma-yon --- */
@@ -371,21 +380,20 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
 <div id="dash">
   <div id="hdr"><button id="backB" title="Butun tumanga qaytish">←</button><div><h1 id="hT">Minbu tumani</h1><div class="sub" id="hS"></div></div></div>
   <div id="kpis"></div>
-  <div id="ldon" class="card"><h3>Oqim yo'llari tarkibi <small id="donStrT">Strahler tartibi bo'yicha</small></h3>
-    <div class="donrow"><svg id="donStr" width="118" height="118"></svg><div class="dleg" id="legStr"></div></div></div>
   <div id="rcol">
     <div class="card" id="cJoy"></div>
     <div class="card" id="cNis"></div>
     <div class="card" id="cBat"></div>
-    <div class="card" id="cUlush"><h3>Sel ulushi bo'yicha hududlar <small>maydonning %</small></h3><div class="rank diag" id="ulush"></div></div>
   </div>
   <div id="brow">
+  <div id="ldon" class="card"><h3>Oqim yo'llari tarkibi <small id="donStrT">Strahler tartibi bo'yicha</small></h3>
+    <div class="donrow"><svg id="donStr" width="118" height="118" viewBox="0 0 118 118"></svg><div class="dleg" id="legStr"></div></div></div>
     <div class="card"><h3>Eng ko'p sel keladigan hududlar <small>HEC-RAS, ga</small></h3><div class="rank diag" id="rank"></div><button class="lnk" data-go="hud">Barchasini ko'rish (70)</button></div>
     <div class="card"><h3>Balandlik taqsimoti <small id="hSub">maydon, km² (10 m oraliq)</small>
       <div class="tg" id="hTg"><button data-k="m" class="on">Maydon</button><button data-k="y">Yig'indi</button></div></h3>
       <svg id="hArea"></svg></div>
     <div class="card"><h3>Sel xavfi darajalari <small id="donSelT">HEC-RAS 2D, Yagi 2024</small></h3>
-      <div class="donrow"><svg id="donSel" width="112" height="112"></svg><div class="dleg" id="legSel"></div></div>
+      <div class="donrow"><svg id="donSel" width="112" height="112" viewBox="0 0 112 112"></svg><div class="dleg" id="legSel"></div></div>
       <div class="ehint" id="selIz" style="margin-top:6px"></div></div>
   </div>
 </div>
@@ -2120,7 +2128,7 @@ function boshJoy() {
   const w = innerWidth, h = innerHeight, cs = getComputedStyle(document.documentElement), px = v => parseFloat(cs.getPropertyValue(v)) || 0;
   if (w <= 900) return { l: 56, r: w, t: 56, b: h };
   if (document.body.classList.contains("nopan")) return { l: px("--rail"), r: w, t: px("--top"), b: h };
-  const j = { l: px("--rail") + 2 * px("--gap") + 300, r: w - px("--rc") - 2 * px("--gap") - 56, t: px("--top") + px("--kh"),
+  const j = { l: px("--rail") + px("--gap"), r: w - px("--gap"), t: px("--top") + px("--kh"),
     b: h - px("--brow") - 2 * px("--gap") };
   // kichik ekranlarda (noutbuk) panellar orasida joy qolmaydi (hatto manfiy) -> xarita butun ekran markaziga qo'yiladi
   { const cx = w / 2, half = Math.min(cx - j.l, j.r - cx); j.l = cx - half; j.r = cx + half; }  // gorizontal: ekran o'rtasi
@@ -2224,9 +2232,12 @@ function joyKarta(p) {
     joyH = null;
     $("cBat").style.display = "none"; $("pop").classList.remove("kichik");
     $("hT").textContent = "Minbu tumani"; $("hS").textContent = `Magway viloyati, Myanma · ${fmt(ST.maydon_km2, 0)} km² · DEM 30 m`; $("backB").style.display = "none";
-    $("cJoy").innerHTML = `<h3>Minbu tumani</h3><div class="sub2">Magway viloyati, Myanma</div>
+    { const pc = v => ((v - ST.min) / Math.max(1, ST.max - ST.min) * 100).toFixed(1);
+    $("cJoy").innerHTML = `<div class="jk"><div class="jh"><span class="jic"><svg viewBox="0 0 24 24"><path d="M3 19l6-9 4 5 3-4 5 8z"/><path d="M3 19h18"/></svg></span><div><h3>Minbu tumani</h3><div class="sub2">Magway viloyati, Myanma</div></div></div>
       <div class="big">${fmt(ST.mean, 0)}<small>m o'rtacha balandlik</small></div>
-      <div class="mini"><div><span>Eng past</span><b>${fmt(ST.min, 0)} m</b><em>Irravadi bo'yi</em></div><div><span>Mediana</span><b>${fmt(ST.median, 0)} m</b><em>yarmi past</em></div><div><span>Eng baland</span><b>${fmt(ST.max, 0)} m</b><em>g'arbiy tepalik</em></div></div>`;
+      <div class="jbar"><i class="md" style="left:${pc(ST.median)}%" title="Mediana"></i><i style="left:${pc(ST.mean)}%" title="O'rtacha"></i></div>
+      <div class="jlab"><span>${fmt(ST.min, 0)} m</span><span>${fmt(ST.max, 0)} m</span></div>
+      <div class="mini"><div style="--c:#38bdf8"><span>Eng past</span><b>${fmt(ST.min, 0)} m</b><em>Irravadi bo'yi</em></div><div style="--c:#2dd4bf"><span>Mediana</span><b>${fmt(ST.median, 0)} m</b><em>yarmi past</em></div><div style="--c:#fbbf24"><span>Eng baland</span><b>${fmt(ST.max, 0)} m</b><em>g'arbiy tepalik</em></div></div></div>`; }
     $("cNis").innerHTML = `<h3>Tumanga nisbatan</h3><div class="ehint">Xaritani bosing yoki yuqorida qishloq nomini yozing: tanlangan joy balandligi, qiyaligi va eng yaqin oqim yo'li tuman bilan solishtiriladi.</div>`;
     drawArea(); return;
   }
@@ -2401,7 +2412,7 @@ function initHudud() {
   chip("hNom", () => {});
   $("hSort").onchange = hudList;
   $("hList").onclick = e => { const b = e.target.closest("button"); if (b) hudTanla(+b.dataset.i); };
-  hudList(); hudTop3(); hudUlush();
+  hudList(); hudTop3();
 }
 const _hp = new THREE.Vector3();
 function hudLabels() {
@@ -2440,7 +2451,6 @@ function hudAt(X, Z) {
 }
 function hudRow(X, Z) { const i = hudAt(X, Z); return i >= 0 ? `<tr><td>Qishloq trakti</td><td>${HUD.t[i].n}</td></tr>` : ""; }
 function hudTanla(i, fly = true, keepPop = false) {
-  setTimeout(hudUlushTan, 0);
   if (hudSelMesh) { scene.remove(hudSelMesh); hudSelMesh.geometry.dispose(); hudSelMesh = null; }
   hudSel = i;
   document.querySelectorAll("#hList button").forEach(b => b.classList.toggle("on", +b.dataset.i === i));
@@ -2537,27 +2547,6 @@ function hudTop3() {
     vtip(e, `<b>${t.n}</b><br>` + t.sel.map((v, k) => `<i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${SEL_RGB[k]};margin-right:5px"></i><span>${SEL_NOM[k]}</span> ${fmt(v, 0)} ga`).join("<br>")
       + `<br><span>${fmt(t.a, 1)} km² · ${fmt(t.ekga, 0)} ga ekin</span>`); };
   $("rank").onmouseleave = e => vtip(e, "");
-}
-
-function hudUlush() {
-  // barcha hududlar: maydonining necha foizini sel bosadi (kamayish tartibida), ustun sel darajalari bo'yicha bo'lingan
-  const ul = t => hudSelGa(t) / (t.a * 100) * 100;
-  const o = HUD.t.map((t, i) => i).filter(i => HUD.t[i].a > 0).sort((a, b) => ul(HUD.t[b]) - ul(HUD.t[a]));
-  const mx = ul(HUD.t[o[0]]) || 1;
-  $("ulush").innerHTML = o.map((i, r) => { const t = HUD.t[i], A = t.a * 100;
-    const seg = t.sel.map((v, k) => v > 0 ? `<span style="width:${(v / A * 100 / mx * 100).toFixed(2)}%;background:${SEL_RGB[k]}"></span>` : "").join("");
-    return `<button class="rb" data-i="${i}"><em>${r + 1}</em><span class="rn">${t.n}</span><span class="rbar">${seg}</span><b>${fmt(ul(t), 1)}%</b></button>`; }).join("");
-  $("ulush").onclick = e => { const b = e.target.closest("button"); if (b) { vtip(e, ""); hudTanla(+b.dataset.i); } };
-  $("ulush").onmousemove = e => { const b = e.target.closest("button"); if (!b) { vtip(e, ""); return; } const t = HUD.t[+b.dataset.i];
-    vtip(e, `<b>${t.n}</b><br>` + t.sel.map((v, k) => `<i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${SEL_RGB[k]};margin-right:5px"></i><span>${SEL_NOM[k]}</span> ${fmt(v, 0)} ga`).join("<br>")
-      + `<br><span>${fmt(hudSelGa(t), 0)} ga / ${fmt(t.a, 1)} km²</span>`); };
-  $("ulush").onmouseleave = e => vtip(e, "");
-  hudUlushTan();
-}
-function hudUlushTan() {
-  const el = $("ulush"); if (!el) return;
-  el.querySelectorAll("button").forEach(b => b.classList.toggle("on", +b.dataset.i === hudSel));
-  const on = el.querySelector("button.on"); if (on) on.scrollIntoView({ block: "nearest" });
 }
 
 // ---------------- Strahler tartibini tanlash (donut / legenda) ----------------
