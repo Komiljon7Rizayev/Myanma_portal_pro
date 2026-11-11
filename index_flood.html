@@ -146,7 +146,7 @@ html,body{background:var(--bg);font-family:Inter,"Segoe UI",system-ui,-apple-sys
 .xulosa h3{margin:0 0 6px;font-size:13px;font-weight:600}
 .xulosa p{margin:0 0 9px;font-size:11.5px;color:var(--tx2);line-height:1.45}
 .xulosa p b{color:var(--ac2);font-weight:600}
-.rsrc{font-size:10px;color:var(--tx3);margin:9px 4px 0;line-height:1.4}
+.rsrc{font-size:10px;color:var(--tx3);margin:auto 4px 0;padding-top:9px;line-height:1.4}
 
 /* yuqori qator */
 #top{position:fixed;left:var(--rail);right:0;top:0;height:var(--top);display:flex;align-items:center;gap:14px;padding:0 var(--gap);
@@ -317,7 +317,6 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
     <button data-p="tOn">To'planish joylari <span>—</span></button>
     <button data-p="sKol">Ko'lmak va daryo <span>—</span></button>
   </div>
-  <div class="xulosa"><h3>Xulosa</h3><p id="xulosaT"></p><button class="btn" data-go="sel" id="xulosaB">Sel xavfini ko'rish</button></div>
   <div class="rsrc">Manba: Copernicus GLO-30, ArcGIS Pro, HEC-RAS 2D, ESA WorldCover, OpenStreetMap.</div>
 </nav>
 
@@ -331,7 +330,6 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
     <span class="w">Kamera: <b id="sCam">—</b></span>
     <span class="w" id="sDet">—</span>
   </div>
-  <div class="seg" id="seg"><button data-m="0" class="on">Tasvir</button><button data-m="2">Aralash</button><button data-m="1">Balandlik</button><button data-m="3">Relyef</button></div>
   <button class="btn" id="panB" title="Panellarni yashirib, faqat xaritani ko'rish">Panellarni yashirish</button>
 </header>
 
@@ -2290,7 +2288,7 @@ function initDash() {
   const T = SUV.strahler.tartiblar, jkm = SUV.strahler.jami_km, SD = DASH.sel.darajalar, selJ = SD[SD.length - 1].jami_ga;
   const km12 = T.filter(q => q.tartib <= 2).reduce((s, q) => s + q.uzunlik_km, 0);
   const hmax = HUD.t.reduce((m, t, i) => hudSelGa(t) > hudSelGa(HUD.t[m]) ? i : m, 0);
-  $("xulosaT").innerHTML = `Oqim yo'llarining <b>${fmt(km12 / jkm * 100, 0)}%</b> i 1–2-tartibli jarliklar. Kuchli yomg'irda (120–190 mm) model bo'yicha <b>${fmt(SD[2].jami_ga, 0)} ga</b> joyni suv bosadi; eng ko'pi <b>${HUD.t[hmax].n}</b> hududida (${fmt(hudSelGa(HUD.t[hmax]), 0)} ga).`;
+  if ($("xulosaT")) $("xulosaT").innerHTML = `Oqim yo'llarining <b>${fmt(km12 / jkm * 100, 0)}%</b> i 1–2-tartibli jarliklar. Kuchli yomg'irda (120–190 mm) model bo'yicha <b>${fmt(SD[2].jami_ga, 0)} ga</b> joyni suv bosadi; eng ko'pi <b>${HUD.t[hmax].n}</b> hududida (${fmt(hudSelGa(HUD.t[hmax]), 0)} ga).`;
   document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => setNav(b.dataset.go));
   document.querySelectorAll("#nav button").forEach(b => b.onclick = () => setNav(b.dataset.n));
   $("dX").onclick = () => setNav("dash");
@@ -2299,7 +2297,7 @@ function initDash() {
     hKind = b.dataset.k; $("hTg").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
     $("hSub").textContent = hKind === "m" ? "maydon, km² (10 m oraliq)" : "shu balandlikdan past joylar, %"; drawArea();
   };
-  $("seg").onclick = e => { const b = e.target.closest("button"); if (b) document.querySelector(`#rejim .chip[data-m="${b.dataset.m}"]`).click(); };
+  if ($("seg")) $("seg").onclick = e => { const b = e.target.closest("button"); if (b) document.querySelector(`#rejim .chip[data-m="${b.dataset.m}"]`).click(); };
   $("rq").onclick = e => { const b = e.target.closest("button"); if (b) $(b.dataset.p).click(); };
   document.addEventListener("click", () => setTimeout(sinxron, 0), true);
   $("panB").onclick = () => {
@@ -2795,6 +2793,485 @@ Promise.all(kalit.map(function(k){
   if(e.message==='ruxsat')yoz("Bu ma'lumotlarni ko'rishga ruxsatingiz yo'q: Minbu Flood itemlari faqat egasining akkauntiga ochiq.<br><a href=\"index.html\" style=\"color:#60a5fa\">Minbu Portalga qaytish</a>",1);
   else yoz("Ma'lumotni yuklab bo'lmadi: "+e.message+"<br><a href=\"index.html\" style=\"color:#60a5fa\">Minbu Portalga qaytish</a>",1);
 });
+})();
+</script>
+<script id="floodTil">
+/* Minbu Flood: til tizimi (uz / en / ru / my). Minbu Portal (index.html) bilan bir xil: tanlov localStorage 'minbu_lang'.
+   Lug'at kaliti — o'zbekcha matn; sonlar {n} bilan almashtiriladi, tarjimada {0},{1}... o'rniga asl sonlar qo'yiladi.
+   Sahifadagi barcha matn tugunlari (dinamik chiqadiganlari ham, MutationObserver orqali) tarjima qilinadi.
+   Manba: Minbu_3D_portal/flood_til.js -> shablon.html va front/index_flood.html ga ichiga joylangan. */
+(function () {
+var D = {
+"Minbu Atlas": ["Minbu Atlas", "Minbu Atlas", "Minbu Atlas"],
+"Minbu Portal": ["Minbu Portal", "Minbu Portal", "Minbu Portal"],
+"Minbu Portal — ekin konturlari tahlili": ["Minbu Portal — crop field analysis", "Minbu Portal — анализ контуров посевов", "Minbu Portal — စိုက်ကွက်ခွဲခြမ်းစိတ်ဖြာမှု"],
+"Minbu tumani": ["Minbu Township", "Минбу (тауншип)", "မင်းဘူးမြို့နယ်"],
+"Magway viloyati, Myanma": ["Magway Region, Myanmar", "Регион Магуэ, Мьянма", "မကွေးတိုင်းဒေသကြီး၊ မြန်မာ"],
+"Magway viloyati, Myanma · {n} km² · DEM {n} m": ["Magway Region, Myanmar · {0} km² · DEM {1} m", "Регион Магуэ, Мьянма · {0} км² · ЦМР {1} м", "မကွေးတိုင်းဒေသကြီး၊ မြန်မာ · {0} km² · DEM {1} m"],
+"Boshqaruv paneli": ["Dashboard", "Панель управления", "ဒက်ရှ်ဘုတ်"],
+"Hududlar": ["Areas", "Территории", "နယ်မြေများ"],
+"Relyef va ko'rinish": ["Terrain & view", "Рельеф и вид", "မြေမျက်နှာသွင်ပြင်နှင့် မြင်ကွင်း"],
+"Suv oqimi": ["Water flow", "Водный сток", "ရေစီးဆင်းမှု"],
+"To'planish joylari": ["Ponding areas", "Места скопления воды", "ရေဝပ်ရာနေရာများ"],
+"Sel xavfi": ["Flood risk", "Риск паводка", "ရေကြီးမှုအန္တရာယ်"],
+"Sozlamalar va asboblar": ["Settings & tools", "Настройки и инструменты", "ဆက်တင်နှင့် ကိရိယာများ"],
+"Manbalar": ["Sources", "Источники", "ရင်းမြစ်များ"],
+"Tezkor qatlamlar": ["Quick layers", "Быстрые слои", "အမြန်အလွှာများ"],
+"Hudud chegaralari": ["Area boundaries", "Границы территорий", "နယ်နိမိတ်များ"],
+"Hudud nomlari": ["Area names", "Названия территорий", "နယ်မြေအမည်များ"],
+"Oqim yo'llari": ["Flow paths", "Пути стока", "ရေစီးလမ်းကြောင်းများ"],
+"Strahler tartibi": ["Strahler order", "Порядок по Стралеру", "Strahler အဆင့်"],
+"Ko'lmak va daryo": ["Ponds & rivers", "Лужи и реки", "ရေအိုင်နှင့် မြစ်"],
+"yoniq": ["on", "вкл", "ဖွင့်"],
+"o'chiq": ["off", "выкл", "ပိတ်"],
+"O'chiq": ["Off", "Выкл", "ပိတ်"],
+"— o'chiq —": ["— off —", "— выкл —", "— ပိတ် —"],
+"Manba: Copernicus GLO{n}, ArcGIS Pro, HEC-RAS {n}D, ESA WorldCover, OpenStreetMap.": ["Sources: Copernicus GLO{0}, ArcGIS Pro, HEC-RAS {1}D, ESA WorldCover, OpenStreetMap.", "Источники: Copernicus GLO{0}, ArcGIS Pro, HEC-RAS {1}D, ESA WorldCover, OpenStreetMap.", "ရင်းမြစ်: Copernicus GLO{0}, ArcGIS Pro, HEC-RAS {1}D, ESA WorldCover, OpenStreetMap."],
+"Qishloq nomini yozing": ["Type a village name", "Введите название деревни", "ကျေးရွာအမည် ရိုက်ထည့်ပါ"],
+"Kursor:": ["Cursor:", "Курсор:", "ကာဆာ:"],
+"Kamera:": ["Camera:", "Камера:", "ကင်မရာ:"],
+"{n} km masofa · {n}° egilish": ["{0} km distance · {1}° tilt", "{0} км расстояние · {1}° наклон", "{0} km အကွာ · {1}° စောင်း"],
+"Detal: {n} m bo'laklar": ["Detail: {0} m tiles", "Детализация: тайлы {0} м", "အသေးစိတ်: {0} m အကွက်များ"],
+"Panellarni yashirish": ["Hide panels", "Скрыть панели", "ဘောင်များ ဖျောက်ရန်"],
+"Panellarni ko'rsatish": ["Show panels", "Показать панели", "ဘောင်များ ပြရန်"],
+"Panellarni yashirib, faqat xaritani ko'rish": ["Hide the panels and view only the map", "Скрыть панели и смотреть только карту", "ဘောင်များဖျောက်ပြီး မြေပုံသာ ကြည့်ရန်"],
+"Butun tumanga qaytish": ["Back to the whole township", "Вернуться ко всему тауншипу", "မြို့နယ်တစ်ခုလုံးသို့ ပြန်ရန်"],
+"Maydon": ["Area", "Площадь", "ဧရိယာ"],
+"Balandlik": ["Elevation", "Высота", "အမြင့်"],
+"Sel keladigan joy": ["Flood-prone area", "Зона паводка", "ရေကြီးနိုင်သောနေရာ"],
+"Copernicus DEM · {n} m piksel": ["Copernicus DEM · {0} m pixel", "Copernicus DEM · пиксель {0} м", "Copernicus DEM · {0} m pixel"],
+"o'rtacha {n} m · dengiz sathidan": ["mean {0} m · above sea level", "в среднем {0} м · над уровнем моря", "ပျမ်းမျှ {0} m · ပင်လယ်ရေမျက်နှာပြင်အထက်"],
+"Strahler {n}–{n} tartib · {n} km/km²": ["Strahler order {0}–{1} · {2} km/km²", "Стралер {0}–{1} порядок · {2} км/км²", "Strahler အဆင့် {0}–{1} · {2} km/km²"],
+"HEC-RAS {n}D · tumanning {n}%": ["HEC-RAS {0}D · {1}% of the township", "HEC-RAS {0}D · {1}% тауншипа", "HEC-RAS {0}D · မြို့နယ်၏ {1}%"],
+"Oqim yo'llari tarkibi": ["Flow path composition", "Состав путей стока", "ရေစီးလမ်းကြောင်း ဖွဲ့စည်းပုံ"],
+"Strahler tartibi bo'yicha": ["by Strahler order", "по порядку Стралера", "Strahler အဆင့်အလိုက်"],
+"km jami": ["km total", "км всего", "km စုစုပေါင်း"],
+"{n} · jarlik": ["{0} · gully", "{0} · овраг", "{0} · လျှိုမြောင်"],
+"{n} · kichik soy": ["{0} · small stream", "{0} · малый ручей", "{0} · ချောင်းငယ်"],
+"{n} · soy": ["{0} · stream", "{0} · ручей", "{0} · ချောင်း"],
+"{n} · katta soy": ["{0} · large stream", "{0} · большой ручей", "{0} · ချောင်းကြီး"],
+"{n} · chaung": ["{0} · chaung", "{0} · чаунг", "{0} · ချောင်း (chaung)"],
+"{n} · asosiy chaung": ["{0} · main chaung", "{0} · главный чаунг", "{0} · ပင်မချောင်း"],
+"jarlik (eng uchidagi)": ["gully (headwater)", "овраг (верховой)", "လျှိုမြောင် (ထိပ်ဆုံး)"],
+"jarlik": ["gully", "овраг", "လျှိုမြောင်"],
+"kichik soy": ["small stream", "малый ручей", "ချောင်းငယ်"],
+"soy": ["stream", "ручей", "ချောင်း"],
+"katta soy": ["large stream", "большой ручей", "ချောင်းကြီး"],
+"chaung": ["chaung", "чаунг", "ချောင်း (chaung)"],
+"asosiy chaung": ["main chaung", "главный чаунг", "ပင်မချောင်း"],
+"Eng ko'p sel keladigan hududlar": ["Most flood-prone areas", "Самые паводкоопасные территории", "ရေအကြီးဆုံးနယ်မြေများ"],
+"HEC-RAS, ga": ["HEC-RAS, ha", "HEC-RAS, га", "HEC-RAS, ဟက်တာ"],
+"Barchasini ko'rish ({n})": ["View all ({0})", "Показать все ({0})", "အားလုံးကြည့်ရန် ({0})"],
+"{n} km² · {n} ga ekin": ["{0} km² · {1} ha cropland", "{0} км² · {1} га посевов", "{0} km² · စိုက်ပျိုးမြေ {1} ဟက်တာ"],
+"Balandlik taqsimoti": ["Elevation distribution", "Распределение высот", "အမြင့်ဖြန့်ဝေမှု"],
+"maydon, km² ({n} m oraliq)": ["area, km² ({0} m bins)", "площадь, км² (шаг {0} м)", "ဧရိယာ, km² ({0} m ကြားကာလ)"],
+"Yig'indi": ["Cumulative", "Накопленно", "စုစုပေါင်း"],
+"{n}–{n} m · {n} km²": ["{0}–{1} m · {2} km²", "{0}–{1} м · {2} км²", "{0}–{1} m · {2} km²"],
+"Sel xavfi darajalari": ["Flood risk levels", "Уровни риска паводка", "ရေကြီးမှုအန္တရာယ်အဆင့်များ"],
+"HEC-RAS {n}D, Yagi {n}": ["HEC-RAS {0}D, Yagi {1}", "HEC-RAS {0}D, тайфун Яги {1}", "HEC-RAS {0}D, Yagi {1}"],
+"ga jami": ["ha total", "га всего", "ဟက်တာ စုစုပေါင်း"],
+"Doimiy": ["Permanent", "Постоянно", "အမြဲတမ်း"],
+"Biroz kuchli": ["Moderately heavy", "Умеренно сильный", "အနည်းငယ်ပြင်း"],
+"Kuchli": ["Heavy", "Сильный", "ပြင်း"],
+"Juda kuchli": ["Very heavy", "Очень сильный", "အလွန်ပြင်း"],
+"{n} ga": ["{0} ha", "{0} га", "{0} ဟက်တာ"],
+"{n} ga · ≤ {n} mm": ["{0} ha · ≤ {1} mm", "{0} га · ≤ {1} мм", "{0} ဟက်တာ · ≤ {1} mm"],
+"{n} ga · {n}–{n} mm": ["{0} ha · {1}–{2} mm", "{0} га · {1}–{2} мм", "{0} ဟက်တာ · {1}–{2} mm"],
+"{n} ga · > {n} mm": ["{0} ha · > {1} mm", "{0} га · > {1} мм", "{0} ဟက်တာ · > {1} mm"],
+"Qo'shiladigan maydon: har daraja oldingisiga qo'shadi. Kuchli yomg'irda ({n}–{n} mm) jami": ["Added area: each level adds to the previous one. In heavy rain ({0}–{1} mm) the total is", "Добавляемая площадь: каждый уровень добавляется к предыдущему. При сильном дожде ({0}–{1} мм) всего", "ထပ်တိုးဧရိယာ: အဆင့်တိုင်း ယခင်အဆင့်ပေါ်ထပ်ပေါင်းသည်။ မိုးသည်းချိန် ({0}–{1} mm) စုစုပေါင်း"],
+"Tumanga nisbatan": ["Compared with the township", "По сравнению с тауншипом", "မြို့နယ်နှင့် နှိုင်းယှဉ်ချက်"],
+"Xaritani bosing yoki yuqorida qishloq nomini yozing: tanlangan joy balandligi, qiyaligi va eng yaqin oqim yo'li tuman bilan solishtiriladi.": ["Click the map or type a village name above: the selected place's elevation, slope and nearest flow path are compared with the township.", "Нажмите на карту или введите название деревни выше: высота, уклон и ближайший путь стока выбранного места сравниваются с тауншипом.", "မြေပုံကိုနှိပ်ပါ သို့မဟုတ် အပေါ်တွင် ကျေးရွာအမည်ရိုက်ပါ: ရွေးထားသောနေရာ၏ အမြင့်၊ ဆင်ခြေလျှောနှင့် အနီးဆုံးရေစီးလမ်းကို မြို့နယ်နှင့် နှိုင်းယှဉ်မည်။"],
+"m o'rtacha balandlik": ["m mean elevation", "м средняя высота", "m ပျမ်းမျှအမြင့်"],
+"m balandlik": ["m elevation", "м высота", "m အမြင့်"],
+"Eng past": ["Lowest", "Минимум", "အနိမ့်ဆုံး"],
+"Eng baland": ["Highest", "Максимум", "အမြင့်ဆုံး"],
+"Mediana": ["Median", "Медиана", "အလယ်ကိန်း"],
+"Irravadi bo'yi": ["Irrawaddy bank", "берег Иравади", "ဧရာဝတီကမ်းစပ်"],
+"yarmi past": ["half are lower", "половина ниже", "တစ်ဝက် နိမ့်"],
+"g'arbiy tepalik": ["western hills", "западные холмы", "အနောက်ဘက်တောင်ကုန်း"],
+"Tanlangan nuqta": ["Selected point", "Выбранная точка", "ရွေးထားသောအမှတ်"],
+"Tanlangan qishloq trakti": ["Selected village tract", "Выбранный сельский тракт", "ရွေးထားသော ကျေးရွာအုပ်စု"],
+"Qishloq trakti": ["Village tract", "Сельский тракт", "ကျေးရွာအုပ်စု"],
+"Qishloq traktlari": ["Village tracts", "Сельские тракты", "ကျေးရွာအုပ်စုများ"],
+"Qishloq trakti · MMR{n} · Minbu tumani": ["Village tract · MMR{0} · Minbu Township", "Сельский тракт · MMR{0} · Минбу", "ကျေးရွာအုပ်စု · MMR{0} · မင်းဘူးမြို့နယ်"],
+"Hududlar (qishloq traktlari)": ["Areas (village tracts)", "Территории (сельские тракты)", "နယ်မြေများ (ကျေးရွာအုပ်စုများ)"],
+"Minbu tumanidagi {n} ta qishloq trakti (ma'muriy hudud). Nomni yoki ro'yxatni bosing: hudud ajratiladi va panellarda uning ko'rsatkichlari chiqadi. Chegaralar: Myanma.gdb (Region); sel: HEC-RAS {n}D darajalari; ekin: Myanma.gdb ekin konturlari.": ["{0} village tracts (administrative areas) in Minbu Township. Click a name or the list: the area is highlighted and its indicators appear in the panels. Boundaries: Myanma.gdb (Region); flood: HEC-RAS {1}D levels; crops: Myanma.gdb crop field outlines.", "{0} сельских трактов (административных единиц) в тауншипе Минбу. Нажмите на название или список: территория выделяется, а её показатели появляются на панелях. Границы: Myanma.gdb (Region); паводок: уровни HEC-RAS {1}D; посевы: контуры посевов Myanma.gdb.", "မင်းဘူးမြို့နယ်ရှိ ကျေးရွာအုပ်စု {0} ခု (အုပ်ချုပ်ရေးနယ်မြေ)။ အမည် သို့မဟုတ် စာရင်းကိုနှိပ်ပါ: နယ်မြေကို ပေါ်လွင်စေပြီး ၎င်း၏ညွှန်ကိန်းများကို ဘောင်များတွင် ပြမည်။ နယ်နိမိတ်: Myanma.gdb (Region); ရေကြီးမှု: HEC-RAS {1}D အဆင့်များ; စိုက်ပျိုးမြေ: Myanma.gdb စိုက်ကွက်များ။"],
+"Nomi": ["Name", "Название", "အမည်"],
+"Tartiblash": ["Sort", "Сортировка", "စီရန်"],
+"Sel maydoni bo'yicha": ["by flood area", "по площади паводка", "ရေကြီးဧရိယာအလိုက်"],
+"Sel ulushi": ["Flood share", "Доля паводка", "ရေကြီးမှုအချိုး"],
+"Ekin maydoni": ["Cropland area", "Площадь посевов", "စိုက်ပျိုးမြေဧရိယာ"],
+"Ekin ulushi": ["Cropland share", "Доля посевов", "စိုက်ပျိုးမြေအချိုး"],
+"{n} kontur": ["{0} fields", "{0} контуров", "စိုက်ကွက် {0} ခု"],
+"Reyting ({n} ta hudud ichida)": ["Ranking (among {0} areas)", "Рейтинг (среди {0} территорий)", "အဆင့် (နယ်မြေ {0} ခုအနက်)"],
+"hududning {n}% · {n}/{n}-o'rin": ["{0}% of the area · rank {1}/{2}", "{0}% территории · {1}/{2} место", "နယ်မြေ၏ {0}% · အဆင့် {1}/{2}"],
+"tumanning {n}% · {n}/{n}-o'rin": ["{0}% of the township · rank {1}/{2}", "{0}% тауншипа · {1}/{2} место", "မြို့နယ်၏ {0}% · အဆင့် {1}/{2}"],
+"{n}/{n}-o'rin": ["rank {0}/{1}", "{0}/{1} место", "အဆင့် {0}/{1}"],
+"{n}-o'rin": ["rank {0}", "{0} место", "အဆင့် {0}"],
+"-o'rin": ["th place", "-е место", " အဆင့်"],
+"-o'rin.": ["th place.", "-е место.", " အဆင့်။"],
+". Sel maydoni bo'yicha tumanda": [". By flood area in the township:", ". По площади паводка в тауншипе —", "။ မြို့နယ်တွင် ရေကြီးဧရိယာအလိုက်"],
+"Tumanning": ["Township's", "Тауншипа", "မြို့နယ်၏"],
+"tuman maydoni": ["township area", "площадь тауншипа", "မြို့နယ်ဧရိယာ"],
+"sel keladigan joy ulushi": ["share of flood-prone area", "доля зоны паводка", "ရေကြီးနိုင်သောနေရာအချိုး"],
+"Relyef": ["Terrain", "Рельеф", "မြေမျက်နှာသွင်ပြင်"],
+"Ko'rinish": ["View", "Вид", "မြင်ကွင်း"],
+"Xarita qatlami": ["Map layer", "Слой карты", "မြေပုံအလွှာ"],
+"Sun'iy yo'ldosh": ["Satellite", "Спутник", "ဂြိုဟ်တု"],
+"Aralash": ["Hybrid", "Смешанный", "ရောနှော"],
+"Balandlik rangi": ["Elevation colours", "Цвет высот", "အမြင့်အရောင်"],
+"Relyef soyasi": ["Hillshade", "Отмывка рельефа", "မြေမျက်နှာအရိပ်"],
+"Vertikal bo'rttirish": ["Vertical exaggeration", "Вертикальное преувеличение", "ဒေါင်လိုက်ချဲ့ကား"],
+"Quyosh azimuti": ["Sun azimuth", "Азимут солнца", "နေ၏ ဒီဂရီဦးတည်ရာ"],
+"Gorizontallar": ["Contours", "Горизонтали", "ကွန်တိုမျဉ်းများ"],
+"har {n} m": ["every {0} m", "каждые {0} м", "{0} m တိုင်း"],
+"Chegara devori": ["Boundary wall", "Стенка по границе", "နယ်နိမိတ်နံရံ"],
+"Chegaralar": ["Boundaries", "Границы", "နယ်နိမိတ်များ"],
+"Nomlar": ["Names", "Названия", "အမည်များ"],
+"To'r sifati": ["Mesh quality", "Качество сетки", "ကွက်ယက်အရည်အသွေး"],
+"Oddiy ({n} m)": ["Normal ({0} m)", "Обычное ({0} м)", "ပုံမှန် ({0} m)"],
+"Yuqori ({n} m)": ["High ({0} m)", "Высокое ({0} м)", "မြင့် ({0} m)"],
+"Tepadan / qiya ko'rinish": ["Top-down / oblique view", "Вид сверху / наклонный", "အပေါ်စီး / စောင်းမြင်ကွင်း"],
+"Boshlang'ich ko'rinish": ["Initial view", "Начальный вид", "မူလမြင်ကွင်း"],
+"Shimolga qaratish": ["Face north", "На север", "မြောက်ဘက်လှည့်ရန်"],
+"Yaqinlashish": ["Zoom in", "Приблизить", "ချဲ့ရန်"],
+"Uzoqlashish": ["Zoom out", "Отдалить", "ချုံ့ရန်"],
+"Xaritani bossangiz — o'sha nuqtadagi aniq {n} m piksel balandligi, qiyalik va koordinata chiqadi.": ["Click the map to see the exact {0} m pixel elevation, slope and coordinates at that point.", "Нажмите на карту — появятся точная высота пикселя {0} м, уклон и координаты этой точки.", "မြေပုံကိုနှိပ်ပါက ထိုအမှတ်ရှိ {0} m pixel ၏ တိကျသောအမြင့်၊ ဆင်ခြေလျှောနှင့် ကိုဩဒိနိတ် ပေါ်လာမည်။"],
+"Yomg'ir suvi oqimi": ["Rainwater runoff", "Сток дождевой воды", "မိုးရေစီးဆင်းမှု"],
+"Oqim yo'llari (Minbu)": ["Flow paths (Minbu)", "Пути стока (Минбу)", "ရေစီးလမ်းကြောင်းများ (မင်းဘူး)"],
+"Oqim shakli": ["Flow type", "Тип стока", "ရေစီးပုံစံ"],
+"Ko'rsatiladigan oqimlar": ["Flows shown", "Показываемые потоки", "ပြသမည့် ရေစီးများ"],
+"havza ≥{n} km²": ["catchment ≥{0} km²", "водосбор ≥{0} км²", "ရေဝေရေလဲ ≥{0} km²"],
+"hammasi": ["all", "все", "အားလုံး"],
+"Animatsiya": ["Animation", "Анимация", "လှုပ်ရှားပုံ"],
+"Oqim yo'llari bo'ylab yugurgan oq to'lqinlar suv oqimi yo'nalishini ko'rsatadi. Strahler tartibi ({n}): {n} — eng uchidagi jarlik, ikkita teng tartibli oqim qo'shilganda tartib {n}, har xil bo'lsa kattasi qoladi; soy boshlanishi havza ≥{n} km². Manba: ArcGIS Pro (D{n}, {n} m, Stream Order), Minbu_suv_oqimi.gdb.": ["White pulses running along the flow paths show the direction of water flow. Strahler order ({0}): {1} — headwater gully; when two flows of equal order join the order becomes {2}, otherwise the larger one is kept; a stream starts at a catchment ≥{3} km². Source: ArcGIS Pro (D{4}, {5} m, Stream Order), Minbu_suv_oqimi.gdb.", "Белые волны вдоль путей стока показывают направление течения воды. Порядок по Стралеру ({0}): {1} — верховой овраг; при слиянии двух потоков одного порядка порядок становится {2}, при разных сохраняется больший; ручей начинается с водосбора ≥{3} км². Источник: ArcGIS Pro (D{4}, {5} м, Stream Order), Minbu_suv_oqimi.gdb.", "ရေစီးလမ်းကြောင်းတစ်လျှောက် ပြေးနေသော အဖြူလှိုင်းများသည် ရေစီးဦးတည်ရာကို ပြသည်။ Strahler အဆင့် ({0}): {1} — ထိပ်ဆုံးလျှိုမြောင်၊ အဆင့်တူ ရေစီးနှစ်ခုပေါင်းလျှင် အဆင့် {2} ဖြစ်ပြီး မတူလျှင် ကြီးသည့်အဆင့် ကျန်သည်; ချောင်းသည် ရေဝေရေလဲ ≥{3} km² မှ စသည်။ ရင်းမြစ်: ArcGIS Pro (D{4}, {5} m, Stream Order), Minbu_suv_oqimi.gdb။"],
+"Xalqaro standart: eng uchidagi irmoq {n}-tartib; ikkita bir xil tartibli oqim qo'shilsa tartib bittaga oshadi, har xil bo'lsa kattasi qoladi": ["International standard: a headwater tributary is order {0}; when two flows of the same order join the order rises by one, otherwise the larger one is kept", "Международный стандарт: верховой приток — порядок {0}; при слиянии двух потоков одного порядка порядок растёт на единицу, при разных сохраняется больший", "နိုင်ငံတကာစံ: ထိပ်ဆုံးမြစ်လက်တက်သည် အဆင့် {0}; အဆင့်တူ ရေစီးနှစ်ခုပေါင်းလျှင် အဆင့်တစ်ခု တိုးပြီး မတူလျှင် ကြီးသည့်အဆင့် ကျန်သည်"],
+"{n}-tartib": ["order {0}", "порядок {0}", "အဆင့် {0}"],
+"Oqim zichligi": ["Drainage density", "Густота стока", "ရေစီးသိပ်သည်းဆ"],
+"Tarmoq zichligi": ["Network density", "Густота сети", "ကွန်ရက်သိပ်သည်းဆ"],
+"zichlik {n} km/km² (tuman {n})": ["density {0} km/km² (township {1})", "густота {0} км/км² (тауншип {1})", "သိပ်သည်းဆ {0} km/km² (မြို့နယ် {1})"],
+"{n} km/km²": ["{0} km/km²", "{0} км/км²", "{0} km/km²"],
+"Tik yonbag'ir: tez yoyma oqim (>{n}°)": ["Steep slope: fast sheet flow (>{0}°)", "Крутой склон: быстрый плоскостной сток (>{0}°)", "မတ်စောက်သောတောင်စောင်း: မြန်သော အပြားလိုက်စီးဆင်းမှု (>{0}°)"],
+"Yonbag'ir: yoyma oqim ({n}–{n}°)": ["Slope: sheet flow ({0}–{1}°)", "Склон: плоскостной сток ({0}–{1}°)", "တောင်စောင်း: အပြားလိုက်စီးဆင်းမှု ({0}–{1}°)"],
+"Tekislik: sekin yoyilma oqim (<{n}°)": ["Plain: slow spreading flow (<{0}°)", "Равнина: медленный растекающийся сток (<{0}°)", "လွင်ပြင်: နှေးကွေးစွာ ပြန့်စီးမှု (<{0}°)"],
+"Ariqcha oqimi ({n}–{n} km²)": ["Rill flow ({0}–{1} km²)", "Струйчатый сток ({0}–{1} км²)", "မြောင်းငယ်စီးဆင်းမှု ({0}–{1} km²)"],
+"Jarlik / vaqtinchalik o'zan ({n}–{n} km²)": ["Gully / ephemeral channel ({0}–{1} km²)", "Овраг / временное русло ({0}–{1} км²)", "လျှိုမြောင် / ယာယီရေလမ်း ({0}–{1} km²)"],
+"Soy ({n}–{n} km²)": ["Stream ({0}–{1} km²)", "Ручей ({0}–{1} км²)", "ချောင်း ({0}–{1} km²)"],
+"Daryo (>{n} km²)": ["River (>{0} km²)", "Река (>{0} км²)", "မြစ် (>{0} km²)"],
+"Ko'lmak: suv to'planadi (≥{n} m)": ["Pond: water collects (≥{0} m)", "Лужа: вода скапливается (≥{0} м)", "ရေအိုင်: ရေစုသည် (≥{0} m)"],
+"Irravadi o'zani": ["Irrawaddy channel", "Русло Иравади", "ဧရာဝတီမြစ်ကြောင်း"],
+"Jarlik / vaqtinchalik o'zan": ["Gully / ephemeral channel", "Овраг / временное русло", "လျှိုမြောင် / ယာယီရေလမ်း"],
+"Soy": ["Stream", "Ручей", "ချောင်း"],
+"Daryo": ["River", "Река", "မြစ်"],
+"Katta daryo": ["Large river", "Большая река", "မြစ်ကြီး"],
+"Suv to'planib qoladigan joylar": ["Places where water ponds", "Места застоя воды", "ရေဝပ်နေတတ်သောနေရာများ"],
+"Ko'lmaklar": ["Ponds", "Лужи", "ရေအိုင်များ"],
+"Ko'lmak": ["Pond", "Лужа", "ရေအိုင်"],
+"Ko'lmaklar (shubhalilar bilan)": ["Ponds (incl. doubtful)", "Лужи (вкл. сомнительные)", "ရေအိုင်များ (သံသယရှိသည်များ အပါအဝင်)"],
+"Ko'lmaklar maydoni": ["Pond area", "Площадь луж", "ရေအိုင်ဧရိယာ"],
+"Shubhali ko'lmak": ["Doubtful pond", "Сомнительная лужа", "သံသယရှိသော ရေအိုင်"],
+"Shubhalilar ham": ["Include doubtful", "Включая сомнительные", "သံသယရှိသည်များပါ"],
+"Hovuzlar": ["Reservoirs", "Пруды", "ရေကန်များ"],
+"Hovuz / suv ombori": ["Pond / reservoir", "Пруд / водохранилище", "ရေကန် / ရေလှောင်ကန်"],
+"Suv bosadigan pastlik": ["Flood-prone lowland", "Затапливаемая низина", "ရေလွှမ်းတတ်သော မြေနိမ့်"],
+"Suv bosadigan pastliklar": ["Flood-prone lowlands", "Затапливаемые низины", "ရေလွှမ်းတတ်သော မြေနိမ့်များ"],
+"Berk chuqurliklar: suv chiqib ketolmaydi": ["Closed depressions: water cannot drain out", "Замкнутые понижения: вода не может уйти", "ပိတ်နေသောချိုင့်များ: ရေထွက်မသွားနိုင်"],
+"Soy/daryodan {n} m gacha baland tekis joylar": ["Flat land up to {0} m above a stream/river", "Ровные места до {0} м выше ручья/реки", "ချောင်း/မြစ်ထက် {0} m အထိမြင့်သော မြေပြန့်များ"],
+"Daraxtzor/bino chetidagi ko'lmaklar: DSM xatosi bo'lishi mumkin": ["Ponds at forest/building edges: may be a DSM artefact", "Лужи у края леса/зданий: возможна ошибка DSM", "သစ်တော/အဆောက်အအုံ အစွန်းရှိ ရေအိုင်များ: DSM အမှား ဖြစ်နိုင်သည်"],
+"Eng katta ko'lmaklar": ["Largest ponds", "Крупнейшие лужи", "အကြီးဆုံး ရေအိုင်များ"],
+"(hajm bo'yicha, bosing — uchib boradi)": ["(by volume, click to fly there)", "(по объёму, нажмите — перелёт)", "(ထုထည်အလိုက်၊ နှိပ်ပါက ထိုနေရာသို့ ပျံသွားမည်)"],
+"{n} ta": ["{0}", "{0} шт.", "{0} ခု"],
+"{n} ta · {n} ga": ["{0} · {1} ha", "{0} шт. · {1} га", "{0} ခု · {1} ဟက်တာ"],
+"{n} ta · {n} mln m³": ["{0} · {1} mln m³", "{0} шт. · {1} млн м³", "{0} ခု · {1} သန်း m³"],
+"{n} ming m³": ["{0} thousand m³", "{0} тыс. м³", "{0} ထောင် m³"],
+"· {n} ga · {n} m": ["· {0} ha · {1} m", "· {0} га · {1} м", "· {0} ဟက်တာ · {1} m"],
+"Ko'lmak: suv chiqib ketolmaydigan berk chuqurlik (≥{n} m), bug'lanib yoki shimilib ketguncha turadi. Pastlik: kuchli yomg'irda soy yoki daryo suvi yoyilib turadigan tekis joy. Manba: s{n}_toplanish.py (DEM {n} m, HAND, ESA WorldCover).": ["Pond: a closed depression (≥{0} m) water cannot leave; it stays until it evaporates or soaks in. Lowland: flat land where stream or river water spreads in heavy rain. Source: s{1}_toplanish.py (DEM {2} m, HAND, ESA WorldCover).", "Лужа: замкнутое понижение (≥{0} м), откуда вода не может уйти; стоит, пока не испарится или не впитается. Низина: ровное место, где при сильном дожде разливается вода ручья или реки. Источник: s{1}_toplanish.py (ЦМР {2} м, HAND, ESA WorldCover).", "ရေအိုင်: ရေထွက်မသွားနိုင်သော ပိတ်ချိုင့် (≥{0} m)၊ အငွေ့ပျံ သို့မဟုတ် စိမ့်ဝင်သည်အထိ ရှိနေသည်။ မြေနိမ့်: မိုးသည်းချိန် ချောင်း သို့မဟုတ် မြစ်ရေ ပြန့်နေတတ်သော မြေပြန့်။ ရင်းမြစ်: s{1}_toplanish.py (DEM {2} m, HAND, ESA WorldCover)။"],
+"Sel xavfi (yomg'irdan toshqin)": ["Flood risk (rain-driven flooding)", "Риск паводка (паводок от дождя)", "ရေကြီးမှုအန္တရာယ် (မိုးကြောင့် ရေလျှံမှု)"],
+"Haqiqiy kun": ["Actual day", "Реальный день", "အမှန်တကယ်ရက်"],
+"Loyiha yomg'iri": ["Design rainfall", "Расчётный дождь", "ဒီဇိုင်းမိုးရေ"],
+"Sana": ["Date", "Дата", "ရက်စွဲ"],
+"Eng sersuv kunlar": ["Wettest days", "Самые дождливые дни", "မိုးအများဆုံးရက်များ"],
+"Sutkalik yog'in": ["Daily rainfall", "Суточные осадки", "နေ့စဉ်မိုးရေချိန်"],
+"Tuproq namligi": ["Soil moisture", "Влажность почвы", "မြေစိုထိုင်းဆ"],
+"Quruq (AMC I)": ["Dry (AMC I)", "Сухая (AMC I)", "ခြောက် (AMC I)"],
+"O'rtacha (AMC II)": ["Average (AMC II)", "Средняя (AMC II)", "ပျမ်းမျှ (AMC II)"],
+"Nam (AMC III)": ["Wet (AMC III)", "Влажная (AMC III)", "စို (AMC III)"],
+"⚠ Sel xavfini hisoblash": ["⚠ Compute flood risk", "⚠ Рассчитать риск паводка", "⚠ ရေကြီးမှုအန္တရာယ် တွက်ရန်"],
+"Avval sel xavfini hisoblang": ["Compute the flood risk first", "Сначала рассчитайте риск паводка", "ဦးစွာ ရေကြီးမှုအန္တရာယ်ကို တွက်ပါ"],
+"⬇ Natijani SHP qilib yuklash": ["⬇ Download result as SHP", "⬇ Скачать результат в SHP", "⬇ ရလဒ်ကို SHP အဖြစ် ဒေါင်းလုဒ်"],
+"o'zan ichidagi suv ham": ["include in-channel water", "включая воду в русле", "ရေလမ်းအတွင်းရေပါ"],
+"{n}{n}{n} (haqiqiy kun)": ["{0}{1}{2} (actual day)", "{0}{1}{2} (реальный день)", "{0}{1}{2} (အမှန်တကယ်ရက်)"],
+"{n}{n}{n} (haqiqiy kun) · {n} ms": ["{0}{1}{2} (actual day) · {3} ms", "{0}{1}{2} (реальный день) · {3} мс", "{0}{1}{2} (အမှန်တကယ်ရက်) · {3} ms"],
+"Yog'in (Minbu o'rtacha)": ["Rainfall (Minbu mean)", "Осадки (среднее по Минбу)", "မိုးရေချိန် (မင်းဘူး ပျမ်းမျှ)"],
+"Oqim qatlami ({n}%)": ["Runoff depth ({0}%)", "Слой стока ({0}%)", "ရေစီးအနက် ({0}%)"],
+"Oqim qatlami (mm)": ["Runoff depth (mm)", "Слой стока (мм)", "ရေစီးအနက် (mm)"],
+"Shundan qirg'oqdan chiqqan": ["Of which overbank", "Из них вышло из берегов", "ယင်းအနက် ကမ်းကျော်"],
+"Qurilgan hudud bosadi": ["Built-up area flooded", "Затоплено застройки", "အဆောက်အအုံဧရိယာ ရေလွှမ်း"],
+"Eng katta sarf ({n} km²)": ["Peak discharge ({0} km²)", "Максимальный расход ({0} км²)", "အမြင့်ဆုံး ရေစီးနှုန်း ({0} km²)"],
+"Suv bosish xavfi": ["Inundation hazard", "Опасность затопления", "ရေလွှမ်းမိုးမှုအန္တရာယ်"],
+"Past (D×V < {n})": ["Low (D×V < {0})", "Низкая (D×V < {0})", "နိမ့် (D×V < {0})"],
+"O'rta (D×V {n}–{n} yoki d ≥ {n} m)": ["Medium (D×V {0}–{1} or d ≥ {2} m)", "Средняя (D×V {0}–{1} или d ≥ {2} м)", "အလယ်အလတ် (D×V {0}–{1} သို့မဟုတ် d ≥ {2} m)"],
+"Yuqori (D×V {n}–{n} yoki d ≥ {n} m)": ["High (D×V {0}–{1} or d ≥ {2} m)", "Высокая (D×V {0}–{1} или d ≥ {2} м)", "မြင့် (D×V {0}–{1} သို့မဟုတ် d ≥ {2} m)"],
+"Juda yuqori (D×V ≥ {n} yoki d ≥ {n} m)": ["Very high (D×V ≥ {0} or d ≥ {1} m)", "Очень высокая (D×V ≥ {0} или d ≥ {1} м)", "အလွန်မြင့် (D×V ≥ {0} သို့မဟုတ် d ≥ {1} m)"],
+"Odatiy o'zan ichida (sayoz suv)": ["Within the normal channel (shallow water)", "В обычном русле (мелководье)", "ပုံမှန်ရေလမ်းအတွင်း (ရေတိမ်)"],
+"Yuqori va juda yuqori xavf (qirg'oqdan tashqarida)": ["High and very high hazard (outside the banks)", "Высокая и очень высокая опасность (за берегами)", "မြင့်နှင့် အလွန်မြင့်အန္တရာယ် (ကမ်းပြင်ပ)"],
+"O'zanlar xavf bo'yicha": ["Channels by hazard", "Русла по опасности", "အန္တရာယ်အလိုက် ရေလမ်းများ"],
+"O'zanlarni sel kuchi (oqim quvvati) bo'yicha bo'yash": ["Colour channels by flood power (stream power)", "Окрашивать русла по силе потока (мощности)", "ရေလမ်းများကို ရေအား (ရေစီးစွမ်းအား) အလိုက် အရောင်ခြယ်ရန်"],
+"Sel yo'q (<{n} m³/s)": ["No flood (<{0} m³/s)", "Нет паводка (<{0} м³/с)", "ရေကြီးမှုမရှိ (<{0} m³/s)"],
+"Past (<{n} W/m²)": ["Low (<{0} W/m²)", "Низкая (<{0} Вт/м²)", "နိမ့် (<{0} W/m²)"],
+"O'rta ({n}–{n})": ["Medium ({0}–{1})", "Средняя ({0}–{1})", "အလယ်အလတ် ({0}–{1})"],
+"Yuqori ({n}–{n})": ["High ({0}–{1})", "Высокая ({0}–{1})", "မြင့် ({0}–{1})"],
+"Juda yuqori (≥{n})": ["Very high (≥{0})", "Очень высокая (≥{0})", "အလွန်မြင့် (≥{0})"],
+"Kuchli sel o'zanlari (≥{n} W/m²)": ["Powerful flood channels (≥{0} W/m²)", "Мощные паводковые русла (≥{0} Вт/м²)", "အားကြီးသော ရေကြီးရေလမ်းများ (≥{0} W/m²)"],
+"Minbu o'rtacha {n} mm, eng ko'p nuqtada {n} mm; nam tuproq (AMC III) {n}/{n} nuqtada.": ["Minbu mean {0} mm, max at a point {1} mm; wet soil (AMC III) at {2}/{3} points.", "Среднее по Минбу {0} мм, максимум в точке {1} мм; влажная почва (AMC III) в {2}/{3} точках.", "မင်းဘူးပျမ်းမျှ {0} mm၊ အမှတ်တစ်ခုတွင် အများဆုံး {1} mm; စိုသောမြေ (AMC III) အမှတ် {2}/{3} တွင်။"],
+"Taqqoslash: ~{n} yilda bir marta bo'ladigan sutkalik yog'in ≈ {n} mm (ECMWF, {n}–).": ["For comparison: the ~{0}-year daily rainfall ≈ {1} mm (ECMWF, {2}–).", "Для сравнения: суточные осадки повторяемостью ~1 раз в {0} лет ≈ {1} мм (ECMWF, {2}–).", "နှိုင်းယှဉ်ချက်: ~{0} နှစ်တစ်ကြိမ် နေ့စဉ်မိုးရေချိန် ≈ {1} mm (ECMWF, {2}–)။"],
+"Kanallar bilan:": ["With canals:", "С каналами:", "တူးမြောင်းများနှင့်:"],
+"OpenStreetMap sug'orish kanallari, ariq va zovurlari (domenda {n} km, Minbu ichida {n} km; Mon janubiy va shimoliy kanallari) relyefga o'yib kiritilgan, suv ular bo'ylab ham oqadi. Usul: SCS-CN oqim (tuproq × yer qoplami, oldingi {n} kun namligi) → D{n} bo'yicha yig'ilish (yuqori havzalar va kanallar bilan) → TR{n} eng katta sarf → HAND sintetik reyting egri chizig'i bilan sath va suv bosish → D×V xavf sinflari; oqim turi Melton nisbati bo'yicha. Yog'in: Open-Meteo ECMWF IFS {n} km ({n}–), tuproq: SoilGrids {n}, qoplama: ESA WorldCover {n}. Skrining natijasi, kuzatuv bilan kalibrlanmagan.": ["OpenStreetMap irrigation canals, ditches and drains ({0} km in the domain, {1} km inside Minbu; Mon south and north canals) are burned into the terrain, so water also flows along them. Method: SCS-CN runoff (soil × land cover, {2}-day antecedent moisture) → D{3} accumulation (with upstream catchments and canals) → TR-{4} peak discharge → water level and inundation from a HAND synthetic rating curve → D×V hazard classes; flow type from the Melton ratio. Rainfall: Open-Meteo ECMWF IFS {5} km ({6}–), soil: SoilGrids {7}, land cover: ESA WorldCover {8}. Screening result, not calibrated against observations.", "Ирригационные каналы, арыки и дрены OpenStreetMap ({0} км в домене, {1} км в Минбу; Южный и Северный каналы Мон) врезаны в рельеф, вода течёт и по ним. Метод: сток SCS-CN (почва × покров, влажность за {2} предыдущих дней) → накопление по D{3} (с верхними водосборами и каналами) → максимальный расход TR-{4} → уровень и затопление по синтетической кривой расходов HAND → классы опасности D×V; тип потока по отношению Мелтона. Осадки: Open-Meteo ECMWF IFS {5} км ({6}–), почва: SoilGrids {7}, покров: ESA WorldCover {8}. Скрининговый результат, не откалиброван по наблюдениям.", "OpenStreetMap ဆည်မြောင်း၊ မြောင်းနှင့် ရေနုတ်မြောင်းများ (domain တွင် {0} km၊ မင်းဘူးအတွင်း {1} km; မုန်းတောင်ဘက်နှင့် မြောက်ဘက်တူးမြောင်း) ကို မြေမျက်နှာပြင်တွင် ထည့်သွင်းထားပြီး ရေသည် ၎င်းတို့အတိုင်းလည်း စီးသည်။ နည်းလမ်း: SCS-CN ရေစီး (မြေ × မြေဖုံး၊ ယခင် {2} ရက် စိုထိုင်းဆ) → D{3} စုစည်းမှု (အထက်ရေဝေရေလဲနှင့် တူးမြောင်းများ) → TR-{4} အမြင့်ဆုံးရေစီးနှုန်း → HAND ဖြင့် ရေမျက်နှာပြင်နှင့် ရေလွှမ်းမှု → D×V အန္တရာယ်အဆင့်များ; ရေစီးအမျိုးအစား Melton အချိုးအလိုက်။ မိုးရေ: Open-Meteo ECMWF IFS {5} km ({6}–)၊ မြေ: SoilGrids {7}၊ မြေဖုံး: ESA WorldCover {8}။ စစ်ဆေးရေးရလဒ်ဖြစ်ပြီး လေ့လာတွေ့ရှိချက်နှင့် ချိန်ညှိထားခြင်း မရှိပါ။"],
+"Sozlamalar": ["Settings", "Настройки", "ဆက်တင်များ"],
+"Asboblar": ["Tools", "Инструменты", "ကိရိယာများ"],
+"⟋ Balandlik profili": ["⟋ Elevation profile", "⟋ Профиль высот", "⟋ အမြင့်ပရိုဖိုင်"],
+"Balandlik profili A → B": ["Elevation profile A → B", "Профиль высот A → B", "အမြင့်ပရိုဖိုင် A → B"],
+"Ikki nuqta bosib balandlik kesmasini chizish": ["Click two points to draw an elevation cross-section", "Нажмите две точки, чтобы построить профиль высот", "အမှတ်နှစ်ခုနှိပ်၍ အမြင့်ဖြတ်ပိုင်း ဆွဲရန်"],
+"Yangi profil uchun A nuqtani bosing · Esc — chiqish": ["Click point A for a new profile · Esc — exit", "Нажмите точку A для нового профиля · Esc — выход", "ပရိုဖိုင်အသစ်အတွက် A အမှတ်ကို နှိပ်ပါ · Esc — ထွက်ရန်"],
+"💧 Tomchi yo'li va havzasi": ["💧 Drop path & catchment", "💧 Путь капли и водосбор", "💧 ရေစက်လမ်းကြောင်းနှင့် ရေဝေရေလဲ"],
+"Nuqta bosing: tomchi qayerga oqadi va bu nuqtaga qayerdan suv yig'iladi": ["Click a point: where a drop flows and where water collects to this point from", "Нажмите точку: куда стечёт капля и откуда сюда собирается вода", "အမှတ်တစ်ခုနှိပ်ပါ: ရေစက် ဘယ်သို့စီးမည်နှင့် ဤအမှတ်သို့ ဘယ်မှရေစုမည်"],
+"Nuqta bosing: tomchi qayerga oqib boradi va bu nuqtaga qayerdan suv yig'iladi · Esc — chiqish": ["Click a point: where a drop flows to and where water collects to this point from · Esc — exit", "Нажмите точку: куда стечёт капля и откуда сюда собирается вода · Esc — выход", "အမှတ်တစ်ခုနှိပ်ပါ: ရေစက် ဘယ်သို့စီးမည်နှင့် ဤအမှတ်သို့ ဘယ်မှရေစုမည် · Esc — ထွက်ရန်"],
+"Sariq yo'l — tomchi yo'li, sariq dog' — bu nuqtaga suv yig'iladigan havza.": ["Yellow line — the drop's path; yellow patch — the catchment draining to this point.", "Жёлтая линия — путь капли, жёлтое пятно — водосбор этой точки.", "အဝါမျဉ်း — ရေစက်လမ်းကြောင်း၊ အဝါကွက် — ဤအမှတ်သို့ စီးဝင်သော ရေဝေရေလဲ။"],
+"Tomchi yo'li": ["Drop path", "Путь капли", "ရေစက်လမ်းကြောင်း"],
+"Suv yig'iladigan havza": ["Contributing catchment", "Водосбор", "ရေဝေရေလဲ"],
+"Irravadi daryosiga quyiladi": ["Flows into the Irrawaddy", "Впадает в Иравади", "ဧရာဝတီမြစ်ထဲ စီးဝင်သည်"],
+"{n} km, {n} m pastga": ["{0} km, {1} m down", "{0} км, на {1} м ниже", "{0} km၊ {1} m အောက်သို့"],
+"Boshqaruv: chap tugma — surish, o'ng tugma (yoki Ctrl+chap) — aylantirish/egish, g'ildirak — yaqinlashish, ikki marta bosish — shu joyga uchish.": ["Controls: left button — pan, right button (or Ctrl+left) — rotate/tilt, wheel — zoom, double-click — fly to that spot.", "Управление: левая кнопка — перемещение, правая (или Ctrl+левая) — вращение/наклон, колесо — масштаб, двойной щелчок — перелёт в точку.", "ထိန်းချုပ်မှု: ဘယ်ခလုတ် — ရွှေ့ရန်၊ ညာခလုတ် (သို့မဟုတ် Ctrl+ဘယ်) — လှည့်/စောင်းရန်၊ ဘီး — ချဲ့/ချုံ့ရန်၊ နှစ်ချက်နှိပ် — ထိုနေရာသို့ ပျံရန်။"],
+"Manbalar va boshqaruv": ["Sources & controls", "Источники и управление", "ရင်းမြစ်နှင့် ထိန်းချုပ်မှု"],
+"Relyef: Copernicus GLO{n} DEM © DLR e.V. {n}–{n}, © Airbus Defence and Space {n}–{n}, Yevropa Ittifoqi va ESA Copernicus dasturi doirasida. Bu sirt modeli (DSM): daraxt va binolar ustidan o'lchangan.": ["Terrain: Copernicus GLO{0} DEM © DLR e.V. {1}–{2}, © Airbus Defence and Space {3}–{4}, provided under the European Union and ESA Copernicus programme. This is a surface model (DSM): measured over the tops of trees and buildings.", "Рельеф: Copernicus GLO{0} DEM © DLR e.V. {1}–{2}, © Airbus Defence and Space {3}–{4}, в рамках программы Copernicus Евросоюза и ЕКА. Это модель поверхности (DSM): измерена по верхушкам деревьев и зданий.", "မြေမျက်နှာသွင်ပြင်: Copernicus GLO{0} DEM © DLR e.V. {1}–{2}, © Airbus Defence and Space {3}–{4}၊ ဥရောပသမဂ္ဂနှင့် ESA Copernicus အစီအစဉ်အောက်တွင်။ ၎င်းသည် မျက်နှာပြင်မော်ဒယ် (DSM) ဖြစ်ပြီး သစ်ပင်နှင့် အဆောက်အအုံ အပေါ်မှ တိုင်းထားသည်။"],
+"Tasvir: Google sun'iy yo'ldosh tasviri.": ["Imagery: Google satellite imagery.", "Снимки: спутниковые снимки Google.", "ပုံရိပ်: Google ဂြိုဟ်တုပုံရိပ်။"],
+"Statistika": ["Statistics", "Статистика", "စာရင်းအင်း"],
+"Batafsil": ["Details", "Подробно", "အသေးစိတ်"],
+"shu nuqta, {n} m piksel": ["this point, {0} m pixel", "эта точка, пиксель {0} м", "ဤအမှတ်၊ {0} m pixel"],
+"Kenglik, uzunlik": ["Latitude, longitude", "Широта, долгота", "လတ္တီတွဒ်၊ လောင်ဂျီတွဒ်"],
+"UTM {n}N": ["UTM {0}N", "UTM {0}N", "UTM {0}N"],
+"DEM piksel": ["DEM pixel", "Пиксель ЦМР", "DEM pixel"],
+"ustun {n}, qator {n} ({n}×{n} m)": ["column {0}, row {1} ({2}×{3} m)", "столбец {0}, строка {1} ({2}×{3} м)", "ကော်လံ {0}၊ အတန်း {1} ({2}×{3} m)"],
+"Qiyalik": ["Slope", "Уклон", "ဆင်ခြေလျှော"],
+"Maks qiyalik": ["Max slope", "Макс. уклон", "အများဆုံး ဆင်ခြေလျှော"],
+"Maks": ["Max", "Макс.", "အများဆုံး"],
+"Yig'ilish maydoni": ["Contributing area", "Площадь водосбора", "စုစည်းဧရိယာ"],
+"{n} m² dan suv keladi": ["water comes from {0} m²", "вода стекает с {0} м²", "{0} m² မှ ရေလာသည်"],
+"{n} ga dan suv keladi": ["water comes from {0} ha", "вода стекает с {0} га", "{0} ဟက်တာ မှ ရေလာသည်"],
+"Yomg'ir suvi": ["Rainwater", "Дождевая вода", "မိုးရေ"],
+"Yaqin oqim": ["Nearest flow", "Ближайший поток", "အနီးဆုံးရေစီး"],
+"jarlik · {n} m": ["gully · {0} m", "овраг · {0} м", "လျှိုမြောင် · {0} m"],
+"soy · {n} m": ["stream · {0} m", "ручей · {0} м", "ချောင်း · {0} m"],
+"Tuproq": ["Soil", "Почва", "မြေဆီလွှာ"],
+"Tuproq: gidrologik guruh": ["Soil: hydrologic group", "Почва: гидрологическая группа", "မြေ: ရေဗေဒအုပ်စု"],
+"Tuproq: suv o'tkazuvchanligi Ks": ["Soil: hydraulic conductivity Ks", "Почва: водопроницаемость Ks", "မြေ: ရေစိမ့်နှုန်း Ks"],
+"C guruh, Ks ≈ {n} mm/soat": ["Group C, Ks ≈ {0} mm/h", "Группа C, Ks ≈ {0} мм/ч", "အုပ်စု C၊ Ks ≈ {0} mm/နာရီ"],
+"Yer qoplami": ["Land cover", "Земной покров", "မြေဖုံး"],
+"Yer qoplami (WorldCover)": ["Land cover (WorldCover)", "Земной покров (WorldCover)", "မြေဖုံး (WorldCover)"],
+"Ekinzor (Manning n {n})": ["Cropland (Manning n {0})", "Пашня (Manning n {0})", "စိုက်ပျိုးမြေ (Manning n {0})"],
+"O'tloq (Manning n {n})": ["Grassland (Manning n {0})", "Луг (Manning n {0})", "မြက်ခင်း (Manning n {0})"],
+"CN (AMC II)": ["CN (AMC II)", "CN (AMC II)", "CN (AMC II)"],
+"CN (oqim koeffitsiyenti)": ["CN (runoff coefficient)", "CN (коэффициент стока)", "CN (ရေစီးကိန်း)"],
+"Yog'in (mm)": ["Rainfall (mm)", "Осадки (мм)", "မိုးရေချိန် (mm)"],
+"Yog'in → oqim": ["Rainfall → runoff", "Осадки → сток", "မိုးရေ → ရေစီး"],
+"{n} mm → {n} mm (AMC III)": ["{0} mm → {1} mm (AMC III)", "{0} мм → {1} мм (AMC III)", "{0} mm → {1} mm (AMC III)"],
+"Suv chuqurligi": ["Water depth", "Глубина воды", "ရေအနက်"],
+"Suv bosadi (o'zanlar bilan)": ["Flooded (incl. channels)", "Затапливается (вкл. русла)", "ရေလွှမ်း (ရေလမ်းများ အပါအဝင်)"],
+"O'zandan balandlik": ["Height above channel", "Высота над руслом", "ရေလမ်းအထက် အမြင့်"],
+"{n} m — suv yetmaydi": ["{0} m — water does not reach", "{0} м — вода не доходит", "{0} m — ရေမရောက်"],
+"Suv yig'iladi": ["Water collects", "Вода скапливается", "ရေစုသည်"],
+"Pastroq joy": ["Lower place", "Более низкое место", "ပိုနိမ့်သောနေရာ"],
+"Tuman o'rtachasi {n} m, mediana {n} m": ["Township mean {0} m, median {1} m", "Среднее по тауншипу {0} м, медиана {1} м", "မြို့နယ်ပျမ်းမျှ {0} m၊ အလယ်ကိန်း {1} m"],
+"Tuman o'rtachasi = ×{n}": ["Township mean = ×{0}", "Среднее по тауншипу = ×{0}", "မြို့နယ်ပျမ်းမျှ = ×{0}"],
+"O'rtachadan": ["From mean", "От среднего", "ပျမ်းမျှမှ"],
+"Medianadan": ["From median", "От медианы", "အလယ်ကိန်းမှ"],
+"O'rtacha": ["Mean", "Среднее", "ပျမ်းမျှ"],
+"Farq": ["Difference", "Разница", "ကွာခြားချက်"],
+"i bu joydan past": ["of the township is lower than here", "тауншипа ниже этого места", "ဤနေရာထက် နိမ့်သည်"],
+"tanlangan: {n} m": ["selected: {0} m", "выбрано: {0} м", "ရွေးထား: {0} m"],
+"o'rtacha {n} m (tuman {n} m)": ["mean {0} m (township {1} m)", "в среднем {0} м (тауншип {1} м)", "ပျမ်းမျှ {0} m (မြို့နယ် {1} m)"],
+"Balandlik bo'yicha maydon taqsimoti ({n} m oraliq)": ["Area by elevation ({0} m bins)", "Распределение площади по высоте (шаг {0} м)", "အမြင့်အလိုက် ဧရိယာဖြန့်ဝေမှု ({0} m ကြားကာလ)"],
+"Kuchli yomg'irgacha (≤{n} mm) jami": ["Total up to heavy rain (≤{0} mm)", "Всего до сильного дождя (≤{0} мм)", "မိုးသည်းအထိ (≤{0} mm) စုစုပေါင်း"],
+"(Minbu o'rtachasi, bosing — tanlanadi)": ["(Minbu mean, click to select)", "(среднее по Минбу, нажмите — выбор)", "(မင်းဘူးပျမ်းမျှ၊ နှိပ်ပါက ရွေးမည်)"],
+"⌂ Butun hudud": ["⌂ Whole area", "⌂ Вся территория", "⌂ နယ်မြေတစ်ခုလုံး"],
+"⚠ Tuproq, qoplama": ["⚠ Soil, land cover", "⚠ Почва, покров", "⚠ မြေ၊ မြေဖုံး"],
+"⚠ Tuproq, qoplama va sel": ["⚠ Soil, land cover & flood", "⚠ Почва, покров и паводок", "⚠ မြေ၊ မြေဖုံးနှင့် ရေကြီးမှု"],
+"Ko'rsatish": ["Show", "Показать", "ပြရန်"],
+"Ko'tarilish": ["Ascent", "Подъём", "တက်"],
+"Tushish": ["Descent", "Спуск", "ဆင်း"],
+"Uzunlik": ["Length", "Длина", "အလျား"],
+"Oxiri": ["End", "Конец", "အဆုံး"],
+"Yopish": ["Close", "Закрыть", "ပိတ်ရန်"],
+"m dan boshlanadi": ["m starting elevation", "м — начальная высота", "m မှ စသည်"],
+"havzadan": ["from catchment", "с водосбора", "ရေဝေရေလဲမှ"],
+"baland": ["high", "высоко", "မြင့်"],
+"past": ["low", "низко", "နိမ့်"],
+"yuqori": ["high", "высокая", "မြင့်"],
+"o'rta": ["medium", "средняя", "အလယ်အလတ်"],
+"ga": ["ha", "га", "ဟက်တာ"],
+"km": ["km", "км", "km"],
+"m": ["m", "м", "m"],
+"km²": ["km²", "км²", "km²"],
+"{n} km": ["{0} km", "{0} км", "{0} km"],
+"{n} km²": ["{0} km²", "{0} км²", "{0} km²"],
+"{n} mm": ["{0} mm", "{0} мм", "{0} mm"],
+"Shimol": ["North", "Север", "မြောက်"],
+"Shimoli-sharq": ["Northeast", "Северо-восток", "အရှေ့မြောက်"],
+"Sharq": ["East", "Восток", "အရှေ့"],
+"Janubi-sharq": ["Southeast", "Юго-восток", "အရှေ့တောင်"],
+"Janub": ["South", "Юг", "တောင်"],
+"Janubi-g'arb": ["Southwest", "Юго-запад", "အနောက်တောင်"],
+"G'arb": ["West", "Запад", "အနောက်"],
+"Shimoli-g'arb": ["Northwest", "Северо-запад", "အနောက်မြောက်"],
+"Til": ["Language", "Язык", "ဘာသာစကား"],
+"Ma'lumotlar ArcGIS Online'dan yuklanmoqda… {n}/{n}": ["Loading data from ArcGIS Online… {0}/{1}", "Загрузка данных из ArcGIS Online… {0}/{1}", "ArcGIS Online မှ ဒေတာ ဖွင့်နေသည်… {0}/{1}"]
+};
+// joy nomi qatnashadigan qoliplar ($1 — joy nomi, sonlar {0},{1}...)
+var P = [
+  [/^(.+) — qishloq trakti, \{n\} km²$/, ["$1 — village tract, {0} km²", "$1 — сельский тракт, {0} км²", "$1 — ကျေးရွာအုပ်စု၊ {0} km²"]],
+  [/^(.+) trakti$/, ["$1 tract", "тракт $1", "$1 ကျေးရွာအုပ်စု"]],
+  [/^(.+)ga qaragan$/, ["facing $D", "обращён на $D", "$D ဘက်သို့ မျက်နှာမူ"]]
+];
+var LANGS = [{k: 'uz', name: "O'zbekcha", short: 'UZ'}, {k: 'en', name: 'English', short: 'EN'}, {k: 'ru', name: 'Русский', short: 'RU'}, {k: 'my', name: 'မြန်မာ', short: 'MY'}];
+var IDX = {uz: -1, en: 0, ru: 1, my: 2};
+var FLAG = {
+  uz: '<svg viewBox="0 0 30 20" width="20" height="14" aria-hidden="true"><rect width="30" height="20" fill="#1eb53a"/><rect width="30" height="13.2" fill="#fff"/><rect width="30" height="6.4" fill="#0099b5"/><rect y="6.4" width="30" height=".6" fill="#ce1126"/><rect y="12.6" width="30" height=".6" fill="#ce1126"/></svg>',
+  en: '<svg viewBox="0 0 60 40" width="20" height="14" aria-hidden="true"><rect width="60" height="40" fill="#012169"/><path d="M0 0l60 40M60 0L0 40" stroke="#fff" stroke-width="8"/><path d="M0 0l60 40M60 0L0 40" stroke="#c8102e" stroke-width="3"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="12"/><path d="M30 0v40M0 20h60" stroke="#c8102e" stroke-width="7"/></svg>',
+  ru: '<svg viewBox="0 0 30 20" width="20" height="14" aria-hidden="true"><rect width="30" height="20" fill="#d52b1e"/><rect width="30" height="13.33" fill="#0039a6"/><rect width="30" height="6.67" fill="#fff"/></svg>',
+  my: '<svg viewBox="0 0 30 20" width="20" height="14" aria-hidden="true"><rect width="30" height="20" fill="#ea2839"/><rect width="30" height="13.33" fill="#34b233"/><rect width="30" height="6.67" fill="#fecb00"/><path fill="#fff" d="M15 3.2l1.85 5.7h6l-4.85 3.5 1.85 5.7L15 14.6l-4.85 3.5 1.85-5.7-4.85-3.5h6z"/></svg>'
+};
+var NUM = /[-−+]?\d+(?:[   ]\d{3})*(?:[.,]\d+)?/g;
+var lang = 'uz';
+try { lang = localStorage.getItem('minbu_lang') || 'uz'; } catch (e) {}
+if (!(lang in IDX)) lang = 'uz';
+
+function fill(s, nums) { return s.replace(/\{(\d+)\}/g, function (m, i) { return nums[+i] !== undefined ? nums[+i] : m; }); }
+function tr1(t) {                     // bitta bo'lak (bo'sh joylarsiz) -> tarjima yoki null
+  var i = IDX[lang], r = D[t];
+  if (r) return r[i];
+  var nums = t.match(NUM) || [], k = t.replace(NUM, '{n}');
+  r = D[k];
+  if (r) return fill(r[i], nums);
+  for (var j = 0; j < P.length; j++) {
+    var m = k.match(P[j][0]);
+    if (!m) continue;
+    var s = P[j][1][i];
+    if (s.indexOf('$D') >= 0) { var dr = D[m[1]]; if (!dr) continue; s = s.replace('$D', dr[i].toLowerCase()); }
+    return fill(s.replace('$1', m[1]), nums);
+  }
+  return null;
+}
+function tr(t) {
+  var r = tr1(t);
+  if (r !== null) return r;
+  if (t.indexOf(' · ') > 0) {           // "A · B · C" — har bo'lagi alohida
+    var ok = false, parts = t.split(' · ').map(function (p) { var x = tr1(p); if (x !== null) { ok = true; return x; } return p; });
+    if (ok) return parts.join(' · ');
+  }
+  return null;
+}
+function L(t) { if (lang === 'uz') return t; var r = tr(t); return r === null ? t : r; }
+
+// --- matn tugunlari ---
+function nodeTr(n) {
+  if (n.__t !== undefined && n.nodeValue === n.__t) return;           // o'zimiz yozgan qiymat
+  var v = n.nodeValue;
+  if (!v || !/[A-Za-z']/.test(v)) { n.__o = undefined; return; }
+  n.__o = v;
+  var k = v.trim(), out = v;
+  if (lang !== 'uz' && k) { var r = tr(k); if (r !== null) out = v.replace(k, r); }
+  if (out !== v) { n.__t = out; n.nodeValue = out; } else n.__t = undefined;
+}
+function restoreNode(n) {               // til almashganda: asl o'zbekchadan qayta
+  if (n.__o !== undefined && n.__t !== undefined && n.nodeValue === n.__t) { n.__t = undefined; n.nodeValue = n.__o; }
+}
+var ATTR = ['placeholder', 'title', 'aria-label'];
+function elTr(el) {
+  for (var a = 0; a < ATTR.length; a++) {
+    var at = ATTR[a]; if (!el.hasAttribute || !el.hasAttribute(at)) continue;
+    var key = '__o_' + at, tk = '__t_' + at, v = el.getAttribute(at);
+    if (el[tk] === undefined || v !== el[tk]) el[key] = v;
+    var o = el[key], k = o.trim(), r = lang === 'uz' ? null : tr(k), out = r === null ? o : o.replace(k, r);
+    el[tk] = out; if (v !== out) el.setAttribute(at, out);
+  }
+}
+function skip(n) { var p = n.parentNode; return !p || p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE' || (p.closest && p.closest('.lang')); }
+function walk(root, f, fe) {
+  if (root.nodeType === 3) { if (!skip(root)) f(root); return; }
+  if (root.nodeType !== 1) return;
+  var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n;
+  while ((n = w.nextNode())) if (!skip(n)) f(n);
+  if (fe) { fe(root); [].forEach.call(root.querySelectorAll('[placeholder],[title],[aria-label]'), fe); }
+}
+var busy = false;
+function apply(root) { busy = true; try { walk(root || document.body, nodeTr, elTr); } finally { busy = false; } }
+var mo = new MutationObserver(function (ms) {
+  if (busy) return;
+  busy = true;
+  try {
+    for (var i = 0; i < ms.length; i++) {
+      var m = ms[i];
+      if (m.type === 'characterData') { if (!skip(m.target)) nodeTr(m.target); }
+      else if (m.type === 'attributes') { if (!(m.target.closest && m.target.closest('.lang'))) elTr(m.target); }
+      else for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j], nodeTr, elTr);
+    }
+  } finally { busy = false; }
+});
+
+// --- til tanlash tugmasi ---
+var CSS = '.lang{position:relative;flex:none;z-index:60}.lang>button{display:flex;align-items:center;gap:7px;height:32px;padding:0 10px;border-radius:9px;background:#0b1320;border:1px solid var(--panel-b,rgba(120,150,200,.2));font:inherit;font-size:12px;color:var(--tx,#e6edf7);cursor:pointer}' +
+  '.lang>button svg:last-child{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:1.8}.lang svg[viewBox]{border-radius:2px}' +
+  '.lang .lmenu{position:absolute;right:0;top:calc(100% + 8px);min-width:170px;background:#0f1a2b;border:1px solid var(--panel-b,rgba(120,150,200,.2));border-radius:12px;padding:5px;box-shadow:0 16px 34px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:1px}' +
+  '.lang .lmenu button{display:flex;align-items:center;gap:10px;min-height:34px;padding:5px 10px;border:0;border-radius:8px;background:none;text-align:left;font:inherit;font-size:13px;color:var(--tx,#e6edf7);cursor:pointer}' +
+  '.lang .lmenu button:hover,.lang .lmenu button:focus-visible{background:rgba(96,165,250,.12);outline:none}.lang .lmenu button[aria-selected="true"]{background:var(--ac,#3b82f6);color:#fff;font-weight:600}' +
+  'html[lang="my"] body{font-family:"Noto Sans Myanmar",Inter,system-ui,sans-serif}';
+var sw;
+function paint() {
+  var c = LANGS.filter(function (x) { return x.k === lang; })[0], b = sw.firstChild;
+  b.innerHTML = FLAG[lang] + '<span>' + c.short + '</span><svg viewBox="0 0 10 10" aria-hidden="true"><path d="m2 3.5 3 3 3-3"/></svg>';
+  b.setAttribute('aria-label', L('Til') + ': ' + c.name);
+}
+function close() { var m = sw.querySelector('.lmenu'); if (m) m.remove(); sw.firstChild.setAttribute('aria-expanded', 'false'); }
+function mount() {
+  sw = document.createElement('div'); sw.className = 'lang';
+  sw.innerHTML = '<button type="button" aria-haspopup="listbox" aria-expanded="false"></button>';
+  var b = sw.firstChild;
+  b.onclick = function (e) {
+    e.stopPropagation();
+    if (sw.querySelector('.lmenu')) { close(); return; }
+    var m = document.createElement('div'); m.className = 'lmenu'; m.setAttribute('role', 'listbox');
+    m.innerHTML = LANGS.map(function (x) { return '<button type="button" role="option" data-l="' + x.k + '" aria-selected="' + (x.k === lang) + '">' + FLAG[x.k] + '<span>' + x.name + '</span></button>'; }).join('');
+    sw.appendChild(m); b.setAttribute('aria-expanded', 'true');
+    (m.querySelector('[aria-selected="true"]') || m.firstChild).focus();
+    m.onclick = function (ev) { var o = ev.target.closest('[data-l]'); if (!o) return; close(); set(o.dataset.l); };
+    m.onkeydown = function (ev) {
+      var bs = [].slice.call(m.querySelectorAll('button')), i = bs.indexOf(document.activeElement);
+      if (ev.key === 'ArrowDown') { ev.preventDefault(); (bs[i + 1] || bs[0]).focus(); }
+      else if (ev.key === 'ArrowUp') { ev.preventDefault(); (bs[i - 1] || bs[bs.length - 1]).focus(); }
+      else if (ev.key === 'Escape') { close(); b.focus(); }
+    };
+  };
+  document.addEventListener('pointerdown', function (ev) { if (!sw.contains(ev.target)) close(); });
+  var top = document.getElementById('top'), pan = document.getElementById('panB');
+  if (top) top.insertBefore(sw, pan && pan.parentNode === top ? pan : null); else { sw.style.cssText = 'position:fixed;top:10px;right:10px'; document.body.appendChild(sw); }
+  paint();
+}
+function set(l) {
+  if (!(l in IDX)) return;
+  busy = true; try { walk(document.body, restoreNode, null); } finally { busy = false; }
+  lang = l; try { localStorage.setItem('minbu_lang', l); } catch (e) {}
+  document.documentElement.lang = l === 'uz' ? 'uz' : l;
+  paint(); apply();
+}
+function start() {
+  var st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
+  var fl = document.createElement('link'); fl.rel = 'stylesheet'; fl.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;600&display=swap'; document.head.appendChild(fl);
+  document.documentElement.lang = lang;
+  mount(); apply();
+  mo.observe(document.body, {childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTR});
+}
+window.FloodTil = {L: L, set: set, get lang() { return lang; }, D: D};
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
 </script>
 </body>
