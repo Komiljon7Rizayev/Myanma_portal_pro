@@ -239,6 +239,13 @@ html,body{background:var(--bg);font-family:Inter,"Segoe UI",system-ui,-apple-sys
 #hLab span:hover{background:rgba(59,130,246,.35)}
 #hLab span.on{background:#dc2626;color:#fff;text-shadow:none;font-size:12px}
 .rank button > b{font-size:12.5px;color:var(--ac2)}
+.rank.diag{gap:3px;margin-top:6px;justify-content:space-between}
+.rank.diag button.rb{grid-template-columns:minmax(64px,30%) 1fr 52px;gap:8px;padding:2px 6px;background:none;font-size:11.5px}
+.rank.diag button.rb:hover{background:#0f1c30}
+.rank.diag .rn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tx)}
+.rank.diag .rbar{display:flex;height:11px;background:#0b1524;border-radius:3px;overflow:hidden}
+.rank.diag .rbar span{display:block;height:100%}
+.rank.diag button.rb > b{font-size:11.5px;text-align:right}
 #vtip{position:fixed;z-index:30;pointer-events:none;background:#0b1320;border:1px solid rgba(96,165,250,.3);border-radius:7px;padding:5px 8px;
   font-size:11.5px;color:var(--tx);display:none;white-space:nowrap;box-shadow:0 8px 20px rgba(0,0,0,.45);font-variant-numeric:tabular-nums}
 #vtip span{color:var(--tx2)}
@@ -344,7 +351,7 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
     <div class="card" id="cBat"></div>
   </div>
   <div id="brow">
-    <div class="card"><h3>Eng ko'p sel keladigan hududlar <small>HEC-RAS, ga</small></h3><div class="rank" id="rank"></div><button class="lnk" data-go="hud">Barchasini ko'rish (70)</button></div>
+    <div class="card"><h3>Eng ko'p sel keladigan hududlar <small>HEC-RAS, ga</small></h3><div class="rank diag" id="rank"></div><button class="lnk" data-go="hud">Barchasini ko'rish (70)</button></div>
     <div class="card"><h3>Balandlik taqsimoti <small id="hSub">maydon, km² (10 m oraliq)</small>
       <div class="tg" id="hTg"><button data-k="m" class="on">Maydon</button><button data-k="y">Yig'indi</button></div></h3>
       <svg id="hArea"></svg></div>
@@ -516,7 +523,7 @@ const NET_CLS = [["Jarlik / vaqtinchalik o'zan", [115, 199, 255], 2], ["Soy", [5
 const MIN_A = [0.1, 0.3, 1, 3, 10, 50, 300];
 // Strahler tartibi 1..7 ranglari (taqdimot bilan bir xil) va nomlari
 const STR_RGB = [[198, 219, 239], [158, 202, 225], [107, 174, 214], [66, 146, 198], [33, 113, 181], [8, 81, 156], [8, 48, 107]];
-const STR_NOM = ["jarlik (eng uchidagi)", "jarlik", "kichik soy", "soy", "katta soy", "chaung", "asosiy chaung"];
+const STR_NOM = ["irmoq (eng uchidagi)", "irmoq", "kichik soy", "soy", "katta soy", "chaung", "asosiy chaung"];
 
 const W = META.w, H = META.h, RES = META.res;
 const SX = W * RES, SZ = H * RES;               // sahna o'lchami (m)
@@ -2072,7 +2079,7 @@ function updateHover() {
 const DASH = __D.dash;
 const SEL_RGB = ["#0072B2", "#009E73", "#E69F00", "#F0E442"];          // taqdimotdagi sel darajalari ranglari
 const SEL_NOM = ["Doimiy", "Biroz kuchli", "Kuchli", "Juda kuchli"];
-const STR_QISQA = ["jarlik", "jarlik", "kichik soy", "soy", "katta soy", "chaung", "asosiy chaung"];
+const STR_QISQA = ["irmoq", "irmoq", "kichik soy", "soy", "katta soy", "chaung", "asosiy chaung"];
 const NAVSEC = { hud: ["secHud"], kor: ["secKor", "secStat"], suv: ["secSuv"], top: ["secTop"], sel: ["secSel"], soz: ["secSoz", "secAsb"], man: ["src"] };
 const NAVT = { hud: "Hududlar (qishloq traktlari)", kor: "Relyef va ko'rinish", suv: "Yomg'ir suvi oqimi", top: "Suv to'planib qoladigan joylar", sel: "Sel xavfi",
   soz: "Sozlamalar va asboblar", man: "Manbalar va boshqaruv" };
@@ -2489,10 +2496,17 @@ function hudList() {
   $("hList").innerHTML = o.map((i, r) => `<button data-i="${i}" class="${i === hudSel ? "on" : ""}"><i>${r + 1}</i><span><b>${HUD.t[i].n}</b></span><small>${f(HUD.t[i])}</small></button>`).join("");
 }
 function hudTop3() {
-  const o = HUD.t.map((t, i) => i).sort((a, b) => hudSelGa(HUD.t[b]) - hudSelGa(HUD.t[a])).slice(0, 3);
-  $("rank").innerHTML = o.map((i, r) => { const t = HUD.t[i];
-    return `<button data-i="${i}"><i>${r + 1}</i><span><b>${t.n}</b><small>${fmt(t.a, 1)} km² · ${fmt(t.ekga, 0)} ga ekin</small></span><b>${fmt(hudSelGa(t), 0)} ga</b></button>`; }).join("");
-  $("rank").onclick = e => { const b = e.target.closest("button"); if (b) hudTanla(+b.dataset.i); };
+  // eng ko'p sel keladigan 5 hudud: gorizontal ustun, sel darajalari (Doimiy … Juda kuchli) ranglari bilan bo'lingan
+  const o = HUD.t.map((t, i) => i).sort((a, b) => hudSelGa(HUD.t[b]) - hudSelGa(HUD.t[a])).slice(0, 5);
+  const mx = hudSelGa(HUD.t[o[0]]) || 1;
+  $("rank").innerHTML = o.map(i => { const t = HUD.t[i];
+    const seg = t.sel.map((v, k) => v > 0 ? `<span style="width:${(v / mx * 100).toFixed(2)}%;background:${SEL_RGB[k]}"></span>` : "").join("");
+    return `<button class="rb" data-i="${i}"><span class="rn">${t.n}</span><span class="rbar">${seg}</span><b>${fmt(hudSelGa(t), 0)} ga</b></button>`; }).join("");
+  $("rank").onclick = e => { const b = e.target.closest("button"); if (b) { vtip(e, ""); hudTanla(+b.dataset.i); } };
+  $("rank").onmousemove = e => { const b = e.target.closest("button"); if (!b) { vtip(e, ""); return; } const t = HUD.t[+b.dataset.i];
+    vtip(e, `<b>${t.n}</b><br>` + t.sel.map((v, k) => `<i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${SEL_RGB[k]};margin-right:5px"></i><span>${SEL_NOM[k]}</span> ${fmt(v, 0)} ga`).join("<br>")
+      + `<br><span>${fmt(t.a, 1)} km² · ${fmt(t.ekga, 0)} ga ekin</span>`); };
+  $("rank").onmouseleave = e => vtip(e, "");
 }
 
 // ---------------- Strahler tartibini tanlash (donut / legenda) ----------------
@@ -2852,7 +2866,11 @@ var D = {
 "{n} · katta soy": ["{0} · large stream", "{0} · большой ручей", "{0} · ချောင်းကြီး"],
 "{n} · chaung": ["{0} · chaung", "{0} · чаунг", "{0} · ချောင်း (chaung)"],
 "{n} · asosiy chaung": ["{0} · main chaung", "{0} · главный чаунг", "{0} · ပင်မချောင်း"],
-"jarlik (eng uchidagi)": ["gully (headwater)", "овраг (верховой)", "လျှိုမြောင် (ထိပ်ဆုံး)"],
+"{n} · irmoq": ["{0} · tributary", "{0} · приток", "{0} · မြစ်လက်တက်"],
+"irmoq (eng uchidagi)": ["tributary (headwater)", "приток (верховой)", "မြစ်လက်တက် (ထိပ်ဆုံး)"],
+"irmoq": ["tributary", "приток", "မြစ်လက်တက်"],
+"irmoq · {n} m": ["tributary · {0} m", "приток · {0} м", "မြစ်လက်တက် · {0} m"],
+"jarlik (eng uchidagi)":["gully (headwater)", "овраг (верховой)", "လျှိုမြောင် (ထိပ်ဆုံး)"],
 "jarlik": ["gully", "овраг", "လျှိုမြောင်"],
 "kichik soy": ["small stream", "малый ручей", "ချောင်းငယ်"],
 "soy": ["stream", "ручей", "ချောင်း"],
