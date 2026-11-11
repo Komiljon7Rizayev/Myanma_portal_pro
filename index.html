@@ -164,7 +164,7 @@ h1,h2,p{margin:0}
 .track{height:7px;margin-top:5px;border-radius:4px;background:var(--glass-2);overflow:hidden}
 .track i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--leaf-2),var(--leaf));transition:width .35s}
 
-.bot{grid-area:bot;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1.18fr) minmax(0,1.08fr);gap:10px}
+.bot{grid-area:bot;display:grid;grid-template-columns:minmax(0,2.3fr) minmax(0,1.08fr);gap:10px}
 .bot .card{display:flex;flex-direction:column;gap:6px;overflow:hidden;position:relative}
 .bot header{display:flex;align-items:flex-start;gap:8px}
 .bot header h2{white-space:nowrap}
@@ -178,7 +178,12 @@ h1,h2,p{margin:0}
 .ileg button{display:flex;align-items:center;gap:7px;padding:2px 6px;border-radius:6px;text-align:left;color:var(--tx-2);white-space:nowrap}
 .ileg button:hover{background:var(--glass-2);color:var(--tx)}
 .ileg button.on{color:var(--tx);font-weight:600}
-.ileg i{width:14px;height:3px;border-radius:2px;flex:none}
+.ileg button.pr{background:var(--glass-2)}
+.ileg i{width:12px;height:12px;border-radius:3px;flex:none;border:1.5px solid;box-sizing:border-box}
+.tip .ln{display:flex;align-items:center;gap:6px;font-weight:500}
+.tip .ln i{width:8px;height:8px;border-radius:50%}
+.tip .ln b{margin-left:auto;padding-left:10px;font-weight:700}
+.dtab .d.up{color:#7fd06c}.dtab .d.dn{color:#ef7a5f}
 .svgbox{position:relative;min-width:0;min-height:0}
 .svgbox svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .tip{position:absolute;pointer-events:none;background:#f2f7ec;color:#14261a;border-radius:8px;padding:4px 9px;font-size:11.5px;font-weight:600;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.4);z-index:5;line-height:1.45}
@@ -586,12 +591,8 @@ h1,h2,p{margin:0}
       </div>
       <div class="bot">
         <section class="card">
-          <header><div><h2>Index qiymati yillik</h2><small>Barcha indekslar, oylar kesimida</small></div><span class="chip" id="c1-year"></span><span></span></header>
-          <div class="plot"><div class="ileg" id="ileg"></div><div class="svgbox" id="c1"></div></div>
-        </section>
-        <section class="card">
-          <header><div><h2>Index yillar kesimida</h2><small>Har bir yil alohida chiziq</small></div><span class="chip" id="c2-idx"></span><span></span></header>
-          <div class="svgbox" id="c2" style="flex:1"></div>
+          <header><div><h2>Index qiymatlari</h2><small>Oylar kesimida, 2022–2026 · bir nechta indeksni tanlash mumkin</small></div><span class="chip" id="c1-year"></span><span></span></header>
+          <div class="plot"><div class="ileg" id="ileg" role="group" aria-label="Indekslar"></div><div class="svgbox" id="c1"></div></div>
         </section>
         <section class="card">
           <header style="grid-template-columns:minmax(0,1fr) auto"><div><h2>Maydon taqsimoti</h2><small id="d-sub"></small></div><span class="chip" id="d-chip"></span></header>
@@ -816,6 +817,16 @@ var D={
 "tuman: {0} ({1})":["township: {0} ({1})","район: {0} ({1})","မြို့နယ်: {0} ({1})"],
 "oylik o'rtacha":["monthly mean","среднее за месяц","လစဉ် ပျမ်းမျှ"],
 "yillik qiymat":["yearly value","годовое значение","နှစ်စဉ် တန်ဖိုး"],
+"Index qiymatlari":["Index values","Значения индексов","အညွှန်းကိန်း တန်ဖိုးများ"],
+"Oylar kesimida, 2022–2026 · bir nechta indeksni tanlash mumkin":["By month, 2022–2026 · several indices can be ticked","По месяцам, 2022–2026 · можно выбрать несколько индексов","လအလိုက်၊ ၂၀၂၂–၂၀၂၆ · အညွှန်းကိန်း အများအပြား ရွေးနိုင်သည်"],
+"Indekslar":["Indices","Индексы","အညွှန်းကိန်းများ"],
+"Olib tashlash":["Remove","Убрать","ဖယ်ရှားရန်"],
+"Qo'shish":["Add","Добавить","ထည့်ရန်"],
+"{0} bilan solishtirganda":["compared with {0}","по сравнению с {0}","{0} နှင့် နှိုင်းယှဉ်လျှင်"],
+"Yillik o'rtacha":["Yearly mean","Среднее за год","နှစ်စဉ် ပျမ်းမျှ"],
+"yillik o'rtacha":["yearly mean","среднее за год","နှစ်စဉ် ပျမ်းမျှ"],
+"Yil tanlang: yillik o'rtacha ko'rinadi, oylar — Oy filtrida":["Pick a year to see its yearly mean; months are in the Month filter","Выберите год — среднее за год; месяцы — в фильтре «Месяц»","နှစ်ရွေးပါ — နှစ်စဉ် ပျမ်းမျှ ပြမည်၊ လများ — လ စစ်ထုတ်မှုတွင်"],
+"Yongan":["Burned","Горело","မီးလောင်"],
 "Tanlangan qishloq":["Selected village","Выбранная деревня","ရွေးချယ်ထားသော ရွာ"],
 "Tanlash uchun qishloqni bosing":["Click a village to select it","Нажмите на деревню, чтобы выбрать","ရွေးရန် ရွာကို နှိပ်ပါ"],
 "Tuman = ×1,00":["Township = ×1.00","Район = ×1,00","မြို့နယ် = ×1,00"],
@@ -947,7 +958,7 @@ var STN=['Juda yaxshi','Yaxshi',"O'rtacha",'Yomon',"Ma'lumot yo'q"];
 var STN_M=['Juda nam','Nam',"O'rtacha",'Quruq',"Ma'lumot yo'q"];
 var STN0=STN.slice(),STNM0=STN_M.slice();
 var EDGE=[.1,.25,.5,1,2,5];
-var S={sel:-1,y:YEARS.length-1,m:0,p5:true,ix:'ndvi',mode:'size',sort:'ha',open:null,hl:null,fs:0,bm:'dark',full:false,d3:false,showP:true,showB:true,fop:.55};
+var S={sel:-1,y:YEARS.length-1,m:0,p5:true,ix:'ndvi',ixs:['ndvi'],mode:'size',sort:'ha',open:null,hl:null,fs:0,bm:'dark',full:false,d3:false,showP:true,showB:true,fop:.55};
 /* "Minbu Water Management" opens the sister portal in this same tab (like one portal); set its address here */
 var WATER_URL='';
 $('wm').onclick=function(e){e.preventDefault();
@@ -1010,11 +1021,12 @@ function loadPser(id){
   });
 }
 function yearVal(sc,ix,yi){return SER[sc][ix].y[yi]}
-/* period: S.p5 = 5-year mean 2022–2026 (default); otherwise one month of one year (there is no yearly raster) */
+/* period: S.p5 = 5-year mean 2022–2026 (default); otherwise one year: S.m = 0 its yearly mean (yillik rasters + table
+   yearly values), S.m = 1..12 one month of it */
 function y5(a){var s=0,n=0;for(var i=0;i<a.length;i++)if(a[i]!=null){s+=a[i];n++}return n?s/n:null}
 function curVal(sc,ix){var o=SER[sc]&&SER[sc][ix];if(!o)return null;return S.p5?y5(o.y):S.m?o.m[S.y][S.m-1]:o.y[S.y]}
 function firstM(yi){if(typeof RM!=='undefined'&&RM&&RM.periods){for(var m=1;m<=12;m++)if(RM.periods[YEARS[yi]+'-'+(m<10?'0':'')+m])return m}return 1}
-function setYear(yi){S.p5=false;S.y=yi;S.m=firstM(yi);render()}
+function setYear(yi){S.p5=false;S.y=yi;S.m=0;render()}
 function setP5(){S.p5=true;S.y=YEARS.length-1;S.m=0;render()}
 function staA(sc,x){if(!S.p5)return STA[sc][x][S.y][S.m];
   /* 5-year area by status = the same per-contour statuses that colour the map (raster under each contour) */
@@ -1032,10 +1044,11 @@ var FL=[
    cur:function(){return S.sel},show:function(){return S.sel<0?L('Barcha qishloqlar'):V[S.sel].name},set:function(v){select(v>=0&&v===S.sel?-1:v)}},
   {k:'y',label:'Yil',opts:function(){return [{v:-1,t:'2022–2026',s:L('5 yillik o\'rtacha')}].concat(YEARS.map(function(y,i){return {v:i,t:String(y)}}).reverse())},
    cur:function(){return S.p5?-1:S.y},show:function(){return S.p5?'2022–2026':String(YEARS[S.y])},set:function(v){if(v<0||(!S.p5&&v===S.y))setP5();else setYear(v)}},
-  {k:'m',label:'Oy',opts:function(){return MONUZ.map(function(m,i){return {v:i+1,t:m,s:MON[i]}})},
-   cur:function(){return S.p5?0:S.m},show:function(){return S.p5?L('5 yillik o\'rtacha'):MONUZ[S.m-1]},set:function(v){if(!S.p5&&v===S.m)setP5();else{S.p5=false;S.m=v;render()}}},
+  {k:'m',label:'Oy',opts:function(){return [{v:0,t:L('Yillik o\'rtacha'),s:S.p5?'':String(YEARS[S.y])}].concat(MONUZ.map(function(m,i){return {v:i+1,t:m,s:MON[i]}}))},
+   cur:function(){return S.p5?-1:S.m},show:function(){return S.p5?L('5 yillik o\'rtacha'):S.m?MONUZ[S.m-1]:L('Yillik o\'rtacha')},set:function(v){if(!S.p5&&v===S.m)setP5();else{S.p5=false;S.m=v;render()}}},
   {k:'i',label:'Index',opts:function(){return IDX.map(function(x){return {v:x,t:x.toUpperCase(),c:ICOL[x]}})},
-   cur:function(){return S.ix},show:function(){return S.ix.toUpperCase()},dot:function(){return ICOL[S.ix]},set:function(v){S.ix=v;render()}}
+   cur:function(){return S.ix},on:function(v){return (S.ixs||[S.ix]).indexOf(v)>=0},multi:true,
+   show:function(){var n=(S.ixs||[S.ix]).length;return S.ix.toUpperCase()+(n>1?' +'+(n-1):'')},dot:function(){return ICOL[S.ix]},set:function(v){setIx(v,true)}}
 ];
 var chev='<svg viewBox="0 0 10 10" aria-hidden="true"><path d="m2 3.5 3 3 3-3"/></svg>';
 function buildFilters(){$('filters').innerHTML=FL.map(function(x){return '<div class="fl" data-k="'+x.k+'"><button class="fbtn" aria-haspopup="listbox" aria-expanded="false" aria-label="'+L(x.label)+'"><span class="k">'+L(x.label)+'</span>'+(x.dot?'<i></i>':'')+'<b></b>'+chev+'</button></div>'}).join('')}
@@ -1058,13 +1071,15 @@ function openMenu(k){
   var box=m.querySelector('.opts'),inp=m.querySelector('input');
   function fill(q){
     var o=x.opts().filter(function(z){return !q||z.t.toLowerCase().indexOf(q)>=0});
-    box.innerHTML=o.length?o.map(function(z){return '<button role="option" data-v="'+z.v+'" aria-selected="'+(String(z.v)===String(x.cur()))+'">'+(z.c?'<i style="background:'+z.c+'"></i>':'')+'<span>'+z.t+'</span>'+(z.s?'<small>'+z.s+'</small>':'')+'</button>'}).join(''):'<p>'+L('Bunday qishloq topilmadi.')+'</p>';
+    box.innerHTML=o.length?o.map(function(z){return '<button role="option" data-v="'+z.v+'" aria-selected="'+(x.on?x.on(z.v):String(z.v)===String(x.cur()))+'">'+(z.c?'<i style="background:'+z.c+'"></i>':'')+'<span>'+z.t+'</span>'+(z.s?'<small>'+z.s+'</small>':'')+'</button>'}).join(''):'<p>'+L('Bunday qishloq topilmadi.')+'</p>';
   }
   fill('');
   var cur=box.querySelector('[aria-selected="true"]');if(cur)cur.scrollIntoView({block:'nearest'});
   (inp||cur||box.querySelector('button')).focus();
   if(inp)inp.oninput=function(){fill(inp.value.trim().toLowerCase())};
-  box.onclick=function(e){var b=e.target.closest('button');if(!b)return;var v=b.dataset.v;closeMenu();x.set(k==='v'||k==='y'||k==='m'?+v:v)};
+  box.onclick=function(e){var b=e.target.closest('button');if(!b)return;var v=b.dataset.v;
+    if(x.multi){x.set(v);fill('');syncFilters();var nb=box.querySelector('[data-v="'+v+'"]');if(nb)nb.focus();return}   /* Index: several can be ticked, menu stays open */
+    closeMenu();x.set(k==='v'||k==='y'||k==='m'?+v:v)};
   m.onkeydown=function(e){
     var bs=[].slice.call(box.querySelectorAll('button')),i=bs.indexOf(document.activeElement);
     if(e.key==='ArrowDown'){e.preventDefault();(bs[i+1]||bs[0]).focus()}
@@ -1145,72 +1160,67 @@ function peak(box,x,y,txt){
 }
 function unpeak(box){hideTip(box);var d=box.querySelector('.pk');if(d)d.style.visibility='hidden'}
 
-/* Panel 1: every index for the chosen year, months on the x axis; the chosen index is the bright curve */
+/* Index chart: one timeline 2022–2026 (60 months). Left: index list (several can be ticked, the last ticked one = S.ix
+   colours the contours and the raster). Top: years, bottom: months, right: value axis. Follows the picked contour. */
+function setIx(x,add){
+  if(!S.ixs)S.ixs=[S.ix];var i=S.ixs.indexOf(x);
+  /* tick / untick (legend, Index menu): a ticked index is removed (one always stays); a new one is added and becomes
+     the map index. Without add (raster square): that index becomes the map index and stays ticked. */
+  if(add){if(i>=0){if(S.ixs.length>1){S.ixs.splice(i,1);S.ix=S.ixs[S.ixs.length-1]}}else{S.ixs.push(x);S.ix=x}}
+  else{if(i<0)S.ixs.push(x);else{S.ixs.splice(i,1);S.ixs.push(x)}S.ix=x}
+  S.hl=null;render();paint();
+}
 function chart1(){
-  var sc=cscope(),yi=S.y,box=$('c1'),cur=S.hl||S.ix;
-  $('c1-year').textContent=(sc==='P'?L('Kontur')+' #'+(PS+1)+' · ':'')+YEARS[yi]+(S.m?' · '+MON[S.m-1]:'');
-  $('ileg').innerHTML=IDX.map(function(x){return '<button data-i="'+x+'" class="'+(x===S.ix?'on':'')+'" aria-pressed="'+(x===S.ix)+'"><i style="background:'+(x===cur?'#ecf4e6':'rgba(236,244,230,.32)')+'"></i>'+x.toUpperCase()+'</button>'}).join('');
+  var sc=cscope(),box=$('c1'),sel=(S.ixs||[S.ix]).slice(),NM=YEARS.length*12;
+  $('c1-year').textContent=sc==='P'?L('Kontur')+' #'+(PS+1):S.sel>=0?V[S.sel].name:L('Barcha qishloqlar');
+  $('ileg').innerHTML=IDX.map(function(x){var on=sel.indexOf(x)>=0;
+    return '<button data-i="'+x+'" class="'+(on?'on':'')+(x===S.ix?' pr':'')+'" aria-pressed="'+on+'" title="'+(on?L('Olib tashlash'):L('Qo\'shish'))+'"><i style="border-color:'+ICOL[x]+';background:'+(on?ICOL[x]:'transparent')+'"></i>'+x.toUpperCase()+'</button>'}).join('');
   var z=size(box),w=z.w,h=z.h;if(!w||!h)return;
-  var all=[];IDX.forEach(function(x){SER[sc][x].m[yi].forEach(function(v){if(v!=null)all.push(v)})});
-  if(!all.length){box.innerHTML='<p class="dnote" style="padding:20px">'+L('Bu yil uchun ma\'lumot yo\'q.')+'</p>';return}
-  var lo=Math.min.apply(null,all),hi=Math.max.apply(null,all),pad=(hi-lo)*.14||.05;lo-=pad;hi+=pad;
-  var l=6,r=6,t=10,b=18,iw=w-l-r,ih=h-t-b,base=t+ih;
-  function X(i){return l+iw*(i+.5)/12} function Y(v){return t+ih*(1-(v-lo)/(hi-lo))}
+  function ser(x){var o=SER[sc]&&SER[sc][x],a=[];for(var yi=0;yi<YEARS.length;yi++)for(var m=0;m<12;m++)a.push(o?o.m[yi][m]:null);return a}
+  var D={},all=[];sel.forEach(function(x){D[x]=ser(x);D[x].forEach(function(v){if(v!=null)all.push(v)})});
+  if(!all.length){box.innerHTML='<p class="dnote" style="padding:20px">'+L('Bu davr uchun ma\'lumot yo\'q.')+'</p>';return}
+  var lo=Math.min.apply(null,all),hi=Math.max.apply(null,all),pad=(hi-lo)*.08||.05;lo-=pad;hi+=pad;
+  var l=4,r=38,t=18,b=16,iw=w-l-r,ih=h-t-b,base=t+ih,cw=iw/NM;
+  function X(k){return l+cw*(k+.5)} function Y(v){return t+ih*(1-(v-lo)/(hi-lo))}
   var s='<defs>'+GRAD+'</defs>';
-  [.5,1].forEach(function(q){var yy=t+ih*(1-q);s+='<line x1="'+l+'" x2="'+(w-r)+'" y1="'+yy+'" y2="'+yy+'" stroke="#a5b9a2" stroke-opacity=".16" stroke-dasharray="3 4"/>'});
-  if(S.m)s+='<rect x="'+(X(S.m-1)-iw/24)+'" y="'+t+'" width="'+(iw/12)+'" height="'+ih+'" fill="#7fd06c" fill-opacity=".07"/>';
-  s+=months(X,h,iw);
-  IDX.forEach(function(x){if(x!==cur)s+=curve(SER[sc][x].m[yi].map(function(v,i){return v==null?null:[X(i),Y(v)]}),base,{col:'#ecf4e6',w:1,op:.22})});
-  s+=curve(SER[sc][cur].m[yi].map(function(v,i){return v==null?null:[X(i),Y(v)]}),base,{col:'#ecf4e6',w:1.6,op:1,area:'ag',dots:true});
-  box.innerHTML='<svg role="img" aria-label="'+YEARS[yi]+' yil, '+cur.toUpperCase()+' va boshqa indekslar oylar bo\'yicha">'+s+'</svg>';
-  function show(q){
-    var v=SER[sc][cur].m[yi][q];
-    if(v==null){unpeak(box);tipAt(box,cur.toUpperCase()+' · '+MON[q]+' '+YEARS[yi]+': '+L('Kosmik tasvir mavjud emas'),X(q),base-20);return}
-    peak(box,X(q),Y(v),cur.toUpperCase()+' · '+MON[q]+' '+YEARS[yi]+': '+iv(v));
+  /* chosen year / month bands */
+  if(!S.p5)s+='<rect x="'+(l+cw*S.y*12)+'" y="'+t+'" width="'+(cw*12)+'" height="'+ih+'" fill="#7fd06c" fill-opacity=".06"/>';
+  if(!S.p5&&S.m)s+='<rect x="'+(l+cw*(S.y*12+S.m-1))+'" y="'+t+'" width="'+cw+'" height="'+ih+'" fill="#f0c744" fill-opacity=".16"/>';
+  /* value axis (right) */
+  var st=(hi-lo)/4;for(var q=0;q<=4;q++){var v=lo+st*q,yy=Y(v);
+    s+='<line x1="'+l+'" x2="'+(w-r)+'" y1="'+yy.toFixed(1)+'" y2="'+yy.toFixed(1)+'" stroke="#a5b9a2" stroke-opacity=".13" stroke-dasharray="3 4"/>'+
+       '<text x="'+(w-r+6)+'" y="'+(yy+3.5).toFixed(1)+'" font-size="9.5" font-family="Manrope,sans-serif" fill="#a5b9a2">'+f(v,Math.abs(hi-lo)<1?2:1)+'</text>'}
+  /* years on top, separators, months at the bottom */
+  YEARS.forEach(function(y,yi){var x0=l+cw*yi*12,on=!S.p5&&yi===S.y;
+    if(yi)s+='<line x1="'+x0+'" x2="'+x0+'" y1="'+(t-14)+'" y2="'+base+'" stroke="#a5b9a2" stroke-opacity=".28"/>';
+    s+='<text data-y="'+yi+'" x="'+(x0+cw*6).toFixed(1)+'" y="11" text-anchor="middle" font-size="'+(on?12:11)+'" font-family="Sora,sans-serif" font-weight="'+(on?600:400)+'" fill="'+(on?'#ecf4e6':'#a5b9a2')+'" style="cursor:pointer">'+y+'</text>';
+    MON.forEach(function(mn,m){var k=yi*12+m,onm=on&&S.m===m+1;
+      if(cw>=9||m%3===0)s+='<text x="'+X(k).toFixed(1)+'" y="'+(h-4)+'" text-anchor="middle" font-size="'+(cw>=22?9.5:8.5)+'" font-family="Manrope,sans-serif" font-weight="'+(onm?700:400)+'" fill="'+(onm?'#ecf4e6':'#a5b9a2')+'">'+(cw>=22?mn:mn.charAt(0))+'</text>'})});
+  /* lines: the other ticked indices first, the chosen one (S.ix) last and brighter; hovered legend item highlighted */
+  var order=sel.filter(function(x){return x!==S.ix}).concat(sel.indexOf(S.ix)>=0?[S.ix]:[]);
+  order.forEach(function(x){var pr=x===S.ix,hl=S.hl===x,dim=S.hl&&!hl;
+    s+=curve(D[x].map(function(v,k){return v==null?null:[X(k),Y(v)]}),base,
+      {col:ICOL[x],w:pr||hl?2:1.3,op:dim?.25:pr||hl?1:.75,area:sel.length===1?'ag':null,dots:cw>=7&&(pr||hl),dot:ICOL[x]})});
+  s+='<line class="gd" x1="0" x2="0" y1="'+t+'" y2="'+base+'" stroke="#ecf4e6" stroke-opacity=".5" visibility="hidden"/>';
+  box.innerHTML='<svg role="img" aria-label="'+sel.map(function(x){return x.toUpperCase()}).join(', ')+' 2022–2026, oylar bo\'yicha">'+s+'</svg>';
+  var gd=box.querySelector('.gd');
+  function show(k){
+    var rows=order.slice().reverse().map(function(x){var v=D[x][k];return '<div class="ln"><i style="background:'+ICOL[x]+'"></i>'+x.toUpperCase()+'<b>'+(v==null?'—':iv(v))+'</b></div>'}).join('');
+    var top=Math.min.apply(null,order.map(function(x){var v=D[x][k];return v==null?base:Y(v)}));
+    gd.setAttribute('x1',X(k));gd.setAttribute('x2',X(k));gd.setAttribute('visibility','visible');
+    tipAt(box,'<div class="h">'+MONUZ[k%12]+' '+YEARS[Math.floor(k/12)]+'</div>'+rows,X(k),Math.max(t+40,top));
   }
-  var vals=SER[sc][cur].m[yi],pk=-1,mx=-1e9;vals.forEach(function(v,i){if(v!=null&&v>mx){mx=v;pk=i}});
-  if(pk>=0)show(S.m&&vals[S.m-1]!=null?S.m-1:pk);
-  box.onpointermove=function(e){var rc=box.getBoundingClientRect();show(Math.max(0,Math.min(11,Math.floor((e.clientX-rc.left-l)/iw*12))))};
-  box.onpointerleave=function(){if(pk>=0)show(S.m&&vals[S.m-1]!=null?S.m-1:pk);else unpeak(box)};
-}
-
-/* Panel 2: chosen index, one curve per year (2022 at the bottom, 2026 on top), chosen year bright */
-function chart2(){
-  var sc=cscope(),x=S.ix,box=$('c2');
-  $('c2-idx').textContent=(sc==='P'?L('Kontur')+' #'+(PS+1)+' · ':'')+x.toUpperCase();
-  var z=size(box),w=z.w,h=z.h;if(!w||!h)return;
-  var M2=SER[sc][x].m,all=[];M2.forEach(function(r){r.forEach(function(v){if(v!=null)all.push(v)})});
-  if(!all.length){box.innerHTML='';return}
-  var lo=Math.min.apply(null,all),hi=Math.max.apply(null,all);if(hi-lo<1e-6){hi+=.05;lo-=.05}
-  var l=40,r=44,t=4,b=18,iw=w-l-r,ih=h-t-b,n=YEARS.length,rh=ih/n;
-  function X(i){return l+iw*(i+.5)/12}
-  function base(k){return t+rh*(n-k)}
-  function Y(k,v){return base(k)-3-(rh-6)*(v-lo)/(hi-lo)}
-  var s='<defs>'+GRAD+'</defs>';
-  if(S.m)s+='<rect x="'+(X(S.m-1)-iw/24)+'" y="'+t+'" width="'+(iw/12)+'" height="'+ih+'" fill="#7fd06c" fill-opacity=".07"/>';
-  for(var k=0;k<n;k++){
-    var on=k===S.y,bb=base(k),pts=M2[k].map(function(v,i){return v==null?null:[X(i),Y(k,v)]});
-    s+='<line x1="'+l+'" x2="'+(w-r)+'" y1="'+bb+'" y2="'+bb+'" stroke="#a5b9a2" stroke-opacity="'+(on?.3:.12)+'" stroke-dasharray="3 4"/>';
-    s+='<text x="'+(l-8)+'" y="'+(bb-rh/2+4)+'" text-anchor="end" font-size="'+(on?12:10.5)+'" font-family="Sora,sans-serif" font-weight="'+(on?500:300)+'" fill="'+(on?'#ecf4e6':'#a5b9a2')+'">'+YEARS[k]+'</text>';
-    s+=curve(pts,bb,on?{col:'#ecf4e6',w:1.6,op:1,area:'ag',dots:true}:{col:'#ecf4e6',w:1,op:.3});
-    var yv=SER[sc][x].y[k];
-    s+='<text x="'+(w-r+6)+'" y="'+(bb-rh/2+4)+'" font-size="10" font-family="Manrope,sans-serif" fill="'+(on?'#ecf4e6':'#a5b9a2')+'" font-weight="'+(on?600:400)+'">'+(yv==null?'—':f(yv,2))+'</text>';
-  }
-  s+='<text x="'+(w-r+6)+'" y="'+(h-4)+'" font-size="9" font-family="Manrope,sans-serif" fill="#a5b9a2">'+L('yillik')+'</text>';
-  s+=months(X,h,iw);
-  box.innerHTML='<svg role="img" aria-label="'+x.toUpperCase()+' yillar bo\'yicha, har bir yil alohida chiziq">'+s+'</svg>';
-  function show(k,q){
-    var v=M2[k][q];
-    if(v==null){unpeak(box);tipAt(box,MON[q]+' '+YEARS[k]+': '+L('Kosmik tasvir mavjud emas'),X(q),base(k)-rh/2);return}
-    peak(box,X(q),Y(k,v),MON[q]+' '+YEARS[k]+': '+iv(v));
-  }
-  function def(){var r0=M2[S.y],pk=-1,mx=-1e9;r0.forEach(function(v,i){if(v!=null&&v>mx){mx=v;pk=i}});if(S.m&&r0[S.m-1]!=null)pk=S.m-1;if(pk>=0)show(S.y,pk);else unpeak(box)}
+  function def(){if(!S.p5&&S.m)show(S.y*12+S.m-1);else{gd.setAttribute('visibility','hidden');hideTip(box)}}
   def();
-  function at(e){var rc=box.getBoundingClientRect();return [Math.max(0,Math.min(n-1,n-1-Math.floor((e.clientY-rc.top-t)/rh))),Math.max(0,Math.min(11,Math.floor((e.clientX-rc.left-l)/iw*12)))]}
-  box.onpointermove=function(e){var a=at(e);show(a[0],a[1])};
+  function at(e){var rc=box.getBoundingClientRect();return Math.max(0,Math.min(NM-1,Math.floor((e.clientX-rc.left-l)/cw)))}
+  box.onpointermove=function(e){show(at(e))};
   box.onpointerleave=def;
-  box.onclick=function(e){var k=at(e)[0];if(!S.p5&&k===S.y)setP5();else setYear(k);paint()};
+  /* click a month: that month of that year; click the year label: the yearly mean; again: back to the 5-year mean */
+  box.onclick=function(e){var yl=e.target.closest('[data-y]');
+    if(yl){var yi=+yl.dataset.y;if(!S.p5&&S.y===yi&&!S.m)setP5();else setYear(yi);return}
+    var k=at(e),yi=Math.floor(k/12),m=k%12+1;if(!S.p5&&S.y===yi&&S.m===m)setYear(yi);else{S.p5=false;S.y=yi;S.m=m;render()}};
 }
+function chart2(){}
 
 /* Panel 3: area by status for index / year / month */
 function donut(){
@@ -1229,13 +1239,26 @@ function donut(){
     (pk>=0?'<text x="64" y="84" text-anchor="middle" font-family="Manrope,sans-serif" font-size="9.5" fill="#a5b9a2">'+names[pk]+'</text>':'');
   $('donut').innerHTML=s;
   var mx=N?Math.max.apply(null,N)||1:1;
+  /* change of each status' share of contours against the same period one year earlier (percentage points);
+     not for the 5-year mean (nothing to compare with) or the first year */
+  var PN=prevN(x),pt=PN?PN.reduce(function(p,q){return p+q},0):0,py=!S.p5&&S.y>0?YEARS[S.y-1]:null;
   $('dtab').innerHTML=a.map(function(v,i){
-    var n=N?N[i]:null,k=i+1;
-    return '<div class="r '+(S.fs===k?'act':S.fs?'off':'')+'" data-k="'+k+'" role="button" tabindex="0" aria-pressed="'+(S.fs===k)+'" title="'+L('{0} ga',f(v))+' · '+L('Xaritada faqat shu konturlarni ko\'rsatish')+'"><i style="background:'+STC[i]+'"></i><span class="nm">'+names[i]+'</span><span class="bar"><b style="width:'+(n==null?0:n/mx*100).toFixed(1)+'%;background:'+STC[i]+'"></b></span><span class="ha">'+(n==null?'…':f(n))+'</span><span class="pc">'+(n==null||!nt?'':pct(n/nt))+'</span></div>';
+    var n=N?N[i]:null,k=i+1,dl='';
+    if(py!=null){if(PN&&pt&&N&&nt){var d=(n/nt-PN[i]/pt)*100,good=i<2?d>=0:d<=0;
+        dl='<span class="d '+(Math.abs(d)<.05?'':good?'up':'dn')+'" title="'+L('{0} bilan solishtirganda',py+(S.m?' '+MON[S.m-1]:''))+'">'+(d>=.05?'▲ ':d<=-.05?'▼ ':'')+f(Math.abs(d),1)+' pp</span>'}
+      else dl='<span class="d">…</span>'}
+    return '<div class="r '+(S.fs===k?'act':S.fs?'off':'')+'" data-k="'+k+'" role="button" tabindex="0" aria-pressed="'+(S.fs===k)+'" title="'+L('{0} ga',f(v))+' · '+L('Xaritada faqat shu konturlarni ko\'rsatish')+'"><i style="background:'+STC[i]+'"></i><span class="nm">'+names[i]+dl+'</span><span class="bar"><b style="width:'+(n==null?0:n/mx*100).toFixed(1)+'%;background:'+STC[i]+'"></b></span><span class="ha">'+(n==null?'…':f(n))+'</span><span class="pc">'+(n==null||!nt?'':pct(n/nt))+'</span></div>';
   }).join('');
   if(S.fs){$('dnote').innerHTML=L('Xaritada faqat <b>{0}</b> konturlar ko\'rsatilmoqda.',names[S.fs===5?4:S.fs-1])+' <button class="btn" id="fclear" style="padding:2px 8px;margin-left:4px">'+L('Hammasini ko\'rsatish')+'</button>';$('fclear').onclick=function(){S.fs=0;render()};return}
   $('dnote').innerHTML=L('<b>{0}</b> maydon {1} yoki undan yuqori holatda',pct(good),L(x==='ndmi'?'nam':'yaxshi'))+(prev&&ptot?L('; o\'tgan yil {0} edi (pp, o\'tgan yilga nisbatan).',pct((prev[0]+prev[1])/ptot)):'.');
 }
+/* contour counts by status for the same index / month one year earlier (village filter applied); loads that year's file */
+function prevN(x){
+  if(S.p5||S.y<1||typeof CLS==='undefined'||!CLS||!M.nf)return null;
+  var key=x+'_'+YEARS[S.y-1],a=CLS[key];
+  if(!a){loadCls(x,YEARS[S.y-1]).then(function(){donut()}).catch(function(){});return null}
+  var o=S.m*M.nf,q=[0,0,0,0],sel=S.sel;if(sel>=0&&!VI)return null;
+  for(var n=0;n<M.nf;n++){if(sel>=0&&VI[n]!==sel)continue;var k=a[o+n];if(k>=1&&k<=4)q[k-1]++}return q}
 function list(){
   if($('drawer').hidden)return;
   var k=S.sort,key=function(v){return k==='ix'?(curVal(v.code,S.ix)||0):v[k]},a=V.slice().sort(function(x,y){return key(y)-key(x)}),mx=key(a[0])||1;
@@ -1246,7 +1269,7 @@ function list(){
 }
 function openList(on){$('drawer').hidden=!on;$('n-list').setAttribute('aria-pressed',String(on));if(on){list();$('d-close').focus()}render()}
 
-$('ileg').onclick=function(e){var b=e.target.closest('button');if(b){S.ix=b.dataset.i;S.hl=null;render();paint()}};
+$('ileg').onclick=function(e){var b=e.target.closest('button');if(b)setIx(b.dataset.i,true)};
 [$('dtab'),$('donut'),$('slegend')].forEach(function(el){
   el.onclick=function(e){var r=e.target.closest('[data-k]');if(r)setFs(+r.dataset.k)};
   el.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){var r=e.target.closest('[data-k]');if(r){e.preventDefault();setFs(+r.dataset.k)}}};
@@ -1287,8 +1310,8 @@ var RAS=window.__RAS||{get:function(p){return fetch('rasters2/'+p).then(function
 var RM=null,TH={},RC={},RCV={},R={on:null,per:null,op:.9,g:null,busy:null};
 var RNAME={ndvi:'NDVI',ndre:'NDRE',rvi:'RVI',ci:'CI',ndmi:'NDMI',nbr:'NBR',lai:'LAI'};
 function hex(h){return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]}
-function rPer(){return !S.p5&&S.m?YEARS[S.y]+'-'+(S.m<10?'0':'')+S.m:'5y'}
-function rLabel(p){return p==='5y'?L('5 yillik o\'rtacha · 2022–2026'):YEARS[S.y]+' · '+MONUZ[S.m-1]}
+function rPer(){return S.p5?'5y':S.m?YEARS[S.y]+'-'+(S.m<10?'0':'')+S.m:String(YEARS[S.y])}
+function rLabel(p){return p==='5y'?L('5 yillik o\'rtacha · 2022–2026'):p.length===4?p+' · '+L('yillik o\'rtacha'):p.slice(0,4)+' · '+MONUZ[+p.slice(5,7)-1]}
 RAS.get('meta.json').then(function(r){return r.json()}).then(function(m){RM=m;rasterPanel();if(typeof clsKey!=='undefined'){clsKey=null;applyCls()}}).catch(function(e){RM=false;rasterPanel();if(window.console)console.warn('raster meta',e)});
 function loadThumbs(p){
   if(TH[p]||!RM||!RM.periods[p])return;TH[p]={};
@@ -1341,20 +1364,20 @@ var IXINFO={
   ru:['Хлорофилльный индекс','Показывает содержание хлорофилла в листьях; используется для оценки фотосинтеза и обеспеченности удобрениями. В портале нормирован к 0–1 (CI / 5,6).','Высокий — много хлорофилла; низкий — желтеющие или слабые растения.'],
   my:['Chlorophyll Index','အရွက်ရှိ ကလိုရိုဖီးလ် ပမာဏကို ပြသည် — ဓာတ်ပြုမှုနှင့် မြေသြဇာ လုံလောက်မှုကို အကဲဖြတ်ရန်။ ပေါ်တယ်တွင် 0–1 သို့ ချိန်ညှိထားသည် (CI / 5.6)။','မြင့် — ကလိုရိုဖီးလ် များ၊ နိမ့် — ဝါနေသော သို့မဟုတ် အားနည်းသော အပင်။'],
   f:'NIR / Green − 1 = B8 / B3 − 1   (portal: CI / 5,6033)',r:'0 … 1'},
- ndmi:{uz:['Normallashtirilgan namlik farqi indeksi','O\'simlik va tuproqdagi suv miqdorini ko\'rsatadi; qurg\'oqchilik va sug\'orish holatini kuzatishda ishlatiladi. 5 yillik raster — namlik sinflari.','Yuqori — nam; past (manfiy) — quruq, suv tanqisligi.'],
-  en:['Normalized Difference Moisture Index','Shows the water content of plants and soil; used to watch drought and irrigation. The 5-year raster shows moisture classes.','High — wet; low (negative) — dry, water stress.'],
-  ru:['Нормализованный разностный индекс влажности','Показывает содержание воды в растениях и почве; для контроля засухи и полива. 5-летний растр — классы влажности.','Высокий — влажно; низкий (отрицательный) — сухо, дефицит воды.'],
+ ndmi:{uz:['Normallashtirilgan namlik farqi indeksi','O\'simlik va tuproqdagi suv miqdorini ko\'rsatadi; qurg\'oqchilik va sug\'orish holatini kuzatishda ishlatiladi. 5 yillik va yillik rasterlar — namlik sinflari.','Yuqori — nam; past (manfiy) — quruq, suv tanqisligi.'],
+  en:['Normalized Difference Moisture Index','Shows the water content of plants and soil; used to watch drought and irrigation. The 5-year and yearly rasters show moisture classes.','High — wet; low (negative) — dry, water stress.'],
+  ru:['Нормализованный разностный индекс влажности','Показывает содержание воды в растениях и почве; для контроля засухи и полива. 5-летний и годовые растры — классы влажности.','Высокий — влажно; низкий (отрицательный) — сухо, дефицит воды.'],
   my:['Normalized Difference Moisture Index','အပင်နှင့် မြေရှိ ရေပမာဏကို ပြသည် — မိုးခေါင်မှုနှင့် ရေသွင်းမှုကို စောင့်ကြည့်ရန်။ ၅ နှစ် ရာစတာ — စိုထိုင်းဆ အတန်းများ။','မြင့် — စို၊ နိမ့် (အနုတ်) — ခြောက်၊ ရေရှားပါးမှု။'],
   f:'(NIR − SWIR1) / (NIR + SWIR1) = (B8 − B11) / (B8 + B11)',r:'−0,1 … 0,4'},
- nbr:{uz:['Normallashtirilgan yong\'in nisbati','Yongan maydonlarni va o\'simlik qoplamining tiklanishini aniqlaydi; ochiq suv olib tashlangan. 5 yillik raster — necha yil yongani.','Yuqori — sog\'lom qoplam; past — yongan yoki ochiq yer.'],
-  en:['Normalized Burn Ratio','Detects burned areas and vegetation recovery; open water is removed. The 5-year raster shows how many years burned.','High — healthy cover; low — burned or bare ground.'],
-  ru:['Нормализованный индекс гари','Выявляет гари и восстановление растительности; открытая вода исключена. 5-летний растр — число лет с пожаром.','Высокий — здоровый покров; низкий — гарь или открытая земля.'],
+ nbr:{uz:['Normallashtirilgan yong\'in nisbati','Yongan maydonlarni va o\'simlik qoplamining tiklanishini aniqlaydi; ochiq suv olib tashlangan. 5 yillik raster — necha yil yongani; yillik raster — o\'sha yili yongan joylar.','Yuqori — sog\'lom qoplam; past — yongan yoki ochiq yer.'],
+  en:['Normalized Burn Ratio','Detects burned areas and vegetation recovery; open water is removed. The 5-year raster shows how many years burned; a yearly raster shows what burned that year.','High — healthy cover; low — burned or bare ground.'],
+  ru:['Нормализованный индекс гари','Выявляет гари и восстановление растительности; открытая вода исключена. 5-летний растр — число лет с пожаром; годовой — гари этого года.','Высокий — здоровый покров; низкий — гарь или открытая земля.'],
   my:['Normalized Burn Ratio','မီးလောင်ဧရိယာနှင့် အပင်ပြန်လည်ကောင်းမွန်မှုကို ဖော်ထုတ်သည်၊ ရေပြင်ကို ဖယ်ထားသည်။ ၅ နှစ် ရာစတာ — မီးလောင်သည့် နှစ်အရေအတွက်။','မြင့် — ကျန်းမာသော အုပ်ဆိုင်းမှု၊ နိမ့် — မီးလောင် သို့မဟုတ် ဗလာမြေ။'],
   f:'(NIR − SWIR2) / (NIR + SWIR2) = (B8 − B12) / (B8 + B12)',r:'−0,5 … 1'},
- lai:{uz:['Barg maydoni indeksi','1 m² yer ustidagi barglarning umumiy maydoni (m²/m²). ESA SNAP biofizik modeli bilan hisoblangan, faqat fevral suratlari.','Yuqori — barglar ko\'p, qalin qoplam; past — siyrak.'],
-  en:['Leaf Area Index','Total leaf area above 1 m² of ground (m²/m²). Computed with the ESA SNAP biophysical model, February images only.','High — many leaves, dense canopy; low — sparse.'],
-  ru:['Индекс листовой поверхности','Общая площадь листьев над 1 м² земли (м²/м²). Рассчитан биофизической моделью ESA SNAP, только февральские снимки.','Высокий — много листьев, густой полог; низкий — редкий.'],
-  my:['Leaf Area Index','မြေ ၁ စတုရန်းမီတာ အပေါ်ရှိ အရွက် စုစုပေါင်းဧရိယာ (m²/m²)။ ESA SNAP ဇီဝရူပမော်ဒယ်ဖြင့် တွက်ချက်ထားသည်၊ ဖေဖော်ဝါရီ ပုံများသာ။','မြင့် — အရွက်များ၊ သိပ်သည်း၊ နိမ့် — ကျဲ။'],
+ lai:{uz:['Barg maydoni indeksi','1 m² yer ustidagi barglarning umumiy maydoni (m²/m²). ESA SNAP biofizik modeli bilan hisoblangan; har oy bulutsiz kungi surat (2022–2026, 37 sana).','Yuqori — barglar ko\'p, qalin qoplam; past — siyrak.'],
+  en:['Leaf Area Index','Total leaf area above 1 m² of ground (m²/m²). Computed with the ESA SNAP biophysical model from one cloud-free image per month (2022–2026, 37 dates).','High — many leaves, dense canopy; low — sparse.'],
+  ru:['Индекс листовой поверхности','Общая площадь листьев над 1 м² земли (м²/м²). Рассчитан биофизической моделью ESA SNAP по одному безоблачному снимку в месяц (2022–2026, 37 дат).','Высокий — много листьев, густой полог; низкий — редкий.'],
+  my:['Leaf Area Index','မြေ ၁ စတုရန်းမီတာ အပေါ်ရှိ အရွက် စုစုပေါင်းဧရိယာ (m²/m²)။ ESA SNAP ဇီဝရူပမော်ဒယ်ဖြင့် တွက်ချက်ထားသည်၊ လစဉ် တိမ်ကင်းသော ပုံ (၂၀၂၂–၂၀၂၆၊ ရက် ၃၇ ရက်)။','မြင့် — အရွက်များ၊ သိပ်သည်း၊ နိမ့် — ကျဲ။'],
   f:'ESA SNAP Biophysical Processor (Sentinel-2)',r:'0 … 1,5 m²/m²'}
 };
 function rinfo(){
@@ -1422,10 +1445,12 @@ function drawRaster(){
 }
 function rasterOff(){R.on=null;R.g=null;R.busy=null;rasterLayerOff();$('rtip').hidden=true;rasterPanel()}
 $('rgrid').onclick=function(e){var b=e.target.closest('.rt');if(!b||b.disabled)return;var ix=b.dataset.r;if(R.on===ix){rasterOff();return}
-  showRaster(ix);if(S.ix!==ix){S.ix=ix;S.hl=null;render()}};
+  showRaster(ix);if(S.ix!==ix)setIx(ix)};
 $('rop').oninput=function(){R.op=this.value/100;if(map&&map.getLayer('ras'))map.setPaintProperty('ras','raster-opacity',R.op)};
 var RB=null;
 function rnum(x){var a=Math.abs(x);return f(x,a>=10?1:a>=1?2:2)}
+/* one value for a pixel: the middle of its class (rasters store class codes, e.g. NDVI 0,44–0,46 -> 0,45) */
+function rmid(c){var v=Math.round((c[0]+c[1])/2*1000)/1000;return f(v,Math.abs(v)>=10?1:Math.round(v*100)===v*100?2:3)}
 function rHover(pt,ll){
   var tip=$('rtip');
   if(!R.g||!RM){tip.hidden=true;return false}
@@ -1451,11 +1476,11 @@ function rHover(pt,ll){
     if(!cc||!l2[cc]||l2[cc][0]==null)return lab+'<i></i><em>—</em>';
     var v=(l2[cc][0]+l2[cc][1])/2,t2=RM.periods[p][q].thr,s2=v>=t2[2]?0:v>=t2[1]?1:v>=t2[0]?2:3,w=Math.max(3,Math.min(100,(v-l2[1][0])/(l2[50][1]-l2[1][0])*100));
     var rc=rcol(q,p,cc)||STC[s2];
-    return lab+'<i><b style="width:'+w.toFixed(0)+'%;background:'+rc+'"></b></i><em>'+rnum(l2[cc][0])+'–'+rnum(l2[cc][1])+'</em>';
+    return lab+'<i><b style="width:'+w.toFixed(0)+'%;background:'+rc+'"></b></i><em title="'+rnum(l2[cc][0])+'–'+rnum(l2[cc][1])+'">'+rmid(l2[cc])+'</em>';
   }).join('')}
   function place(){tip.hidden=false;var W=$('map').clientWidth,H=$('map').clientHeight,tw=tip.offsetWidth,th=tip.offsetHeight;
     var x=pt.x+16,y=pt.y-th/2;if(x+tw>W-8)x=pt.x-tw-16;y=Math.max(8,Math.min(H-th-8,y));tip.style.left=x+'px';tip.style.top=y+'px'}
-  var head='<div class="h"><span>'+RNAME[ix]+' · '+rLabel(p)+'</span><span>'+Math.round(10.65*(RM.step||1))+' m</span></div>';
+  var dt=RM.periods[p][ix].date,head='<div class="h"><span>'+RNAME[ix]+' · '+(dt?dt.split('-').reverse().join('.'):rLabel(p))+'</span><span>'+Math.round(10.65*(RM.step||1))+' m</span></div>';
   if(CT){
     var chips='<div class="rcat">'+CT.n.map(function(n2,i){return n2?'<span'+(i===c?' class="on"':'')+'><i style="background:'+CT.c[i]+'"></i>'+L(n2)+'</span>':''}).join('')+'</div>';
     tip.innerHTML=head+'<div class="v"><b style="font-size:16px">'+L(CT.n[c])+'</b><span class="pill" style="background:'+STC[s-1]+(s<3?';color:#fff':'')+'">'+nm[s-1]+'</span></div>'+chips+'<div class="bars">'+rowsHtml()+'</div>';
@@ -1474,7 +1499,7 @@ function rHover(pt,ll){
     '<line x1="'+mx.toFixed(1)+'" x2="'+mx.toFixed(1)+'" y1="4" y2="17" stroke="#fff" stroke-width="1.5"/>'+
     '<text x="0" y="27" font-size="9" fill="#a5b9a2">'+rnum(lo)+'</text><text x="208" y="27" font-size="9" fill="#a5b9a2" text-anchor="end">'+rnum(hi)+'</text></svg>';
   tip.innerHTML=head+
-    '<div class="v"><b>'+rnum(a[0])+'–'+rnum(a[1])+'</b><span class="pill" style="background:'+STC[s-1]+(s<3?';color:#fff':'')+'">'+nm[s-1]+'</span></div>'+svg+
+    '<div class="v"><b title="'+rnum(a[0])+'–'+rnum(a[1])+'">'+rmid(a)+'</b><span class="pill" style="background:'+STC[s-1]+(s<3?';color:#fff':'')+'">'+nm[s-1]+'</span></div>'+svg+
     '<div class="bars">'+rowsHtml()+'</div>';
   place();
   return true;
@@ -1525,7 +1550,7 @@ var VI=null,KS=null,KE=null,HS=null,PAREA=null;
 var IXN={ndvi:1,ndre:2,rvi:3,ci:4,ndmi:5,nbr:6,lai:7};
 /* contour colour = the raster palette colour of the contour's own value (from the tables), with the raster's stretch:
    feature-state cc = IXN*64 + ramp index 1..50 (category rasters: moisture 8*64+code, burn 9*64+code), 0 = use status colour */
-var RCOL={"color":{"ci":[null,"#f09000","#f09502","#f19a05","#f19f07","#f2a40a","#f2a80c","#f2ad0f","#f3b211","#f3b714","#f4bc16","#f4c118","#f4c61b","#f5cb1d","#f5ce1c","#f4d11a","#f4d417","#f3d715","#f3da12","#f3dd10","#f2e00d","#f2e30b","#f1e609","#f1e906","#f1ec04","#f0ef01","#edf000","#e7ef00","#e1ee00","#dbed00","#d6ec00","#d0eb00","#caea00","#c4e900","#bee800","#b8e700","#b2e600","#ace500","#a6e200","#9cdb00","#92d400","#88cc00","#7ec500","#74be00","#6ab700","#60af00","#56a800","#4ca100","#429a00","#389200","#2e8b00"],"lai":[null,"#ffffcc","#fcfec9","#f9fdc6","#f6fbc2","#f3fabf","#f0f9bb","#edf8b8","#eaf7b5","#e7f5b2","#e3f4ae","#e0f3ab","#ddf2a7","#daf0a4","#d4eea1","#cbea9d","#c3e79a","#bce396","#b4e093","#abdc8f","#a3d98c","#9cd588","#94d285","#8dcf82","#83cb7e","#7cc87b","#75c377","#6ebe73","#66b86e","#5fb369","#59ae65","#52a861","#4ba35d","#439d58","#3d9853","#36934f","#2f8e4b","#278746","#228242","#1f7d40","#1d783e","#1a733c","#176e3a","#146938","#116436","#0e5f34","#0b5931","#08542f","#054f2d","#034a2b","#004529"],"nbr":[null,"#4d1a02","#551d03","#5e2103","#662404","#6f2805","#792c06","#812f06","#893307","#923608","#9c3a09","#a43e09","#ad410a","#b5450b","#bc4e12","#c25d1e","#c86929","#cd7533","#d3823e","#d9904b","#df9d55","#e4a960","#eab56a","#efc275","#f6d181","#fbdd8c","#fbe38f","#f4e28c","#ebe189","#e4e086","#dedf83","#d7df80","#d0de7d","#c7dd79","#c1dc76","#badb73","#b3da70","#aada6c","#a2d769","#97d266","#8ccd62","#81c75f","#74c15b","#69bc58","#5eb755","#53b152","#46ab4e","#3ba64b","#30a147","#259b44","#1a9641"],"ndmi":[null,"#8c510a","#925911","#986018","#9e681f","#a47027","#ab792f","#b18136","#b7883d","#bd9045","#c4994d","#caa154","#d0a95b","#d6b063","#dab66a","#dcbb73","#dfbf7a","#e1c381","#e3c789","#e6cc92","#e9d099","#ebd4a0","#edd9a8","#f0ddaf","#f2e2b8","#f5e6bf","#f0e6c2","#e4e2c0","#d5ddbe","#c9d9bc","#bcd5bb","#b0d1b9","#a4cdb7","#95c8b5","#89c4b3","#7dc0b1","#71bcaf","#62b7ad","#58b2aa","#51aca4","#4aa69e","#43a098","#3a9890","#33928a","#2c8c84","#25867e","#1d7e76","#167870","#0f726a","#086c64","#01665e"],"ndre":[null,"#ffffd9","#fdfed5","#fbfed1","#f9fdcd","#f8fcc9","#f6fbc5","#f4fbc1","#f2fabc","#f0f9b8","#eef9b4","#ecf8b1","#e8f6b1","#e4f5b2","#e1f3b2","#ddf2b2","#d9f0b3","#d5efb3","#d1edb3","#cdebb4","#c9eab4","#c3e7b4","#b9e4b5","#afe0b6","#a6dcb7","#9cd8b8","#92d4b9","#88d1ba","#7fcdbb","#76cabc","#6ec7be","#65c3bf","#5dc0c0","#54bdc1","#4cbac2","#44b7c4","#3eb2c4","#39adc3","#34a8c3","#2fa3c2","#2a9ec1","#2599c1","#2094c0","#1d8fbf","#1e88bc","#1f81b8","#1f7ab5","#2073b2","#216caf","#2165ab","#225ea8"],"ndvi":[null,"#d7191c","#da221f","#dd2c21","#e03524","#e33f26","#e74829","#ea522c","#ed5b2e","#f06531","#f36e34","#f67836","#f98139","#fc8b3b","#fd933d","#fc9b3f","#fca340","#fbab42","#fbb344","#fabb45","#fac447","#f9cc49","#f9d44a","#f8dc4c","#f8e44e","#f7ec4f","#f3ee4f","#eaeb4e","#e1e84c","#d8e54a","#d0e149","#c7de47","#bedb45","#b5d844","#add442","#a4d140","#9bce3f","#93ca3d","#8ac63c","#80bf3a","#76b738","#6cb037","#62a935","#59a133","#4f9a32","#459330","#3b8b2f","#31842d","#287d2b","#1e752a","#146e28"],"rvi":[null,"#780000","#7c0400","#800800","#840c00","#881000","#8c1400","#901800","#951d00","#992100","#9d2500","#a12900","#a53001","#aa3703","#ae3e04","#b34505","#b74c06","#bc5308","#c05a09","#c5610a","#c9680b","#cd6f0c","#d0780a","#d38109","#d68908","#d99207","#db9a05","#dea304","#e1ab03","#e4b402","#e7bd00","#e8c40d","#e7ca22","#e7d137","#e6d84c","#e5de62","#e5e577","#e4eb8c","#e0ee99","#d0e88e","#bfe182","#afdb77","#9fd46b","#8ece60","#7ec755","#6ec149","#58b142","#42a13c","#2c9136","#168030","#00702a"]},"cat":{"moisture":[null,"#8C510A","#D8B365","#F6E8C3","#5AB4AC","#01665E"],"burn":[null,"#F2F2F2","#FEE391","#FE9929","#D95F0E","#993404","#4D1A02"]}},CATN={moisture:8,burn:9},KC=null;
+var RCOL={"color":{"ci":[null,"#f09000","#f09502","#f19a05","#f19f07","#f2a40a","#f2a80c","#f2ad0f","#f3b211","#f3b714","#f4bc16","#f4c118","#f4c61b","#f5cb1d","#f5ce1c","#f4d11a","#f4d417","#f3d715","#f3da12","#f3dd10","#f2e00d","#f2e30b","#f1e609","#f1e906","#f1ec04","#f0ef01","#edf000","#e7ef00","#e1ee00","#dbed00","#d6ec00","#d0eb00","#caea00","#c4e900","#bee800","#b8e700","#b2e600","#ace500","#a6e200","#9cdb00","#92d400","#88cc00","#7ec500","#74be00","#6ab700","#60af00","#56a800","#4ca100","#429a00","#389200","#2e8b00"],"lai":[null,"#ffffcc","#fcfec9","#f9fdc6","#f6fbc2","#f3fabf","#f0f9bb","#edf8b8","#eaf7b5","#e7f5b2","#e3f4ae","#e0f3ab","#ddf2a7","#daf0a4","#d4eea1","#cbea9d","#c3e79a","#bce396","#b4e093","#abdc8f","#a3d98c","#9cd588","#94d285","#8dcf82","#83cb7e","#7cc87b","#75c377","#6ebe73","#66b86e","#5fb369","#59ae65","#52a861","#4ba35d","#439d58","#3d9853","#36934f","#2f8e4b","#278746","#228242","#1f7d40","#1d783e","#1a733c","#176e3a","#146938","#116436","#0e5f34","#0b5931","#08542f","#054f2d","#034a2b","#004529"],"nbr":[null,"#4d1a02","#551d03","#5e2103","#662404","#6f2805","#792c06","#812f06","#893307","#923608","#9c3a09","#a43e09","#ad410a","#b5450b","#bc4e12","#c25d1e","#c86929","#cd7533","#d3823e","#d9904b","#df9d55","#e4a960","#eab56a","#efc275","#f6d181","#fbdd8c","#fbe38f","#f4e28c","#ebe189","#e4e086","#dedf83","#d7df80","#d0de7d","#c7dd79","#c1dc76","#badb73","#b3da70","#aada6c","#a2d769","#97d266","#8ccd62","#81c75f","#74c15b","#69bc58","#5eb755","#53b152","#46ab4e","#3ba64b","#30a147","#259b44","#1a9641"],"ndmi":[null,"#8c510a","#925911","#986018","#9e681f","#a47027","#ab792f","#b18136","#b7883d","#bd9045","#c4994d","#caa154","#d0a95b","#d6b063","#dab66a","#dcbb73","#dfbf7a","#e1c381","#e3c789","#e6cc92","#e9d099","#ebd4a0","#edd9a8","#f0ddaf","#f2e2b8","#f5e6bf","#f0e6c2","#e4e2c0","#d5ddbe","#c9d9bc","#bcd5bb","#b0d1b9","#a4cdb7","#95c8b5","#89c4b3","#7dc0b1","#71bcaf","#62b7ad","#58b2aa","#51aca4","#4aa69e","#43a098","#3a9890","#33928a","#2c8c84","#25867e","#1d7e76","#167870","#0f726a","#086c64","#01665e"],"ndre":[null,"#ffffd9","#fdfed5","#fbfed1","#f9fdcd","#f8fcc9","#f6fbc5","#f4fbc1","#f2fabc","#f0f9b8","#eef9b4","#ecf8b1","#e8f6b1","#e4f5b2","#e1f3b2","#ddf2b2","#d9f0b3","#d5efb3","#d1edb3","#cdebb4","#c9eab4","#c3e7b4","#b9e4b5","#afe0b6","#a6dcb7","#9cd8b8","#92d4b9","#88d1ba","#7fcdbb","#76cabc","#6ec7be","#65c3bf","#5dc0c0","#54bdc1","#4cbac2","#44b7c4","#3eb2c4","#39adc3","#34a8c3","#2fa3c2","#2a9ec1","#2599c1","#2094c0","#1d8fbf","#1e88bc","#1f81b8","#1f7ab5","#2073b2","#216caf","#2165ab","#225ea8"],"ndvi":[null,"#d7191c","#da221f","#dd2c21","#e03524","#e33f26","#e74829","#ea522c","#ed5b2e","#f06531","#f36e34","#f67836","#f98139","#fc8b3b","#fd933d","#fc9b3f","#fca340","#fbab42","#fbb344","#fabb45","#fac447","#f9cc49","#f9d44a","#f8dc4c","#f8e44e","#f7ec4f","#f3ee4f","#eaeb4e","#e1e84c","#d8e54a","#d0e149","#c7de47","#bedb45","#b5d844","#add442","#a4d140","#9bce3f","#93ca3d","#8ac63c","#80bf3a","#76b738","#6cb037","#62a935","#59a133","#4f9a32","#459330","#3b8b2f","#31842d","#287d2b","#1e752a","#146e28"],"rvi":[null,"#780000","#7c0400","#800800","#840c00","#881000","#8c1400","#901800","#951d00","#992100","#9d2500","#a12900","#a53001","#aa3703","#ae3e04","#b34505","#b74c06","#bc5308","#c05a09","#c5610a","#c9680b","#cd6f0c","#d0780a","#d38109","#d68908","#d99207","#db9a05","#dea304","#e1ab03","#e4b402","#e7bd00","#e8c40d","#e7ca22","#e7d137","#e6d84c","#e5de62","#e5e577","#e4eb8c","#e0ee99","#d0e88e","#bfe182","#afdb77","#9fd46b","#8ece60","#7ec755","#6ec149","#58b142","#42a13c","#2c9136","#168030","#00702a"]},"cat":{"moisture":[null,"#8C510A","#D8B365","#F6E8C3","#5AB4AC","#01665E"],"burn":[null,"#F2F2F2","#FEE391","#FE9929","#D95F0E","#993404","#4D1A02"],"burned":[null,"#F2F2F2","#B8460B"]}},CATN={moisture:8,burn:9,burned:10},KC=null;
 function ccArr(a,ix){
   var nf=M.nf,o=new Uint16Array(nf);if(typeof RM==='undefined'||!RM||!RM.legend||!RM.legend[ix])return o;
   var p=rPer(),C=rcat(ix,p),s=rst(ix,p),cat=C&&RM.periods[p]&&RM.periods[p][ix]&&RM.periods[p][ix].cat,base=(C?CATN[cat]:IXN[ix])*64;
@@ -1536,6 +1561,7 @@ function ccArr(a,ix){
       if(C)c=cat==='burn'?Math.round(v)+1:(v<0?1:v<.1?2:v<.2?3:v<.3?4:5);
       else{var lo=0,hi=49;while(lo<hi){var md=(lo+hi+1)>>1;if(fr[md]<=v)lo=md;else hi=md-1}c=lo+1}}}
     else if(S.m&&a.length>=off+nf)c=a[off+n];
+    else if(!S.m&&a.length>=26*nf)c=a[25*nf+n];   /* yearly mean: slot 25 = class code of the table's yearly value */
     if(c)o[n]=C?base+c:base+1+Math.round((s[1]>s[0]?Math.min(1,Math.max(0,(c-s[0])/(s[1]-s[0]))):0)*49);
   }
   return o;
@@ -1579,7 +1605,7 @@ function pcard(){
     '<div class="v">'+v.name+' · '+f(a,2)+' '+L('ga')+'</div>'+
     '<div class="s"><i style="background:'+(k&&k<5?STC[k-1]:STC[4])+'"></i>'+S.ix.toUpperCase()+' · '+period()+': <b>'+(k&&k<5?nm[k-1]:nm[4])+'</b></div>'+
     '<div class="pv">'+L('Qiymat')+': <b>'+vtxt+'</b></div>'+
-    '<div class="yrs" id="pc-yrs" title="'+L('Yil tanlang: oylar kesimida ko\'rinadi')+'">'+YEARS.map(function(y,i){return '<button data-y="'+i+'"'+(!S.p5&&i===S.y?' class="on"':'')+'>'+y+'</button>'}).join('')+'</div>'+
+    '<div class="yrs" id="pc-yrs" title="'+L('Yil tanlang: yillik o\'rtacha ko\'rinadi, oylar — Oy filtrida')+'">'+YEARS.map(function(y,i){return '<button data-y="'+i+'"'+(!S.p5&&i===S.y?' class="on"':'')+'><i style="background:'+STC[4]+'"></i>'+y+'</button>'}).join('')+'</div>'+
     '<button class="vb">'+L('Qishloqni tanlash')+'</button>';
   el.hidden=false;
   var W=$('map').clientWidth,H=$('map').clientHeight,p=PSpt||{x:W/2,y:H/2},w=el.offsetWidth,h=el.offsetHeight;
@@ -1588,7 +1614,11 @@ function pcard(){
   el.querySelector('.vb').onclick=function(){var vi=VI[id];pickParcel(-1);select(vi)};
   /* year chips: switch the whole portal to that year, the contour stays picked */
   $('pc-yrs').onclick=function(e){var b=e.target.closest('button');if(!b)return;var yi=+b.dataset.y;if(!S.p5&&yi===S.y)setP5();else setYear(yi)};
-  /* yearly-average statuses are hidden for now: the chips only open that year's months */
+  /* each year chip is coloured by the contour's YEARLY status of the shown index (slot 0 of cls/{index}_{year}) */
+  var ixc=S.ix;YEARS.forEach(function(y,i){loadCls(ixc,y).then(function(a){
+    if(PS!==id||S.ix!==ixc)return;var b=document.querySelector('#pc-yrs button[data-y="'+i+'"]');if(!b)return;
+    var k=a[id],nm2=ixc==='ndmi'?STN_M:STN;if(!(k>=1&&k<=4))return;
+    b.querySelector('i').style.background=STC[k-1];b.title=y+' · '+nm2[k-1]}).catch(function(){})});
 }
 /* ArcGIS Online (Esri) basemaps; the chosen one feeds the "Sun'iy yo'ldosh" and "3D" modes and is masked to the township */
 var ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/',WB='https://wayback.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/WMTS/1.0.0/default028mm/MapServer/tile/44710/';
@@ -1892,7 +1922,7 @@ map.on('load',function(){
     /* "Tozalash": back to the default view (all picks, filters, layers, raster and basemap reset) */
     $('breset').onclick=function(){
       stopAuto();pickParcel(-1);rasterOff();closeMenu();
-      S.fs=0;S.ix='ndvi';S.hl=null;S.y=YEARS.length-1;S.m=0;S.p5=true;S.showP=true;S.showB=true;S.fop=.55;
+      S.fs=0;S.ix='ndvi';S.ixs=['ndvi'];S.hl=null;S.y=YEARS.length-1;S.m=0;S.p5=true;S.showP=true;S.showB=true;S.fop=.55;
       $('t-parcel').checked=true;$('t-bound').checked=true;$('t-op').value=55;$('t-opv').textContent='55%';map.setPaintProperty('parcel-fill','fill-opacity',S.fop);
       if(S.full)setFull(false);if(S.ebm!=='wayback')setEsri('wayback');S.bm='dark';basemap();
       if(!$('drawer').hidden)openList(false);
