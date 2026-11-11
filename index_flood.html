@@ -269,6 +269,14 @@ html,body{background:var(--bg);font-family:Inter,"Segoe UI",system-ui,-apple-sys
 #pop.kichik{min-width:0;padding:5px 26px 5px 10px;font-size:12px;white-space:nowrap}
 #pop.kichik b{font-weight:600}#pop.kichik span{color:var(--tx2);margin-left:6px}
 #cBat{display:none}
+/* o'ng ustundagi bo'sh joy: hududlar sel ulushi bo'yicha (nuqta tanlanib "Batafsil" chiqsa yashiriladi) */
+#cUlush{flex:1 1 0;min-height:110px;display:flex;flex-direction:column;overflow:hidden}
+#cBat[style*="block"] ~ #cUlush{display:none}
+#cUlush .rank{overflow-y:auto;justify-content:flex-start;padding-right:2px}
+#cUlush .rank::-webkit-scrollbar{width:6px}#cUlush .rank::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+#cUlush .rank button.rb{grid-template-columns:18px minmax(60px,38%) 1fr 40px;flex:0 0 auto}
+#cUlush .rank em{font-style:normal;font-size:10px;color:var(--tx3);text-align:right}
+#cUlush .rank button.on{background:rgba(220,38,38,.22)}
 #cBat table{border-collapse:collapse;margin-top:6px;font-size:11.5px;font-variant-numeric:tabular-nums;width:100%}
 #cBat td{padding:2px 0;vertical-align:top}#cBat td:first-child{color:var(--tx3);padding-right:10px;white-space:nowrap}
 #cBat td.sh{color:var(--tx);font-weight:600;padding-top:7px}
@@ -369,6 +377,7 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
     <div class="card" id="cJoy"></div>
     <div class="card" id="cNis"></div>
     <div class="card" id="cBat"></div>
+    <div class="card" id="cUlush"><h3>Sel ulushi bo'yicha hududlar <small>maydonning %</small></h3><div class="rank diag" id="ulush"></div></div>
   </div>
   <div id="brow">
     <div class="card"><h3>Eng ko'p sel keladigan hududlar <small>HEC-RAS, ga</small></h3><div class="rank diag" id="rank"></div><button class="lnk" data-go="hud">Barchasini ko'rish (70)</button></div>
@@ -2392,7 +2401,7 @@ function initHudud() {
   chip("hNom", () => {});
   $("hSort").onchange = hudList;
   $("hList").onclick = e => { const b = e.target.closest("button"); if (b) hudTanla(+b.dataset.i); };
-  hudList(); hudTop3();
+  hudList(); hudTop3(); hudUlush();
 }
 const _hp = new THREE.Vector3();
 function hudLabels() {
@@ -2431,6 +2440,7 @@ function hudAt(X, Z) {
 }
 function hudRow(X, Z) { const i = hudAt(X, Z); return i >= 0 ? `<tr><td>Qishloq trakti</td><td>${HUD.t[i].n}</td></tr>` : ""; }
 function hudTanla(i, fly = true, keepPop = false) {
+  setTimeout(hudUlushTan, 0);
   if (hudSelMesh) { scene.remove(hudSelMesh); hudSelMesh.geometry.dispose(); hudSelMesh = null; }
   hudSel = i;
   document.querySelectorAll("#hList button").forEach(b => b.classList.toggle("on", +b.dataset.i === i));
@@ -2527,6 +2537,27 @@ function hudTop3() {
     vtip(e, `<b>${t.n}</b><br>` + t.sel.map((v, k) => `<i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${SEL_RGB[k]};margin-right:5px"></i><span>${SEL_NOM[k]}</span> ${fmt(v, 0)} ga`).join("<br>")
       + `<br><span>${fmt(t.a, 1)} km² · ${fmt(t.ekga, 0)} ga ekin</span>`); };
   $("rank").onmouseleave = e => vtip(e, "");
+}
+
+function hudUlush() {
+  // barcha hududlar: maydonining necha foizini sel bosadi (kamayish tartibida), ustun sel darajalari bo'yicha bo'lingan
+  const ul = t => hudSelGa(t) / (t.a * 100) * 100;
+  const o = HUD.t.map((t, i) => i).filter(i => HUD.t[i].a > 0).sort((a, b) => ul(HUD.t[b]) - ul(HUD.t[a]));
+  const mx = ul(HUD.t[o[0]]) || 1;
+  $("ulush").innerHTML = o.map((i, r) => { const t = HUD.t[i], A = t.a * 100;
+    const seg = t.sel.map((v, k) => v > 0 ? `<span style="width:${(v / A * 100 / mx * 100).toFixed(2)}%;background:${SEL_RGB[k]}"></span>` : "").join("");
+    return `<button class="rb" data-i="${i}"><em>${r + 1}</em><span class="rn">${t.n}</span><span class="rbar">${seg}</span><b>${fmt(ul(t), 1)}%</b></button>`; }).join("");
+  $("ulush").onclick = e => { const b = e.target.closest("button"); if (b) { vtip(e, ""); hudTanla(+b.dataset.i); } };
+  $("ulush").onmousemove = e => { const b = e.target.closest("button"); if (!b) { vtip(e, ""); return; } const t = HUD.t[+b.dataset.i];
+    vtip(e, `<b>${t.n}</b><br>` + t.sel.map((v, k) => `<i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${SEL_RGB[k]};margin-right:5px"></i><span>${SEL_NOM[k]}</span> ${fmt(v, 0)} ga`).join("<br>")
+      + `<br><span>${fmt(hudSelGa(t), 0)} ga / ${fmt(t.a, 1)} km²</span>`); };
+  $("ulush").onmouseleave = e => vtip(e, "");
+  hudUlushTan();
+}
+function hudUlushTan() {
+  const el = $("ulush"); if (!el) return;
+  el.querySelectorAll("button").forEach(b => b.classList.toggle("on", +b.dataset.i === hudSel));
+  const on = el.querySelector("button.on"); if (on) on.scrollIntoView({ block: "nearest" });
 }
 
 // ---------------- Strahler tartibini tanlash (donut / legenda) ----------------
@@ -2939,7 +2970,10 @@ var D = {
 "Nomi": ["Name", "Название", "အမည်"],
 "Tartiblash": ["Sort", "Сортировка", "စီရန်"],
 "Sel maydoni bo'yicha": ["by flood area", "по площади паводка", "ရေကြီးဧရိယာအလိုက်"],
-"Sel ulushi": ["Flood share", "Доля паводка", "ရေကြီးမှုအချိုး"],
+"Sel ulushi bo'yicha hududlar": ["Areas by flood share", "Территории по доле паводка", "ရေကြီးမှုအချိုးအလိုက် နယ်မြေများ"],
+"maydonning %": ["% of area", "% площади", "ဧရိယာ၏ %"],
+"{n} ga / {n} km²": ["{0} ha / {1} km²", "{0} га / {1} км²", "{0} ဟက်တာ / {1} km²"],
+"Sel ulushi":["Flood share", "Доля паводка", "ရေကြီးမှုအချိုး"],
 "Ekin maydoni": ["Cropland area", "Площадь посевов", "စိုက်ပျိုးမြေဧရိယာ"],
 "Ekin ulushi": ["Cropland share", "Доля посевов", "စိုက်ပျိုးမြေအချိုး"],
 "{n} kontur": ["{0} fields", "{0} контуров", "စိုက်ကွက် {0} ခု"],
