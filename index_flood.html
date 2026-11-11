@@ -1716,7 +1716,7 @@ function home(animate = true) {
 function clampCam() {
   cam.dist = Math.min(4e5, Math.max(120, cam.dist));
   cam.pol = Math.min(1.45, Math.max(.001, cam.pol));
-  const lim = 1.2;
+  const lim = 3;   // xaritani istalgan tomonga (ekran chetigacha) surish mumkin; avval 1.2 edi va chapga yetmasdi
   cam.t.x = Math.min(SX * lim / 2, Math.max(-SX * lim / 2, cam.t.x));
   cam.t.z = Math.min(SZ * lim / 2, Math.max(-SZ * lim / 2, cam.t.z));
 }
