@@ -1,0 +1,12 @@
+Myanma_portal_pro repozitoriysini tuzatish (github.com/Komiljon7Rizayev/Myanma_portal_pro)
+
+1) YUKLASH: shu papkadagi index_flood.html ni repozitoriyga "Add file > Upload files" orqali yuklang.
+   Eski index_flood.html ustidan yoziladi (u Minbu Portal nusxasi edi, sel xavfi sahifasi emas).
+
+2) O'CHIRISH (ishlatilmaydigan noto'g'ri nusxalar):
+   - callback_flood.html
+   - prognoz_flood.html
+   - water_back_button_flood.html
+   Har birini oching -> "..." -> "Delete file" -> Commit.
+
+Boshqa fayllarga (index.html, callback.html, prognoz.html, water_back_button.html) tegilmaydi.
