@@ -463,8 +463,14 @@ h1,h2,p{margin:0}
 .gate .box:not(.step1) label,.gate .box:not(.step1) .pwrap,.gate .box:not(.step1) #un{animation:gin .35s ease both}
 @keyframes gin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.gate .slides div{animation:none;transition:none}}
+/* page refresh while signed in: the sign-in screen is never painted, only a spinner over the portal until data is in */
+html.resume .gate{display:none!important}
+html.resume::after{content:"";position:fixed;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;border:2.5px solid rgba(127,208,108,.25);border-top-color:#7fd06c;animation:rsp .8s linear infinite;z-index:260}
+html.resume.rsm-on::after{display:none}
 </style>
 
+<script>(function(){try{var t=JSON.parse(localStorage.getItem('minbu_tok')||'null'),n=Date.now();
+if(t&&t.exp>n+60000&&(!t.keep||t.keep>n)&&!/[?&]code=/.test(location.search))document.documentElement.classList.add('resume')}catch(e){}})()</script>
 <div class="gate" id="gate">
   <canvas id="agri" aria-hidden="true"></canvas><div class="slides" id="slides" aria-hidden="true"></div><div class="shade" aria-hidden="true"></div>
   <form class="box step1" id="gform" autocomplete="on" novalidate>
@@ -1229,11 +1235,13 @@ function donut(){
   $('d-chip').textContent=S.p5?'2022–2026':YEARS[S.y]+' · '+(S.m?MON[S.m-1]:L('yillik'));
   if(!tot){$('donut').innerHTML='';$('dtab').innerHTML='<p class="dnote">'+L('Bu davr uchun ma\'lumot yo\'q.')+'</p>';$('dnote').textContent='';return}
   var prev=!S.p5&&S.y>0?STA[sc][x][S.y-1][S.m].slice(0,4):null,ptot=prev?prev.reduce(function(p,q){return p+q},0):0;
-  /* ring = AREA by status; centre = total area, or the picked status' area; rows = number of CONTOURS per status */
+  /* ring = number of CONTOURS by status; centre = total area, or the picked status' area; rows = number of CONTOURS per status */
   var N=staN(x),nt=N?N.reduce(function(p,q){return p+q},0):0;
   $('d-sub').textContent=L('{0} statusi · kontur soni',x.toUpperCase());
   var s='',ang=-Math.PI/2,gap=.03;
-  a.forEach(function(v,i){var d=v/tot*2*Math.PI,k=i+1;if(d>gap*1.5)s+='<path data-k="'+k+'" style="cursor:pointer" d="'+arc(64,64,52,ang+gap/2,ang+d-gap/2)+'" fill="none" stroke="'+STC[i]+'" stroke-width="'+(S.fs===k?16:13)+'" stroke-opacity="'+(S.fs&&S.fs!==k?.35:1)+'"/>';ang+=d});
+  /* ring segments = share of CONTOURS by status (area while the contour statuses are still loading) */
+  var RG=N&&nt?N:a,rt=N&&nt?nt:tot;
+  RG.forEach(function(v,i){var d=v/rt*2*Math.PI,k=i+1;if(d>gap*1.5)s+='<path data-k="'+k+'" style="cursor:pointer" d="'+arc(64,64,52,ang+gap/2,ang+d-gap/2)+'" fill="none" stroke="'+STC[i]+'" stroke-width="'+(S.fs===k?16:13)+'" stroke-opacity="'+(S.fs&&S.fs!==k?.35:1)+'"/>';ang+=d});
   var good=(a[0]+a[1])/tot,pk=S.fs>=1&&S.fs<=4?S.fs-1:-1;
   s+='<text x="64" y="'+(pk>=0?56:60)+'" text-anchor="middle" font-family="Sora,sans-serif" font-weight="300" font-size="17" fill="'+(pk>=0?STC[pk]:'#ecf4e6')+'">'+f(pk>=0?a[pk]:tot)+'</text><text x="64" y="'+(pk>=0?70:75)+'" text-anchor="middle" font-family="Manrope,sans-serif" font-size="10.5" fill="#a5b9a2">'+(pk>=0?L('ga')+' · '+pct(a[pk]/tot):L('ga, jami'))+'</text>'+
     (pk>=0?'<text x="64" y="84" text-anchor="middle" font-family="Manrope,sans-serif" font-size="9.5" fill="#a5b9a2">'+names[pk]+'</text>':'');
@@ -1428,7 +1436,12 @@ function showRaster(ix){
 /* boundaries (township edge, village lines, picked village) sit ABOVE a shown raster and below the contours;
    without a raster they go back under the contour fill */
 var BLAY=['town-glow','town-edge','bound-line','sel-fill','sel-glow','sel-line'];
-function boundsOverRaster(on){if(!map)return;BLAY.forEach(function(id){if(map.getLayer(id))try{map.moveLayer(id,on?'parcel-line':(id.indexOf('town')===0?(map.getLayer('vill-share')?'vill-share':'parcel-fill'):'parcel-fill'))}catch(e){}})}
+var LCOL={};
+function contoursOverRaster(on){if(!map||!map.getLayer('parcel-case')||!LCOL.n)return;
+  var pv=map.getLayoutProperty('parcel-line','visibility')||'visible';
+  map.setLayoutProperty('parcel-case','visibility',on&&pv!=='none'?'visible':'none');
+  map.setPaintProperty('parcel-line','line-color',on?LCOL.r:LCOL.n)}
+function boundsOverRaster(on){contoursOverRaster(on);if(!map)return;BLAY.forEach(function(id){if(map.getLayer(id))try{map.moveLayer(id,on?(map.getLayer('parcel-case')?'parcel-case':'parcel-line'):(id.indexOf('town')===0?(map.getLayer('vill-share')?'vill-share':'parcel-fill'):'parcel-fill'))}catch(e){}})}
 function rasterLayerOff(){if(!map)return;if(map.getLayer('ras'))map.removeLayer('ras');if(map.getSource('ras'))map.removeSource('ras');boundsOverRaster(false)}
 function drawRaster(){
   if(!R.g||!map||!map.getLayer('parcel-line'))return;
@@ -1440,7 +1453,7 @@ function drawRaster(){
   x.putImageData(im,0,0);R.fs=S.fs;
   rasterLayerOff();
   map.addSource('ras',{type:'canvas',canvas:c,coordinates:RM.bounds,animate:false});
-  map.addLayer({id:'ras',type:'raster',source:'ras',paint:{'raster-opacity':R.op,'raster-resampling':'nearest','raster-fade-duration':0}},'parcel-line');
+  map.addLayer({id:'ras',type:'raster',source:'ras',paint:{'raster-opacity':R.op,'raster-resampling':'nearest','raster-fade-duration':0}},map.getLayer('parcel-case')?'parcel-case':'parcel-line');
   boundsOverRaster(true);
 }
 function rasterOff(){R.on=null;R.g=null;R.busy=null;rasterLayerOff();$('rtip').hidden=true;rasterPanel()}
@@ -1711,7 +1724,7 @@ function set3d(on){
     map.setTerrain({source:'dem',exaggeration:1.6});
     if(map.setSky)map.setSky({'sky-color':'#7fb3e0','horizon-color':'#e6d2a8','fog-color':'#c9d6c4','sky-horizon-blend':.55,'horizon-fog-blend':.6,'fog-ground-blend':.25,'atmosphere-blend':['interpolate',['linear'],['zoom'],0,1,10,1,12,0]});
     if(map.getLayer('mask'))map.setPaintProperty('mask','fill-opacity',.6);
-    ['parcel-fill','parcel-line'].forEach(function(l){map.setLayerZoomRange(l,11,24)});
+    ['parcel-fill','parcel-case','parcel-line'].forEach(function(l){map.setLayerZoomRange(l,11,24)});
     if(map.setPixelRatio)map.setPixelRatio(Math.min(DPR0,1.25));
     map.setMaxPitch(75);
     map.dragRotate.disable();map.touchZoomRotate.enableRotation();
@@ -1719,7 +1732,7 @@ function set3d(on){
   }else{
     map.setTerrain(null);
     if(map.getLayer('mask'))map.setPaintProperty('mask','fill-opacity',1);
-    ['parcel-fill','parcel-line'].forEach(function(l){map.setLayerZoomRange(l,0,24)});
+    ['parcel-fill','parcel-case','parcel-line'].forEach(function(l){map.setLayerZoomRange(l,0,24)});
     if(map.setPixelRatio)map.setPixelRatio(DPR0);
     map.dragRotate.disable();map.touchZoomRotate.disableRotation();
     map.easeTo({pitch:0,bearing:0,duration:reduced?0:800});
@@ -1796,7 +1809,7 @@ function paint(){
   map.setFilter('sel-fill',['==',['get','v'],s]);
   if(R.g&&R.fs!==S.fs)drawRaster();
   var pv=size&&S.showP?'visible':'none';
-  if(map.getLayoutProperty('parcel-fill','visibility')!==pv){map.setLayoutProperty('parcel-fill','visibility',pv);map.setLayoutProperty('parcel-line','visibility',pv)}
+  if(map.getLayoutProperty('parcel-fill','visibility')!==pv){map.setLayoutProperty('parcel-fill','visibility',pv);map.setLayoutProperty('parcel-line','visibility',pv);contoursOverRaster(!!R.g)}
   var bv=S.showB?'visible':'none';if(map.getLayoutProperty('bound-line','visibility')!==bv)map.setLayoutProperty('bound-line','visibility',bv);
   map.setLayoutProperty('vill-share','visibility',size?'none':'visible');
   map.setPaintProperty('vill-share','fill-opacity',s<0?1:['case',['==',['get','v'],s],1,.4]);
@@ -1894,9 +1907,16 @@ map.on('load',function(){
     var HAS=['>',CC,0],FC=PC.length>3?['case',HAS,PC,MF]:MF,FD=PC.length>3?['case',HAS,PD,MD]:MD,FL=PC.length>3?['case',HAS,PC,ML]:ML;
     map.addLayer({id:'parcel-fill',type:'fill',source:'parcels',paint:{'fill-opacity':S.fop,
       'fill-color':['case',['==',HF,2],'rgba(0,0,0,0)',['==',HF,1],FD,FC]}});
-    map.addLayer({id:'parcel-line',type:'line',source:'parcels',layout:{'line-join':'round'},paint:{
-      'line-color':['case',ON,'#ffffff',['==',HF,2],'rgba(0,0,0,0)',['==',HF,1],FD,FL],
-      'line-width':['interpolate',['linear'],['zoom'],9,['case',ON,1.6,.45],12,['case',ON,2.4,1],14,['case',ON,3,1.6],17,['case',ON,3.8,2.4]]}});
+    /* over a raster the contour edge would vanish in the same colours: then a dark casing + a light edge (readable on
+       any raster colour); without a raster the edge keeps the contour's own colour */
+    var LW=['interpolate',['linear'],['zoom'],9,['case',ON,1.6,.45],12,['case',ON,2.4,1],14,['case',ON,3,1.6],17,['case',ON,3.8,2.4]];
+    LCOL.n=['case',ON,'#ffffff',['==',HF,2],'rgba(0,0,0,0)',['==',HF,1],FD,FL];
+    LCOL.r=['case',ON,'#ffffff',['==',HF,2],'rgba(0,0,0,0)',['==',HF,1],'rgba(246,243,230,.35)','#f6f3e6'];
+    map.addLayer({id:'parcel-case',type:'line',source:'parcels',layout:{'line-join':'round',visibility:'none'},paint:{
+      'line-color':['case',['==',HF,2],'rgba(0,0,0,0)',['==',HF,1],'rgba(8,20,12,.3)','rgba(8,20,12,.85)'],
+      'line-width':['interpolate',['linear'],['zoom'],9,['case',ON,3,1.4],12,['case',ON,4,2.4],14,['case',ON,4.8,3.2],17,['case',ON,5.8,4.2]]}});
+    map.addLayer({id:'parcel-line',type:'line',source:'parcels',layout:{'line-join':'round'},paint:{'line-color':LCOL.n,'line-width':LW}});
+    if(R.g)contoursOverRaster(true);
     map.addLayer({id:'vill-hit',type:'fill',source:'bound',paint:{'fill-color':'#000','fill-opacity':0}});
     labels();map.on('moveend',cull);map.on('zoomend',cull);
     window.__atlasReady=true;paint();applyCls();basemap();drawRaster();
@@ -2637,13 +2657,14 @@ function item(id,tok){
     if(s.charAt(0)==='{'&&s.indexOf('"error"')>0&&s.length<600)throw new Error(/"code"\s*:\s*49[89]/.test(s)?'eskirgan':'ruxsat');return s});
 }
 function boot(resume){
-  var t=getTok();if(!t){un.focus();return}
+  var t=getTok();if(!t){document.documentElement.classList.remove('resume','rsm-on');un.focus();return}
   busy(true);say('Ma\'lumotlar ArcGIS Online\'dan yuklanmoqda…');
   /* page refresh while signed in: stay in the portal window (no sign-in screen), only a small loader */
   var ld=null;
   if(resume){$('gate').hidden=true;if(window.__stopAgri)window.__stopAgri();
     ld=document.createElement('div');ld.className='rsm';ld.setAttribute('role','status');ld.innerHTML='<i></i><span>'+L('Portal yangilanmoqda…')+'</span>';document.body.appendChild(ld)}
-  function unload(){if(ld){ld.remove();ld=null}}
+  if(ld)document.documentElement.classList.add('rsm-on');
+  function unload(){if(ld){ld.remove();ld=null}document.documentElement.classList.remove('resume','rsm-on')}
   var CL={};
   function getCls(ix,y){
     var p=CL[ix]||(CL[ix]=item(IDS['cls_'+ix],t.t).then(function(s){return s.split('\n')}));
