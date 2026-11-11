@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Minbu Flood — 3D relyef va sel xavfi</title>
+<title>Minbu toshqin xavfi monitoringi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -282,7 +282,27 @@ body.nopan #tools{right:var(--gap);top:calc(var(--top) + var(--gap))}
 body.nopan #profil{bottom:var(--gap)}
 body.drawer #ldon{display:none}
 
-@media (max-width:1180px){ :root{--rc:260px} #kpis{grid-template-columns:repeat(2,1fr)} :root{--kh:236px} .kpi b{font-size:20px} }
+@media (max-width:1180px){ :root{--rc:260px} }
+/* --- ixcham KPI kartalari: keng ekranda sarlavha qatorida, o'ng tarafda yonma-yon --- */
+:root{--kh:88px}
+#kpis{left:auto;right:calc(var(--rc) + 2*var(--gap));top:6px;display:flex;gap:8px;grid-template-columns:none}
+#kpis .kpi{flex:0 1 178px;min-width:132px;padding:7px 11px}
+.kpi .kh{font-size:11px;gap:6px}
+.kpi .ki{width:18px;height:18px;border-radius:5px}
+.kpi .ki svg{width:11px;height:11px}
+.kpi b{font-size:18px;margin-top:3px}
+.kpi b small{font-size:11px}
+.kpi .ks{font-size:10px}
+#hdr{right:calc(var(--rc) + 3*var(--gap) + 4*178px + 24px);min-width:0}
+#hdr > div{min-width:0}
+#hdr .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* o'rta ekran: joy yetmasa kartalar sarlavha ostida bitta qatorda */
+@media (max-width:1500px){ :root{--kh:128px} #kpis{left:var(--gap);top:50px} #kpis .kpi{flex:1 1 0} #hdr{right:calc(var(--rc) + 3*var(--gap))} }
+/* logotip va nom */
+.brand{padding:2px 4px 14px;gap:10px;align-items:center}
+.brand i.logo{width:38px;height:38px;border-radius:10px;background:none;flex:0 0 auto;box-shadow:0 4px 14px rgba(37,99,235,.35)}
+.brand b{font-size:13.5px;line-height:1.22;font-weight:650;letter-spacing:.1px}
+
 @media (max-width:900px){
   :root{--rail:56px}
   .brand b,.nav button span,.rlab,.rq,.xulosa,.rsrc{display:none}
@@ -304,7 +324,7 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
 <canvas id="c"></canvas>
 
 <nav id="rail">
-  <div class="brand"><i><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 17l5-6 4 4 4-7 5 9"/><path d="M3 21h18"/></svg></i><b>Minbu Atlas</b></div>
+  <div class="brand"><i class="logo" title="MTXM — Minbu toshqin xavfi monitoringi"><svg viewBox="0 0 40 40" width="38" height="38" aria-hidden="true"><defs><linearGradient id="mtxmG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1e3a8a"/><stop offset=".55" stop-color="#2563eb"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#mtxmG)"/><path d="M0 29c4.5-2.6 9-2.6 13.5 0s9 2.6 13.5 0 8.5-2.6 13-.4V40H0z" fill="#fff" fill-opacity=".13"/><text x="20" y="17.2" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="11.5" font-weight="800" letter-spacing=".6" fill="#fff">MT</text><path d="M7.5 21.6c2.5-1.7 5-1.7 7.5 0s5 1.7 7.5 0 5-1.7 7.5 0 2.6 1.3 3.6.6" fill="none" stroke="#bae6fd" stroke-width="1.5" stroke-linecap="round"/><text x="20" y="32.6" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="11.5" font-weight="800" letter-spacing=".6" fill="#e0f2fe">XM</text></svg></i><b>Minbu toshqin xavfi monitoringi</b></div>
   <div class="nav" id="nav">
     <button data-n="dash" class="on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Boshqaruv paneli</span></button>
     <button data-n="hud"><svg viewBox="0 0 24 24"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg><span>Hududlar</span></button>
@@ -2817,6 +2837,8 @@ Promise.all(kalit.map(function(k){
 (function () {
 var D = {
 "Minbu Atlas": ["Minbu Atlas", "Minbu Atlas", "Minbu Atlas"],
+"Minbu toshqin xavfi monitoringi": ["Minbu Flood Risk Monitoring", "Мониторинг паводкового риска Минбу", "မင်းဘူး ရေကြီးမှုအန္တရာယ် စောင့်ကြည့်ရေး"],
+"MTXM — Minbu toshqin xavfi monitoringi": ["MTXM — Minbu Flood Risk Monitoring", "MTXM — Мониторинг паводкового риска Минбу", "MTXM — မင်းဘူး ရေကြီးမှုအန္တရာယ် စောင့်ကြည့်ရေး"],
 "Minbu Portal": ["Minbu Portal", "Minbu Portal", "Minbu Portal"],
 "Minbu Portal — ekin konturlari tahlili": ["Minbu Portal — crop field analysis", "Minbu Portal — анализ контуров посевов", "Minbu Portal — စိုက်ကွက်ခွဲခြမ်းစိတ်ဖြာမှု"],
 "Minbu tumani": ["Minbu Township", "Минбу (тауншип)", "မင်းဘူးမြို့နယ်"],
