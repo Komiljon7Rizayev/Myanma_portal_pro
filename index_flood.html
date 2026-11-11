@@ -289,6 +289,9 @@ body.drawer #ldon{display:none}
 
 #legStr div,#donStr path{cursor:pointer}#legStr div.tan{background:rgba(220,38,38,.22);border-radius:6px;color:#fff}#legStr div.tan i{background:#ef4444!important}
 </style>
+<style>/* sichqoncha 2 marta bosilganda yozuvlar belgilanib (select) qolmasin */
+body{-webkit-user-select:none;user-select:none}
+input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:text}</style>
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -1538,9 +1541,9 @@ async function init() {
   initDash();
   initSelShp();
   initStrTanlov();
-  home(false);
-  readHash();
   resize();
+  home(false);   // har doim DEM ekran (panellar orasi) markazida ochiladi
+  if (/[?&]korinish=1/.test(location.search)) readHash();   // eski ko'rinish faqat ?korinish=1 bo'lsa tiklanadi
   addEventListener("resize", resize);
   if (BOLAK && location.protocol.startsWith("http")) { fineOn = true; BOLAK.set = new Set(BOLAK.bor.map(b => b[0] + "_" + b[1])); }
   $("sDet").textContent = fineOn ? "Detal: 2.5 m bo'laklar" : (BOLAK ? "Detal 2.5 m uchun ochish.bat orqali oching" : "");
