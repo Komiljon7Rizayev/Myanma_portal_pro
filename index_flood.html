@@ -1727,6 +1727,12 @@ function yogGrafKursor() {
   const t0 = Date.parse(m.vaqt[0].replace(" ", "T") + ":00Z"), i0 = (Date.parse(q.sana + "T00:00:00Z") - t0) / 36e5;
   l.setAttribute("x", x(Math.max(0, i0))); l.setAttribute("width", x(Math.min(T, i0 + 24)) - x(Math.max(0, i0)));
 }
+function yogPop(i) {   // nuqta yonidagi yozuv: xaritada tanlangan qatlam (kun) bo'yicha shu nuqtaning yog'ini
+  if (!YOG || !yogOn || i < 0) return "";
+  const v = yogMm(yogQ, i); if (v === null) return "";
+  const q = YOG.m.qatlam[yogQ], t = q.k === "kun" ? q.sana.slice(8) + "." + q.sana.slice(5, 7) + " yog'in" : q.k === "jami" ? "7 kun jami" : q.k === "soat" ? "eng kuchli soat" : "oldingi 5 kun";
+  return `<span style="color:#7dd3fc">· ${t}: <b style="color:#e0f2fe">${fmt(v, 1)} mm</b></span>`;
+}
 function yogRows(i) {
   if (!YOG || !yogOn || i < 0 || yogMm(0, i) === null) return "";
   const m = YOG.m, r = [`<tr><td colspan="2" class="sh">🌧 Yog'in (ERA5): 01.06 … 07.06</td></tr>`];
@@ -2736,8 +2742,8 @@ function joyKarta(p) {
   if (!document.body.classList.contains("nopan") && innerWidth > 900 && tbl) {
     $("cBat").innerHTML = `<h3>Batafsil <small>shu nuqta, 30 m piksel</small></h3>` + tbl.outerHTML;
     $("pop").classList.add("kichik");
-    $("pop").innerHTML = `<button class="x" onclick="closePop()">×</button><b>${nom}</b><span>${fmt(d.h, 1)} m</span>`;
-  } else { $("pop").classList.remove("kichik"); tumanBat(); }
+    $("pop").innerHTML = `<button class="x" onclick="closePop()">×</button><b>${nom}</b><span>${fmt(d.h, 1)} m</span>${yogPop(i)}`;
+  } else { $("pop").classList.remove("kichik"); if (tbl) $("cBat").innerHTML = `<h3>Batafsil <small>shu nuqta, 30 m piksel</small></h3>` + tbl.outerHTML; else tumanBat(); }
   $("hT").textContent = nom; $("backB").style.display = "block";
   $("hS").textContent = `${p.tur ? p.tur + " · " : ""}${hi >= 0 ? HUD.t[hi].n + " trakti · " : ""}${d.lat.toFixed(4)}°N ${d.lon.toFixed(4)}°E · Minbu tumani`;
   $("cJoy").innerHTML = `<h3>${nom}</h3><div class="sub2">${d.lat.toFixed(5)}°, ${d.lon.toFixed(5)}° · UTM ${Math.round(d.E)} E, ${Math.round(d.N)} N</div>
@@ -3337,6 +3343,10 @@ Promise.all(kalit.map(function(k){
    Manba: Minbu_3D_portal/flood_til.js -> shablon.html va front/index_flood.html ga ichiga joylangan. */
 (function () {
 var D = {
+"· {n} yog'in:": ["· {0} rain:", "· осадки {0}:", "· {0} မိုးရေ:"],
+"· {n} kun jami:": ["· {0}-day total:", "· за {0} дней:", "· {0} ရက် စုစုပေါင်း:"],
+"· eng kuchli soat:": ["· most intense hour:", "· самый сильный час:", "· အပြင်းဆုံးနာရီ:"],
+"· oldingi {n} kun:": ["· previous {0} days:", "· предыдущие {0} дней:", "· ယခင် {0} ရက်:"],
 "Daraxtzor {n}%": ["Tree cover {0}%", "Леса {0}%", "သစ်တော {0}%"],
 "Butazor {n}%": ["Shrubland {0}%", "Кустарник {0}%", "ချုံပုတ် {0}%"],
 "O'tloq {n}%": ["Grassland {0}%", "Луга {0}%", "မြက်ခင်း {0}%"],
