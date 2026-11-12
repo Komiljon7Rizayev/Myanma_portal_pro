@@ -286,8 +286,9 @@ html,body{background:var(--bg);font-family:Inter,"Segoe UI",system-ui,-apple-sys
 #pop{z-index:6;background:rgba(8,13,22,.95)}
 #pop.kichik{min-width:0;padding:5px 26px 5px 10px;font-size:12px;white-space:nowrap}
 #pop.kichik b{font-weight:600}#pop.kichik span{color:var(--tx2);margin-left:6px}
-#cBat{display:none}
-#cBat table{border-collapse:collapse;margin-top:6px;font-size:11.5px;font-variant-numeric:tabular-nums;width:100%}
+#cBat{display:none;left:var(--gap);bottom:calc(var(--brow) + 2*var(--gap));width:300px;max-height:calc(100% - var(--brow) - var(--top) - 4*var(--gap));overflow-y:auto;padding:8px 11px;scrollbar-width:thin}
+#cBat h3{font-size:12px}#cBat h3 small{font-size:10px}
+#cBat table{border-collapse:collapse;margin-top:4px;font-size:10.5px;font-variant-numeric:tabular-nums;width:100%}
 #cBat td{padding:2px 0;vertical-align:top}#cBat td:first-child{color:var(--tx3);padding-right:10px;white-space:nowrap}
 #cBat td.sh{color:var(--tx);font-weight:600;padding-top:7px}
 #pop:after{border-top-color:rgba(8,13,22,.95)}
@@ -381,6 +382,8 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
 #tools .tfly{position:absolute;right:calc(100% + 10px);top:0;display:flex;flex-direction:column;gap:2px;padding:6px;min-width:150px;
   background:rgba(8,13,22,.85);border:1px solid var(--panel-b);border-radius:var(--r);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 #tools .tfly[hidden]{display:none}
+#tools .tfly .tlab{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;padding:6px 10px 2px;white-space:nowrap}
+#tools .tfly{top:auto;bottom:0;max-height:calc(100vh - 140px);overflow-y:auto}
 #tools .tfly button{width:auto;height:30px;padding:0 10px;text-align:left;font:inherit;font-size:12.5px;background:none;color:var(--tx2)}
 #tools .tfly button:hover{background:rgba(255,255,255,.08);color:var(--tx)}
 #tools .tfly button.on{background:var(--ac);color:#fff}
@@ -435,12 +438,12 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
   <div id="rcol">
     <div class="card" id="cJoy"></div>
     <div class="card" id="cNis"></div>
-    <div class="card" id="cBat"></div>
   </div>
+  <div class="card" id="cBat"></div>
   <div id="brow">
     <div class="card" id="cRank" style="display:none"><h3>Eng ko'p sel keladigan hududlar <small>HEC-RAS, ga</small></h3><div class="rank diag" id="rank"></div><button class="lnk" data-go="hud">Barchasini ko'rish (70)</button></div>
     <div class="card"><h3>Balandlik taqsimoti <small id="hSub">balandlik va maydon, km² (10 m oraliq)</small>
-      <div class="tg" id="hTg"><button data-k="m" class="on">Maydon</button><button data-k="y">Yig'indi</button></div></h3>
+</h3>
       <svg id="hArea"></svg></div>
     <div id="ldon" class="card dcard"><div class="dch"><h3>Oqim yo'llari tarkibi</h3><span class="pill" id="donStrT">Strahler tartibi bo'yicha</span></div>
       <div class="dbody"><svg id="donStr" class="dbig" width="180" height="180" viewBox="0 0 180 180"></svg><div class="dleg dlegB" id="legStr"></div></div>
@@ -468,7 +471,6 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
       <h2>Ko'rinish</h2>
       <div class="chips" id="rejim">
         <button class="chip on" data-m="0">Sun'iy yo'ldosh</button>
-        <button class="chip" data-m="2">Aralash</button>
         <button class="chip" data-m="1">Balandlik rangi</button>
         <button class="chip" data-m="3">Relyef</button>
       </div>
@@ -597,7 +599,7 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
 
 <div id="tools" class="panel">
   <div class="tq"><button id="mapB" class="tl" title="Xarita ko'rinishi"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span>Xarita</span><svg class="chv" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
-    <div id="mapM" class="tfly" hidden><button data-m="0">Sun'iy yo'ldosh</button><button data-m="2">Aralash</button><button data-m="1">Balandlik rangi</button><button data-m="3">Relyef</button></div></div>
+    <div id="mapM" class="tfly" hidden><button data-m="0">Sun'iy yo'ldosh</button><button data-m="1">Balandlik rangi</button><button data-m="3">Relyef</button><span class="tlab">Onlayn xaritalar</span><button data-b="ewi">Esri World Imagery</button><button data-b="eil">Esri Imagery Labels</button><button data-b="etm">Esri Topo Map</button><button data-b="esm">Esri Street Map</button><button data-b="edg">Esri Dark Gray</button><button data-b="gs">Google Satellite</button><button data-b="gh">Google Hybrid</button><button data-b="gr">Google Roadmap</button><button data-b="gt">Google Terrain</button><span class="tlab" id="mapH" style="text-transform:none;letter-spacing:0"></span></div></div>
   <button id="tilt" class="tl" title="Tepadan / qiya ko'rinish"><svg viewBox="0 0 24 24"><path d="M3 18l6-8 4 5 3-4 5 7z"/></svg><span>3D</span></button>
   <div class="tz"><button id="zin" title="Yaqinlashish">+</button><button id="zout" title="Uzoqlashish">−</button><button id="kompas" title="Shimolga qaratish"><svg width="16" height="16" viewBox="0 0 22 22"><path d="M11 2l4 9h-8z" fill="#e8584c"/><path d="M11 20l-4-9h8z" fill="#cfd6dd"/></svg></button></div>
   <i class="tsep"></i>
@@ -1774,6 +1776,77 @@ function yogUI() {
   $("yogKun").onclick = e => { const b = e.target.closest(".chip"); if (b && YOG) { yogQ = +b.dataset.q; yogChiz(); } };
   addEventListener("resize", () => { if (YOG && yogOn) { yogGraf(); yogGrafKursor(); } });
 }
+// ---------------- Onlayn tagxaritalar (ArcGIS Online "Minbu_new" papkasidagi web map'lar bilan bir xil manbalar) ----------------
+const XARITALAR = {
+  ewi: { n: "Esri World Imagery", u: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"], c: "Esri, Maxar, Earthstar Geographics" },
+  eil: { n: "Esri Imagery Labels", u: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"], c: "Esri, Maxar" },
+  etm: { n: "Esri Topo Map", u: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"], c: "Esri" },
+  esm: { n: "Esri Street Map", u: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"], c: "Esri" },
+  edg: { n: "Esri Dark Gray", u: ["https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"], c: "Esri" },
+  gs: { n: "Google Satellite", u: ["https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"], c: "Google" },
+  gh: { n: "Google Hybrid", u: ["https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"], c: "Google" },
+  gr: { n: "Google Roadmap", u: ["https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"], c: "Google" },
+  gt: { n: "Google Terrain", u: ["https://mt{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}"], c: "Google" }
+};
+let xarK = null, xarAsl = null, xarFineAsl = null, xarNav = 0;
+const xarTex = {};
+function xarTayyorla(k) {   // butun tuman uchun UTM tekstura: Web Mercator bo'laklari affin o'zgartirish bilan chiziladi
+  if (xarTex[k]) return xarTex[k];
+  const L = XARITALAR[k], Z = 14, CW = 4096, CH = Math.round(CW * H / W), s = W * RES / CW;
+  const cv = document.createElement("canvas"); cv.width = CW; cv.height = CH;
+  const ctx = cv.getContext("2d"); ctx.fillStyle = "#1b2430"; ctx.fillRect(0, 0, CW, CH);
+  const t = new THREE.CanvasTexture(cv); t.flipY = false; t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  const n2 = 256 * 2 ** Z;
+  const merc = (u, v) => {
+    const [lat, lon] = utm2ll(META.x0 + u * s, META.y0 - v * s, META.utm_zona), f = lat * Math.PI / 180;
+    return [(lon + 180) / 360 * n2, (1 - Math.log(Math.tan(f) + 1 / Math.cos(f)) / Math.PI) / 2 * n2];
+  };
+  // affin: kanvas (u,v) -> mercator piksel; 3 burchakdan
+  const p0 = merc(0, 0), p1 = merc(CW, 0), p2 = merc(0, CH);
+  const a = (p1[0] - p0[0]) / CW, b = (p2[0] - p0[0]) / CH, d = (p1[1] - p0[1]) / CW, e = (p2[1] - p0[1]) / CH;
+  const det = a * e - b * d, ia = e / det, ib = -b / det, id = -d / det, ie = a / det;   // teskari matritsa
+  const p3 = merc(CW, CH), xs = [p0, p1, p2, p3].map(p => p[0]), ys = [p0, p1, p2, p3].map(p => p[1]);
+  const tx0 = Math.floor(Math.min(...xs) / 256), tx1 = Math.floor(Math.max(...xs) / 256), ty0 = Math.floor(Math.min(...ys) / 256), ty1 = Math.floor(Math.max(...ys) / 256);
+  const Xo = tx0 * 256, Yo = ty0 * 256, ox = p0[0] - Xo, oy = p0[1] - Yo;
+  const navbat = [];
+  for (let y = ty0; y <= ty1; y++) for (let x = tx0; x <= tx1; x++) navbat.push([x, y]);
+  const cx = (tx0 + tx1) / 2, cy = (ty0 + ty1) / 2; navbat.sort((p, q) => Math.hypot(p[0] - cx, p[1] - cy) - Math.hypot(q[0] - cx, q[1] - cy));
+  const img = url => new Promise(r => { const i = new Image(); i.crossOrigin = "anonymous"; i.onload = () => r(i); i.onerror = () => r(null); i.src = url; });
+  const R = { t, jami: navbat.length, tayyor: 0, c: L.c };
+  let yangi = false;
+  const chiz = (ims, x, y) => {
+    // mercator (X-Xo, Y-Yo) -> kanvas: [u,v] = inv * ([X,Y] - p0)
+    ctx.setTransform(ia, id, ib, ie, -(ia * ox + ib * oy), -(id * ox + ie * oy));
+    ims.forEach(im => { if (im) ctx.drawImage(im, x * 256 - Xo, y * 256 - Yo, 256, 256); });
+    ctx.setTransform(1, 0, 0, 1, 0, 0); yangi = true;
+  };
+  const ishchi = async () => {
+    while (navbat.length) {
+      const [x, y] = navbat.shift(), sd = (x + y) % 4;
+      const ims = await Promise.all(L.u.map(u => img(u.replace("{z}", Z).replace("{x}", x).replace("{y}", y).replace("{s}", sd))));
+      chiz(ims, x, y); R.tayyor++;
+    }
+  };
+  for (let i = 0; i < 12; i++) ishchi();
+  const tik = setInterval(() => {
+    if (yangi) { t.needsUpdate = true; yangi = false; dirty = true; }
+    xarHolat();
+    if (R.tayyor >= R.jami) clearInterval(tik);
+  }, 300);
+  return (xarTex[k] = R);
+}
+function xarHolat() {
+  const el = document.getElementById("mapH"); if (!el) return;
+  const R = xarK && xarTex[xarK];
+  el.textContent = !R ? "" : (R.tayyor < R.jami ? `yuklanmoqda ${Math.round(R.tayyor / R.jami * 100)}% · ` : "") + "© " + R.c;
+}
+function xaritaTanla(k) {   // k = null -> portalning o'z sun'iy yo'ldosh tasviri
+  if (xarAsl === null) { xarAsl = U.uSat.value; xarFineAsl = fineOn; }
+  xarK = k;
+  if (!k) { U.uSat.value = xarAsl; fineOn = xarFineAsl; fineC0 = fineR0 = -999; if (fineOn) updateFine(); }
+  else { U.uSat.value = xarTayyorla(k).t; fineOn = false; U.uFineR.value.w = 0; }
+  xarHolat(); dirty = true;
+}
 // qalin chiziq geometriyasi (xz nuqtalar, balandlik funksiyasi bilan)
 function fatGeom(pts, hf, closed) {
   const n = pts.length, P = new Float32Array(n * 2 * 3), A = new Float32Array(n * 2), O = new Float32Array(n * 2 * 3), Sd = new Float32Array(n * 2);
@@ -2101,9 +2174,12 @@ function clampCam() {
 let profMode = 0, profA = null, profB = null, profData = null, popAt = null;
 function toolsUI() {
   const q = document.querySelector("#tools .tq"), mm = $("mapM");
-  const belgi = () => { const m = document.querySelector("#rejim .chip.on"); mm.querySelectorAll("button").forEach(b => b.classList.toggle("on", !!m && b.dataset.m === m.dataset.m)); };
+  const belgi = () => { const m = document.querySelector("#rejim .chip.on"); mm.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.b ? b.dataset.b === xarK : !!m && b.dataset.m === m.dataset.m && !(xarK && b.dataset.m === "0"))); };
   $("mapB").onclick = e => { e.stopPropagation(); mm.hidden = !mm.hidden; q.classList.toggle("och", !mm.hidden); belgi(); };
-  mm.onclick = e => { const b = e.target.closest("button"); if (!b) return; document.querySelector(`#rejim .chip[data-m="${b.dataset.m}"]`).click(); belgi(); };
+  mm.onclick = e => { const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.b) { document.querySelector(`#rejim .chip[data-m="0"]`).click(); xaritaTanla(b.dataset.b); }
+    else { if (xarK) xaritaTanla(null); document.querySelector(`#rejim .chip[data-m="${b.dataset.m}"]`).click(); }
+    belgi(); };
   document.addEventListener("pointerdown", e => { if (!q.contains(e.target)) { mm.hidden = true; q.classList.remove("och"); } });
   const t3 = () => $("tilt").classList.toggle("on", cam.pol > .3);
   setInterval(t3, 400); t3();
@@ -2708,7 +2784,7 @@ function initDash() {
   document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => setNav(b.dataset.go));
   document.querySelectorAll("#nav button").forEach(b => b.onclick = () => setNav(b.dataset.n));
   $("dX").onclick = () => setNav("dash");
-  $("hTg").onclick = e => {
+  if ($("hTg")) $("hTg").onclick = e => {
     const b = e.target.closest("button"); if (!b) return;
     hKind = b.dataset.k; $("hTg").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
     $("hSub").textContent = hKind === "m" ? "balandlik va maydon, km² (10 m oraliq)" : "balandlik va maydon, tuman %"; drawArea();
@@ -2790,7 +2866,7 @@ function hudLabels() {
   if (!on) return;
   const rc = renderer.domElement.getBoundingClientRect(), joy = [];
   // panellar ostiga tushadigan nomlar ko'rsatilmaydi (yashirin panellarning o'lchami 0)
-  document.querySelectorAll("#rail, #top, #hdr, #kpis, #ldon, #side, #rcol .card, #brow, #tools, #pop").forEach(e => {
+  document.querySelectorAll("#rail, #top, #hdr, #kpis, #ldon, #side, #rcol .card, #cBat, #brow, #tools, #pop").forEach(e => {
     const r = e.getBoundingClientRect(); if (r.width > 0 && r.height > 0) joy.push([r.left, r.top, r.right, r.bottom]);
   });
   const ord = HUD.t.map((t, i) => i).sort((a, b) => (b === hudSel) - (a === hudSel) || HUD.t[b].a - HUD.t[a].a);
@@ -3229,6 +3305,8 @@ Promise.all(kalit.map(function(k){
    Manba: Minbu_3D_portal/flood_til.js -> shablon.html va front/index_flood.html ga ichiga joylangan. */
 (function () {
 var D = {
+"Onlayn xaritalar": ["Online maps", "Онлайн-карты", "အွန်လိုင်းမြေပုံများ"],
+"yuklanmoqda {n}%": ["loading {0}%", "загрузка {0}%", "ဖွင့်နေသည် {0}%"],
 "{n}–{n} m · {n} km² ({n}%)": ["{0}–{1} m · {2} km² ({3}%)", "{0}–{1} м · {2} км² ({3}%)", "{0}–{1} m · {2} km² ({3}%)"],
 "{n}–{n} m · {n}% past": ["{0}–{1} m · {2}% lower", "{0}–{1} м · {2}% ниже", "{0}–{1} m · {2}% နိမ့်"],
 "Yog'in ma'lumotlari": ["Rainfall data", "Данные об осадках", "မိုးရေချိန် အချက်အလက်"],
