@@ -397,9 +397,9 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
   <div class="nav" id="nav">
     <button data-n="dash" class="on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Boshqaruv paneli</span></button>
     <button data-n="hud"><svg viewBox="0 0 24 24"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg><span>Hududlar</span></button>
-    <button data-n="kor"><svg viewBox="0 0 24 24"><path d="M3 18l6-8 4 5 3-4 5 7z"/><circle cx="17" cy="6" r="2"/></svg><span>Relyef va ko'rinish</span></button>
     <button data-n="suv"><svg viewBox="0 0 24 24"><path d="M4 6c3 0 3 3 6 3s3-3 6-3 3 3 4 3"/><path d="M4 13c3 0 3 3 6 3s3-3 6-3 3 3 4 3"/></svg><span>Suv oqimi</span></button>
     <button data-n="top"><svg viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></svg><span>To'planish joylari</span></button>
+    <button data-n="yog"><svg viewBox="0 0 24 24"><path d="M7 15a4 4 0 0 1 .5-8A5.5 5.5 0 0 1 18 8.5 3.5 3.5 0 0 1 17.5 15z"/><path d="M8 18l-1 2.5M12 18l-1 2.5M16 18l-1 2.5"/></svg><span>Yog'in ma'lumotlari</span></button>
     <button data-n="sel"><svg viewBox="0 0 24 24"><path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17v.5"/></svg><span>Sel xavfi</span></button>
     <button data-n="soz"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Sozlamalar va asboblar</span></button>
     <button data-n="man"><svg viewBox="0 0 24 24"><path d="M5 4h10l4 4v12H5z"/><path d="M9 12h6M9 16h6"/></svg><span>Manbalar</span></button>
@@ -439,7 +439,7 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
   </div>
   <div id="brow">
     <div class="card" id="cRank" style="display:none"><h3>Eng ko'p sel keladigan hududlar <small>HEC-RAS, ga</small></h3><div class="rank diag" id="rank"></div><button class="lnk" data-go="hud">Barchasini ko'rish (70)</button></div>
-    <div class="card"><h3>Balandlik taqsimoti <small id="hSub">maydon, km² (10 m oraliq)</small>
+    <div class="card"><h3>Balandlik taqsimoti <small id="hSub">balandlik va maydon, km² (10 m oraliq)</small>
       <div class="tg" id="hTg"><button data-k="m" class="on">Maydon</button><button data-k="y">Yig'indi</button></div></h3>
       <svg id="hArea"></svg></div>
     <div id="ldon" class="card dcard"><div class="dch"><h3>Oqim yo'llari tarkibi</h3><span class="pill" id="donStrT">Strahler tartibi bo'yicha</span></div>
@@ -502,6 +502,23 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
       <div class="tlh">Eng katta ko'lmaklar <span>(hajm bo'yicha, bosing — uchib boradi)</span></div>
       <div id="tList" class="tlist"></div>
       <div class="hint">Ko'lmak: suv chiqib ketolmaydigan berk chuqurlik (≥0.3 m), bug'lanib yoki shimilib ketguncha turadi. Pastlik: kuchli yomg'irda soy yoki daryo suvi yoyilib turadigan tekis joy. Manba: s5_toplanish.py (DEM 30 m, HAND, ESA WorldCover).</div>
+    </div>
+    <div class="sec" id="secYog">
+      <h2>Yog'in ma'lumotlari</h2>
+      <div class="hint" id="yogInfo" style="margin-top:0">Yog'in ma'lumoti yuklanmoqda…</div>
+      <div class="stats" id="yogStats" style="margin-top:8px"></div>
+      <div class="tlh" style="margin-top:10px">Xaritadagi qatlam</div>
+      <div class="chips" id="yogQat">
+        <button class="chip on" data-q="0">7 kun jami</button>
+        <button class="chip" data-q="kun">Kunlik</button>
+        <button class="chip" data-q="8">Eng kuchli soat</button>
+        <button class="chip" data-q="9">Oldingi 5 kun</button>
+      </div>
+      <div class="chips" id="yogKun" style="margin-top:6px;display:none"></div>
+      <div id="yogLeg" style="margin-top:8px"></div>
+      <div class="tlh" style="margin-top:10px">Soatlik yog'in, mm <span>(Minbu o'rtacha; ustun tepasida — kunlik jami; kunni bosing)</span></div>
+      <svg id="yogGraf" style="width:100%;height:120px;display:block;cursor:pointer"></svg>
+      <div class="hint">Xaritani bosing: shu joyga yoqqan yog'in chiqadi. <span id="yogManba"></span></div>
     </div>
     <div class="sec" id="secSel">
       <h2>Sel xavfi (yomg'irdan toshqin)</h2>
@@ -1640,6 +1657,123 @@ function hecUI() {
   };
 }
 
+// ---------------- Yog'in ma'lumotlari: ERA5, 2025-06-01 … 06-07 (yogin_tayyorla.py) ----------------
+let YOG = null, yogYuk = null, yogQ = 0, yogOn = false, yogOld = 0;
+const YOG_RAMP = [[0, [245, 245, 235]], [5, [200, 230, 205]], [15, [140, 205, 210]], [40, [70, 150, 215]], [80, [45, 80, 190]], [120, [90, 30, 150]], [170, [180, 20, 120]]];
+async function yogYukla() {
+  let m, b;
+  if (window.__D && __D.ol) {
+    const [mb, bb] = await Promise.all([__D.ol("yogm"), __D.ol("yogBin")]);
+    m = JSON.parse(new TextDecoder().decode(mb)); b = new Uint8Array(bb);
+  } else {
+    const [mr, br] = await Promise.all([fetch("data/yogin_meta.json"), fetch("data/yogin_bin.bin.gz")]);
+    if (!mr.ok || !br.ok) throw new Error("yog'in ma'lumoti topilmadi");
+    m = await mr.json(); b = new Uint8Array(await br.arrayBuffer());
+  }
+  const u = await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream("gzip"))).arrayBuffer();
+  const K = new Int16Array(u), W = m.w, Hh = m.h;
+  for (let r = 0; r < m.B * Hh; r++) { const o = r * W; for (let c = 1; c < W; c++) K[o + c] += K[o + c - 1]; }   // qator ichidagi farqlardan tiklash
+  YOG = { m, K, n: W * Hh };
+}
+const yogMm = (q, i) => { const c = YOG.K[q * YOG.n + i]; return c < 0 ? null : c / 10; };
+function yogLegHtml(lo, mx) {   // shkala har qatlamning eng kattasiga moslanadi (kunlik 1 mm ham ko'rinsin)
+  const st = YOG_RAMP.map(([v, c]) => `rgb(${c.join(",")}) ${(v / 170 * 100).toFixed(1)}%`).join(",");
+  return `<span style="display:block"><span style="display:block;height:10px;border-radius:3px;background:linear-gradient(90deg,${st})"></span>
+    <span style="display:flex;justify-content:space-between;margin-top:2px"><em style="font-style:normal">${fmt(lo, mx < 10 ? 1 : 0)}</em><em style="font-style:normal">${fmt((lo + mx) / 2, mx < 10 ? 1 : 0)}</em><em style="font-style:normal">${fmt(mx, mx < 10 ? 1 : 0)} mm</em></span></span>`;
+}
+function yogChiz() {
+  if (!YOG || !yogOn) return;
+  const q = YOG.m.qatlam[yogQ], D = datData, n = YOG.n, o0 = yogQ * n, K = YOG.K;
+  const mx = Math.max(q.max, 1), lo = q.k === "kun" ? 0 : Math.floor(q.min / 10) * 10;
+  for (let i = 0; i < n; i++) {
+    const c = K[o0 + i], o = i * 4;
+    if (c < 0) { D[o + 3] = 0; continue; }
+    const col = rampAt(YOG_RAMP, Math.max(0, c / 10 - lo) / (mx - lo) * 170);
+    D[o] = col[0]; D[o + 1] = col[1]; D[o + 2] = col[2]; D[o + 3] = 175;
+  }
+  datT.needsUpdate = true; U.uDatOn.value = 1; dirty = true;
+  $("yogQat").querySelectorAll(".chip").forEach(b => b.classList.toggle("on", +b.dataset.q === yogQ || (b.dataset.q === "kun" && q.k === "kun")));
+  $("yogKun").style.display = q.k === "kun" ? "" : "none";
+  $("yogKun").querySelectorAll(".chip").forEach(b => b.classList.toggle("on", +b.dataset.q === yogQ));
+  $("yogLeg").innerHTML = `<div style="font-size:11px;color:var(--tx2);margin-bottom:3px">${yogQNom(q)} · Minbu o'rtacha <b>${fmt(q.ort, 1)} mm</b> (${fmt(q.min, 1)}–${fmt(q.max, 1)} mm)</div>` + yogLegHtml(lo, mx);
+  yogGrafKursor();
+  if (popAt) showInfo(popAt);
+}
+const yogQNom = q => q.k === "kun" ? q.sana.slice(8) + "." + q.sana.slice(5, 7) + " kunlik yog'in" : q.k === "jami" ? "7 kun jami yog'in" : q.k === "soat" ? "Eng kuchli 1 soatlik yog'in" : "Oldingi 5 kun yog'ini (27–31.05)";
+function yogGraf() {
+  const g = $("yogGraf"), m = YOG.m, W = Math.max(240, Math.round(g.clientWidth || 300)), Hh = 120, T = m.vaqt.length, a = m.soat_ort, amax = Math.max(...a) * 1.1;
+  const x = i => 4 + i / T * (W - 8), y = v => Hh - 16 - v / amax * (Hh - 30), bw = Math.max(1, (W - 8) / T - .6);
+  const t0 = Date.parse(m.vaqt[0].replace(" ", "T") + ":00Z");
+  let s = "";
+  Object.entries(m.kun_ort).forEach(([d, p], k) => {
+    const i0 = (Date.parse(d + "T00:00:00Z") - t0) / 36e5, x0 = x(Math.max(0, i0)), x1 = x(Math.min(T, i0 + 24));
+    const q = m.qatlam.findIndex(z => z.sana === d);
+    s += `<rect class="yk" data-q="${q}" x="${x0}" y="0" width="${x1 - x0}" height="${Hh - 14}" fill="${k % 2 ? "rgba(148,163,184,.05)" : "transparent"}"/>`
+      + `<text x="${(x0 + x1) / 2}" y="${Hh - 3}" text-anchor="middle" font-size="10" fill="#8b9bb0">${d.slice(8)}.06</text>`
+      + `<text x="${(x0 + x1) / 2}" y="11" text-anchor="middle" font-size="10" fill="#cbd5e1">${fmt(p, 1)}</text>`;
+  });
+  s += a.map((v, i) => v > 0 ? `<rect x="${x(i).toFixed(1)}" y="${y(v).toFixed(1)}" width="${bw.toFixed(1)}" height="${(Hh - 16 - y(v)).toFixed(1)}" fill="#38bdf8" pointer-events="none"/>` : "").join("");
+  s += `<rect id="yogKur" x="-10" y="14" width="0" height="${Hh - 30}" fill="rgba(248,250,252,.10)" stroke="#f8fafc" stroke-dasharray="2 2" pointer-events="none"/>`;
+  g.setAttribute("viewBox", `0 0 ${W} ${Hh}`); g.innerHTML = s; g.dataset.w = W;
+  g.onclick = e => { const r = e.target.closest(".yk"); if (r && +r.dataset.q >= 0) { yogQ = +r.dataset.q; yogChiz(); } };
+}
+function yogGrafKursor() {
+  const l = document.getElementById("yogKur"); if (!l) return;
+  const m = YOG.m, q = m.qatlam[yogQ], W = +$("yogGraf").dataset.w || 300, T = m.vaqt.length, x = i => 4 + i / T * (W - 8);
+  if (q.k !== "kun") { l.setAttribute("x", -10); l.setAttribute("width", 0); return; }
+  const t0 = Date.parse(m.vaqt[0].replace(" ", "T") + ":00Z"), i0 = (Date.parse(q.sana + "T00:00:00Z") - t0) / 36e5;
+  l.setAttribute("x", x(Math.max(0, i0))); l.setAttribute("width", x(Math.min(T, i0 + 24)) - x(Math.max(0, i0)));
+}
+function yogRows(i) {
+  if (!YOG || !yogOn || i < 0 || yogMm(0, i) === null) return "";
+  const m = YOG.m, r = [`<tr><td colspan="2" class="sh">🌧 Yog'in (ERA5): 01.06 … 07.06</td></tr>`];
+  const q = m.qatlam[yogQ];
+  if (q.k === "kun") r.push(`<tr><td>${yogQNom(q)}</td><td>${fmt(yogMm(yogQ, i), 1)} mm</td></tr>`);
+  r.push(`<tr><td>7 kun jami</td><td>${fmt(yogMm(0, i), 1)} mm</td></tr>`);
+  let bk = 1; for (let k = 2; k <= 7; k++) if (yogMm(k, i) > yogMm(bk, i)) bk = k;
+  r.push(`<tr><td>Eng ko'p yoqqan kun</td><td>${m.qatlam[bk].sana.slice(8)}.06 · ${fmt(yogMm(bk, i), 1)} mm</td></tr>`);
+  r.push(`<tr><td>Eng kuchli 1 soat</td><td>${fmt(yogMm(8, i), 1)} mm</td></tr>`);
+  r.push(`<tr><td>Oldingi 5 kun</td><td>${fmt(yogMm(9, i), 1)} mm</td></tr>`);
+  return r.join("");
+}
+function yogRejim(on) {
+  if (on === yogOn) return;
+  yogOn = on;
+  if (!on) {   // oldingi qatlam (sel / HEC-RAS) qaytariladi
+    if (!yogOld) { U.uDatOn.value = 0; dirty = true; }
+    else if (typeof hecFaol === "function" && hecFaol() && HEC) hecChiz();
+    else if (SL) selQatlam(); else { U.uDatOn.value = 0; dirty = true; }
+    if (popAt) showInfo(popAt);
+    return;
+  }
+  yogOld = U.uDatOn.value;
+  if (YOG) { yogChiz(); return; }
+  $("yogInfo").textContent = "Yog'in ma'lumoti yuklanmoqda…";
+  yogYuk = yogYuk || yogYukla();
+  yogYuk.then(() => {
+    const m = YOG.m, ek = m.eng_kuchli_soat, kmax = m.qatlam.filter(q => q.k === "kun").map(q => [q.sana, q.ort]).sort((a, b) => b[1] - a[1])[0];
+    $("yogInfo").innerHTML = `ERA5 soatlik yog'in, ${m.vaqt[0]} — ${m.vaqt[m.vaqt.length - 1]} (Myanma vaqti). Shu yomg'ir HEC-RAS sel modeliga (Sel xavfi → 2025-06-05) kiritilgan.`;
+    $("yogStats").innerHTML = [
+      [fmt(m.qatlam[0].ort, 1) + " mm", "7 kunda jami (Minbu o'rtacha)"],
+      [fmt(kmax[1], 1) + " mm", `Eng ko'p kun: ${kmax[0].slice(8)}.06`],
+      [fmt(ek.mm, 1) + " mm", `Eng kuchli soat: ${ek.vaqt.slice(8, 10)}.06 ${ek.vaqt.slice(11)}`],
+      [fmt(m.qatlam[9].ort, 1) + " mm", "Oldingi 5 kun (tuproq nam edi)"]
+    ].map(([v, s]) => `<div><b>${v}</b><span>${s}</span></div>`).join("");
+    $("yogKun").innerHTML = m.qatlam.map((q, k) => q.k === "kun" ? `<button class="chip" data-q="${k}">${q.sana.slice(8)}.06</button>` : "").join("");
+    $("yogManba").textContent = "Manba: " + m.manba;
+    yogGraf();
+    if (yogOn) yogChiz();
+  }).catch(e => { console.error(e); yogYuk = null; $("yogInfo").textContent = "Yog'in ma'lumotini yuklab bo'lmadi: " + e.message; });
+}
+function yogUI() {
+  $("yogQat").onclick = e => {
+    const b = e.target.closest(".chip"); if (!b || !YOG) return;
+    if (b.dataset.q === "kun") { if (YOG.m.qatlam[yogQ].k !== "kun") yogQ = 2; } else yogQ = +b.dataset.q;
+    yogChiz();
+  };
+  $("yogKun").onclick = e => { const b = e.target.closest(".chip"); if (b && YOG) { yogQ = +b.dataset.q; yogChiz(); } };
+  addEventListener("resize", () => { if (YOG && yogOn) { yogGraf(); yogGrafKursor(); } });
+}
 // qalin chiziq geometriyasi (xz nuqtalar, balandlik funksiyasi bilan)
 function fatGeom(pts, hf, closed) {
   const n = pts.length, P = new Float32Array(n * 2 * 3), A = new Float32Array(n * 2), O = new Float32Array(n * 2 * 3), Sd = new Float32Array(n * 2);
@@ -2105,6 +2239,7 @@ function initUI() {
   tupd(); topLegend();
   selUI();
   hecUI();
+  yogUI();
   const ss = SUV.stat, tk = Object.values(ss.tarmoq_minbu_km).reduce((a, b) => a + b, 0);
   $("sStats").innerHTML = [
     [fmt(tk, 0) + " km", "Oqim yo'llari (Minbu)"], [fmt(ss.tarmoq_zichligi_km_km2, 2) + " km/km²", "Tarmoq zichligi"],
@@ -2207,6 +2342,7 @@ function showInfo(p, jForce) {
     <tr><td>Yig'ilish maydoni</td><td>${fmtAkm(accAt(i))} dan suv keladi</td></tr>${strRow(i)}` : ""; })()}
     ${tj >= 0 ? topRows(tj) : ""}
     ${selRows(ci)}
+    ${yogRows(ci)}
     </table>
     <button class="btn cp" onclick="navigator.clipboard&&navigator.clipboard.writeText('${d.lat.toFixed(6)}, ${d.lon.toFixed(6)}');this.textContent='Nusxalandi'">Koordinatani nusxalash</button>`;
   $("pop").style.display = "block"; $("pin").style.display = "block";
@@ -2337,8 +2473,8 @@ const DASH = __D.dash;
 const SEL_RGB = ["#0072B2", "#009E73", "#E69F00", "#F0E442"];          // taqdimotdagi sel darajalari ranglari
 const SEL_NOM = ["Doimiy", "Biroz kuchli", "Kuchli", "Juda kuchli"];
 const STR_QISQA = ["irmoq", "irmoq", "kichik soy", "soy", "katta soy", "chaung", "asosiy chaung"];
-const NAVSEC = { hud: ["secHud"], kor: ["secKor", "secStat"], suv: ["secSuv"], top: ["secTop"], sel: ["secSel"], soz: ["secSoz", "secAsb"], man: ["src"] };
-const NAVT = { hud: "Hududlar (qishloq traktlari)", kor: "Relyef va ko'rinish", suv: "Yomg'ir suvi oqimi", top: "Suv to'planib qoladigan joylar", sel: "Sel xavfi",
+const NAVSEC = { hud: ["secHud"], kor: ["secKor", "secStat"], suv: ["secSuv"], top: ["secTop"], yog: ["secYog"], sel: ["secSel"], soz: ["secSoz", "secAsb"], man: ["src"] };
+const NAVT = { hud: "Hududlar (qishloq traktlari)", kor: "Relyef va ko'rinish", suv: "Yomg'ir suvi oqimi", top: "Suv to'planib qoladigan joylar", yog: "Yog'in ma'lumotlari (ERA5, 2025-06-01 … 06-07)", sel: "Sel xavfi",
   soz: "Sozlamalar va asboblar", man: "Manbalar va boshqaruv" };
 let hKind = "m", joyH = null;
 const hexRgb = c => `rgb(${c.join(",")})`;
@@ -2411,49 +2547,50 @@ function foiz(hm) {
   }
   return Math.max(0, Math.min(100, s / ST.maydon_km2 * 100));
 }
-function drawArea(hi = -1) {
+function drawArea(hi = -1) {   // y — balandlik (baland joy yuqorida), x — shu balandlikdagi maydon (yig'ilib boradi)
   const svg = $("hArea"), W = svg.clientWidth, H = svg.clientHeight;
   if (!W || !H) return;
-  const hs = META.hist, n = hs.km2.length;
-  let ys = hs.km2.slice();
-  if (hKind === "y") { let c = 0; ys = ys.map(v => (c += v) / ST.maydon_km2 * 100); }
-  const pd = { l: 4, r: 6, t: 26, b: 17 }, mx = Math.max(...ys) * 1.02, cw = W - pd.l - pd.r, chh = H - pd.t - pd.b;
-  const X = i => pd.l + (i + .5) / n * cw, Y = v => pd.t + (1 - v / mx) * chh, XE = e => pd.l + (e - hs.lo) / (n * hs.step) * cw;
-  const p = ys.map((v, i) => [X(i), Y(v)]);
+  const hs = META.hist, n = hs.km2.length, tot = hs.km2.reduce((s, v) => s + v, 0), foiz = hKind === "y";
+  const cum = [0]; hs.km2.forEach(v => cum.push(cum[cum.length - 1] + v));
+  const pd = { l: 40, r: 10, t: 12, b: 17 }, cw = W - pd.l - pd.r, chh = H - pd.t - pd.b, top = hs.lo + n * hs.step;
+  const X = a => pd.l + a / tot * cw, Y = e => pd.t + (1 - (e - hs.lo) / (top - hs.lo)) * chh;
+  const p = cum.map((c, i) => [X(c), Y(hs.lo + i * hs.step)]);
   let d = `M${p[0]}`;
-  for (let i = 0; i < n - 1; i++) {   // silliq, lekin nuqtalar orasidan oshib ketmaydi
-    const a = p[Math.max(0, i - 1)], b = p[i], c = p[i + 1], e = p[Math.min(n - 1, i + 2)];
-    const lo = Math.min(b[1], c[1]), up = Math.max(b[1], c[1]), cl = y => Math.min(up, Math.max(lo, y));
-    d += `C${b[0] + (c[0] - a[0]) / 6},${cl(b[1] + (c[1] - a[1]) / 6)} ${c[0] - (e[0] - b[0]) / 6},${cl(c[1] - (e[1] - b[1]) / 6)} ${c}`;
+  for (let i = 0; i < n; i++) {   // silliq, lekin nuqtalar orasidan oshib ketmaydi
+    const a = p[Math.max(0, i - 1)], b = p[i], c = p[i + 1], e = p[Math.min(n, i + 2)];
+    const cl = (v, u, w) => Math.min(Math.max(u, w), Math.max(Math.min(u, w), v));
+    d += `C${cl(b[0] + (c[0] - a[0]) / 6, b[0], c[0])},${cl(b[1] + (c[1] - a[1]) / 6, b[1], c[1])} ${cl(c[0] - (e[0] - b[0]) / 6, b[0], c[0])},${cl(c[1] - (e[1] - b[1]) / 6, b[1], c[1])} ${c}`;
   }
-  let g = `<defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6" stop-opacity=".45"/><stop offset="1" stop-color="#3b82f6" stop-opacity="0"/></linearGradient></defs>`;
-  [.5, 1].forEach(k => g += `<line x1="${pd.l}" x2="${W - pd.r}" y1="${Y(mx / 1.02 * k)}" y2="${Y(mx / 1.02 * k)}" stroke="rgba(148,163,184,.12)"/>`);
-  g += `<path d="${d}L${p[n - 1][0]},${H - pd.b}L${p[0][0]},${H - pd.b}Z" fill="url(#hg)"/><path d="${d}" fill="none" stroke="#60a5fa" stroke-width="2"/>`;
-  for (let e = Math.ceil(hs.lo / 50) * 50; e <= hs.lo + n * hs.step; e += 50)
-    g += `<text x="${XE(e)}" y="${H - 4}" fill="#5f708a" font-size="10" text-anchor="middle">${e} m</text>`;
+  let g = `<defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b82f6" stop-opacity=".45"/><stop offset="1" stop-color="#3b82f6" stop-opacity=".02"/></linearGradient></defs>`;
+  for (let e = Math.ceil(hs.lo / 100) * 100; e <= top; e += 100)
+    g += `<line x1="${pd.l}" x2="${W - pd.r}" y1="${Y(e)}" y2="${Y(e)}" stroke="rgba(148,163,184,.12)"/><text x="${pd.l - 5}" y="${Y(e) + 3.5}" fill="#5f708a" font-size="10" text-anchor="end">${e} m</text>`;
+  g += `<path d="${d}L${p[n][0]},${H - pd.b}L${p[0][0]},${H - pd.b}Z" fill="url(#hg)"/><path d="${d}" fill="none" stroke="#60a5fa" stroke-width="2"/>`;
+  const qd = (foiz ? [10, 25, 50] : [50, 100, 250, 500, 1000]).find(q => (foiz ? 100 : tot) / q <= cw / 55) || (foiz ? 50 : 1000);
+  for (let v = 0; v <= (foiz ? 100 : tot) + 1e-9; v += qd)
+    g += `<text x="${Math.min(W - pd.r - 14, X(foiz ? v / 100 * tot : v))}" y="${H - 4}" fill="#5f708a" font-size="10" text-anchor="middle">${fmt(v, 0)}${foiz ? "%" : ""}</text>`;
+  g += `<text x="${W - pd.r}" y="${H - 4}" fill="#5f708a" font-size="10" text-anchor="end">${foiz ? "" : "km²"}</text>`;
   if (joyH !== null) {   // tanlangan joy balandligi
-    const x = XE(Math.max(hs.lo, Math.min(hs.lo + n * hs.step, joyH)));
-    g += `<line x1="${x}" x2="${x}" y1="${pd.t - 6}" y2="${H - pd.b}" stroke="#38bdf8" stroke-dasharray="3 3"/>`
-      + `<text x="${Math.min(W - 40, Math.max(40, x))}" y="${pd.t - 10}" fill="#38bdf8" font-size="10" text-anchor="middle">tanlangan: ${fmt(joyH, 0)} m</text>`;
+    const y = Y(Math.max(hs.lo, Math.min(top, joyH)));
+    g += `<line x1="${pd.l}" x2="${W - pd.r}" y1="${y}" y2="${y}" stroke="#38bdf8" stroke-dasharray="3 3"/>`
+      + `<text x="${W - pd.r}" y="${Math.max(10, y - 4)}" fill="#38bdf8" font-size="10" text-anchor="end">tanlangan: ${fmt(joyH, 0)} m</text>`;
   }
-  const k = hi >= 0 ? hi : (hKind === "m" && joyH === null ? ys.indexOf(Math.max(...ys)) : -1);
+  const k = hi >= 0 ? hi : (!foiz && joyH === null ? hs.km2.indexOf(Math.max(...hs.km2)) : -1);
   if (k >= 0) {
-    const a = hs.lo + k * hs.step, lab = `${a}–${a + hs.step} m · ${hKind === "m" ? fmt(hs.km2[k], 1) + " km²" : fmt(ys[k], 0) + "% past"}`;
-    const tw = lab.length * 5.6 + 14, tx = Math.min(W - tw - 2, Math.max(2, p[k][0] - tw / 2));
-    g += `<line x1="${p[k][0]}" x2="${p[k][0]}" y1="${p[k][1]}" y2="${H - pd.b}" stroke="rgba(96,165,250,.45)"/>`
-      + `<circle cx="${p[k][0]}" cy="${p[k][1]}" r="4.5" fill="#0a111d" stroke="#60a5fa" stroke-width="2"/>`
-      + `<rect x="${tx}" y="${Math.max(1, p[k][1] - 26)}" width="${tw}" height="18" rx="9" fill="#e6edf6"/>`
-      + `<text x="${tx + tw / 2}" y="${Math.max(1, p[k][1] - 26) + 12.5}" fill="#0a111d" font-size="10.5" font-weight="600" text-anchor="middle">${lab}</text>`;
+    const a = hs.lo + k * hs.step, px = (p[k][0] + p[k + 1][0]) / 2, py = (p[k][1] + p[k + 1][1]) / 2;
+    const lab = `${a}–${a + hs.step} m · ${foiz ? fmt(cum[k + 1] / tot * 100, 0) + "% past" : fmt(hs.km2[k], 1) + " km² (" + fmt(hs.km2[k] / tot * 100, 1) + "%)"}`;
+    const tw = lab.length * 5.6 + 14, tx = Math.min(W - tw - 2, Math.max(pd.l, px - tw - 8)), ty = Math.max(1, Math.min(H - pd.b - 20, py - 26));
+    g += `<line x1="${pd.l}" x2="${px}" y1="${py}" y2="${py}" stroke="rgba(96,165,250,.45)"/>`
+      + `<circle cx="${px}" cy="${py}" r="4.5" fill="#0a111d" stroke="#60a5fa" stroke-width="2"/>`
+      + `<rect x="${tx}" y="${ty}" width="${tw}" height="18" rx="9" fill="#e6edf6"/>`
+      + `<text x="${tx + tw / 2}" y="${ty + 12.5}" fill="#0a111d" font-size="10.5" font-weight="600" text-anchor="middle">${lab}</text>`;
   }
   svg.innerHTML = g + `<rect x="0" y="0" width="${W}" height="${H}" fill="transparent" id="hHit"/>`;
   $("hHit").onpointermove = e => {
-    const r = svg.getBoundingClientRect(), i = Math.floor((e.clientX - r.left - pd.l) / cw * n);
-    if (i < 0 || i >= n) return;
-    const a = hs.lo + i * hs.step, cum = hs.km2.slice(0, i + 1).reduce((s, x) => s + x, 0);
+    const r = svg.getBoundingClientRect(), a = (e.clientX - r.left - pd.l) / cw * tot;
+    let i = 0; while (i < n - 1 && cum[i + 1] < a) i++;
     if (i !== hi) drawArea(i);
-    vtip(e, `<b>${a}–${a + hs.step} m</b> <span>· ${fmt(hs.km2[i], 1)} km² (${fmt(hs.km2[i] / ST.maydon_km2 * 100, 1)}%)</span><br><span>${a + hs.step} m dan past: ${fmt(cum / ST.maydon_km2 * 100, 0)}%</span>`);
   };
-  $("hHit").onpointerleave = e => { vtip(e); drawArea(); };
+  $("hHit").onpointerleave = () => drawArea();
 }
 function joyKarta(p) {
   const d = p && info(p.x, p.z);
@@ -2520,6 +2657,7 @@ function setNav(n) {
   $("ldon").style.display = n === "sel" ? "none" : "";      // Sel xavfi bo'limida oqim tarkibi o'rniga sel darajalari
   $("cSel").style.display = n === "sel" ? "" : "none";
   if (n === "kor") drawHist();
+  yogRejim(n === "yog"); if (n === "yog" && YOG) requestAnimationFrame(() => { yogGraf(); yogGrafKursor(); });
   $("side").scrollTop = 0;
   resize();
 }
@@ -2573,7 +2711,7 @@ function initDash() {
   $("hTg").onclick = e => {
     const b = e.target.closest("button"); if (!b) return;
     hKind = b.dataset.k; $("hTg").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
-    $("hSub").textContent = hKind === "m" ? "maydon, km² (10 m oraliq)" : "shu balandlikdan past joylar, %"; drawArea();
+    $("hSub").textContent = hKind === "m" ? "balandlik va maydon, km² (10 m oraliq)" : "balandlik va maydon, tuman %"; drawArea();
   };
   if ($("seg")) $("seg").onclick = e => { const b = e.target.closest("button"); if (b) document.querySelector(`#rejim .chip[data-m="${b.dataset.m}"]`).click(); };
   $("rq").onclick = e => { const b = e.target.closest("button"); if (b) $(b.dataset.p).click(); };
@@ -3024,8 +3162,8 @@ init().catch(e => { $("yukT").textContent = "Xato: " + e.message; console.error(
 <script>
 /* ---------- Minbu Flood: ma'lumotlarni ArcGIS Online'dan yuklash (Minbu Portal logini bilan) ---------- */
 (function(){
-var CFG={"portal": "https://land-tiiame.maps.arcgis.com", "res": {"meta": "d/meta.json", "dem": "d/dem30.bin.gz.txt", "sat": "d/sat15.jpg", "niqob": "d/niqob.png", "suv": "d/suv_meta.json", "suvGrid": "d/suv_grid.bin.gz.txt", "suvNet": "d/suv_tarmoq.bin.gz.txt", "selm": "d/sel_meta.json", "selGrid": "d/sel_grid.bin.gz.txt", "selBin": "d/sel_bin.bin.gz.txt", "dash": "d/dash.json", "hudud": "d/hudud.json", "bolak": "d/royxat.json", "hecm": "d/hec_meta.json", "hecBin": "d/hec_bin.bin.gz.txt"}, "enc": {"dem": "b64", "suvGrid": "b64", "suvNet": "b64", "selGrid": "b64", "selBin": "b64", "hecBin": "b64"}, "tiles_prefix": "b/", "tiles_ext": ".jpg", "item": "62b3142355fb4095903e49806c904888", "tiles_item": "4623aed3551f4f99943f2f0e7ad5e460", "tiles_items": ["4623aed3551f4f99943f2f0e7ad5e460", "71456975f5264980ad2b75578bf9c9ea"], "tiles_idx": {"41_23": 1, "41_24": 1, "41_25": 1, "41_26": 1, "41_27": 1, "41_28": 1, "41_29": 1, "42_22": 1, "42_23": 1, "42_24": 1, "42_25": 1, "42_26": 1, "42_27": 1, "42_28": 1, "42_29": 1, "43_25": 1, "43_26": 1, "43_27": 1, "43_28": 1, "43_29": 1, "44_27": 1, "4_11": 1, "4_12": 1, "4_13": 1, "4_14": 1, "4_15": 1, "4_16": 1, "4_17": 1, "4_18": 1, "4_19": 1, "4_20": 1, "4_21": 1, "4_22": 1, "5_11": 1, "5_12": 1, "5_13": 1, "5_14": 1, "5_15": 1, "5_16": 1, "5_17": 1, "5_18": 1, "5_19": 1, "5_20": 1, "5_21": 1, "5_22": 1, "5_23": 1, "6_10": 1, "6_11": 1, "6_12": 1, "6_13": 1, "6_14": 1, "6_15": 1, "6_16": 1, "6_17": 1, "6_18": 1, "6_19": 1, "6_20": 1, "6_21": 1, "6_22": 1, "6_23": 1, "7_10": 1, "7_11": 1, "7_12": 1, "7_13": 1, "7_14": 1, "7_15": 1, "7_16": 1, "7_17": 1, "7_18": 1, "7_19": 1, "7_20": 1, "7_21": 1, "7_22": 1, "7_23": 1, "7_24": 1, "7_25": 1, "8_10": 1, "8_11": 1, "8_12": 1, "8_13": 1, "8_14": 1, "8_15": 1, "8_16": 1, "8_17": 1, "8_18": 1, "8_19": 1, "8_20": 1, "8_21": 1, "8_22": 1, "8_23": 1, "8_24": 1, "8_25": 1, "8_26": 1, "8_27": 1, "8_9": 1, "9_10": 1, "9_11": 1, "9_12": 1, "9_13": 1, "9_14": 1, "9_15": 1, "9_16": 1, "9_17": 1, "9_18": 1, "9_19": 1, "9_20": 1, "9_21": 1, "9_22": 1, "9_23": 1, "9_24": 1, "9_25": 1, "9_26": 1, "9_27": 1, "9_28": 1, "9_6": 1, "9_7": 1, "9_8": 1, "9_9": 1}}, LOKAL={"meta": "data/meta.json", "dem": "data/dem30.bin.gz", "sat": "data/sat15.jpg", "niqob": "data/niqob.png", "bolak": "bolak/royxat.json", "suv": "data/suv_meta.json", "suvGrid": "data/suv_grid.bin.gz", "suvNet": "data/suv_tarmoq.bin.gz", "selm": "data/sel_meta.json", "selGrid": "data/sel_grid.bin.gz", "selBin": "data/sel_bin.bin.gz", "dash": "data/dash.json", "hudud": "data/hudud.json"};
-var LAZY={"hecm":"data/hec_meta.json","hecBin":"data/hec_bin.bin.gz"};
+var CFG={"portal": "https://land-tiiame.maps.arcgis.com", "res": {"meta": "d/meta.json", "dem": "d/dem30.bin.gz.txt", "sat": "d/sat15.jpg", "niqob": "d/niqob.png", "suv": "d/suv_meta.json", "suvGrid": "d/suv_grid.bin.gz.txt", "suvNet": "d/suv_tarmoq.bin.gz.txt", "selm": "d/sel_meta.json", "selGrid": "d/sel_grid.bin.gz.txt", "selBin": "d/sel_bin.bin.gz.txt", "dash": "d/dash.json", "hudud": "d/hudud.json", "bolak": "d/royxat.json", "hecm": "d/hec_meta.json", "hecBin": "d/hec_bin.bin.gz.txt", "yogm": "d/yogin_meta.json", "yogBin": "d/yogin_bin.bin.gz.txt"}, "enc": {"dem": "b64", "suvGrid": "b64", "suvNet": "b64", "selGrid": "b64", "selBin": "b64", "hecBin": "b64", "yogBin": "b64"}, "tiles_prefix": "b/", "tiles_ext": ".jpg", "item": "62b3142355fb4095903e49806c904888", "tiles_item": "4623aed3551f4f99943f2f0e7ad5e460", "tiles_items": ["4623aed3551f4f99943f2f0e7ad5e460", "71456975f5264980ad2b75578bf9c9ea"], "tiles_idx": {"41_23": 1, "41_24": 1, "41_25": 1, "41_26": 1, "41_27": 1, "41_28": 1, "41_29": 1, "42_22": 1, "42_23": 1, "42_24": 1, "42_25": 1, "42_26": 1, "42_27": 1, "42_28": 1, "42_29": 1, "43_25": 1, "43_26": 1, "43_27": 1, "43_28": 1, "43_29": 1, "44_27": 1, "4_11": 1, "4_12": 1, "4_13": 1, "4_14": 1, "4_15": 1, "4_16": 1, "4_17": 1, "4_18": 1, "4_19": 1, "4_20": 1, "4_21": 1, "4_22": 1, "5_11": 1, "5_12": 1, "5_13": 1, "5_14": 1, "5_15": 1, "5_16": 1, "5_17": 1, "5_18": 1, "5_19": 1, "5_20": 1, "5_21": 1, "5_22": 1, "5_23": 1, "6_10": 1, "6_11": 1, "6_12": 1, "6_13": 1, "6_14": 1, "6_15": 1, "6_16": 1, "6_17": 1, "6_18": 1, "6_19": 1, "6_20": 1, "6_21": 1, "6_22": 1, "6_23": 1, "7_10": 1, "7_11": 1, "7_12": 1, "7_13": 1, "7_14": 1, "7_15": 1, "7_16": 1, "7_17": 1, "7_18": 1, "7_19": 1, "7_20": 1, "7_21": 1, "7_22": 1, "7_23": 1, "7_24": 1, "7_25": 1, "8_10": 1, "8_11": 1, "8_12": 1, "8_13": 1, "8_14": 1, "8_15": 1, "8_16": 1, "8_17": 1, "8_18": 1, "8_19": 1, "8_20": 1, "8_21": 1, "8_22": 1, "8_23": 1, "8_24": 1, "8_25": 1, "8_26": 1, "8_27": 1, "8_9": 1, "9_10": 1, "9_11": 1, "9_12": 1, "9_13": 1, "9_14": 1, "9_15": 1, "9_16": 1, "9_17": 1, "9_18": 1, "9_19": 1, "9_20": 1, "9_21": 1, "9_22": 1, "9_23": 1, "9_24": 1, "9_25": 1, "9_26": 1, "9_27": 1, "9_28": 1, "9_6": 1, "9_7": 1, "9_8": 1, "9_9": 1}}, LOKAL={"meta": "data/meta.json", "dem": "data/dem30.bin.gz", "sat": "data/sat15.jpg", "niqob": "data/niqob.png", "bolak": "bolak/royxat.json", "suv": "data/suv_meta.json", "suvGrid": "data/suv_grid.bin.gz", "suvNet": "data/suv_tarmoq.bin.gz", "selm": "data/sel_meta.json", "selGrid": "data/sel_grid.bin.gz", "selBin": "data/sel_bin.bin.gz", "dash": "data/dash.json", "hudud": "data/hudud.json"};
+var LAZY={"hecm":"data/hec_meta.json","hecBin":"data/hec_bin.bin.gz","yogm":"data/yogin_meta.json","yogBin":"data/yogin_bin.bin.gz"};
 var q=new URLSearchParams(location.search), dev=q.get('dev'), TOK=null, $t=document.getElementById('yukT');
 function yoz(t,xato){$t.innerHTML=t;if(xato){var s=document.querySelector('#yuk .sp');if(s)s.style.display='none'}}
 if(!dev){
@@ -3091,6 +3229,37 @@ Promise.all(kalit.map(function(k){
    Manba: Minbu_3D_portal/flood_til.js -> shablon.html va front/index_flood.html ga ichiga joylangan. */
 (function () {
 var D = {
+"{n}–{n} m · {n} km² ({n}%)": ["{0}–{1} m · {2} km² ({3}%)", "{0}–{1} м · {2} км² ({3}%)", "{0}–{1} m · {2} km² ({3}%)"],
+"{n}–{n} m · {n}% past": ["{0}–{1} m · {2}% lower", "{0}–{1} м · {2}% ниже", "{0}–{1} m · {2}% နိမ့်"],
+"Yog'in ma'lumotlari": ["Rainfall data", "Данные об осадках", "မိုးရေချိန် အချက်အလက်"],
+"Yog'in ma'lumotlari (ERA{n}, {n}{n}{n} … {n}{n})": ["Rainfall data (ERA{0}, {1}{2}{3} … {4}{5})", "Данные об осадках (ERA{0}, {1}{2}{3} … {4}{5})", "မိုးရေချိန် အချက်အလက် (ERA{0}, {1}{2}{3} … {4}{5})"],
+"Yog'in ma'lumoti yuklanmoqda…": ["Loading rainfall data…", "Загрузка данных об осадках…", "မိုးရေချိန် ဒေတာ ဖွင့်နေသည်…"],
+"Yog'in ma'lumotini yuklab bo'lmadi: {n}": ["Could not load rainfall data: {0}", "Не удалось загрузить данные об осадках: {0}", "မိုးရေချိန် ဒေတာ မဖွင့်နိုင်ပါ: {0}"],
+"ERA{n} soatlik yog'in, {n}{n}{n} {n}:{n} — {n}{n}{n} {n}:{n} (Myanma vaqti). Shu yomg'ir HEC-RAS sel modeliga (Sel xavfi → {n}{n}{n}) kiritilgan.": ["ERA{0} hourly rainfall, {1}{2}{3} {4}:{5} — {6}{7}{8} {9}:{10} (Myanmar time). This rainfall is the input of the HEC-RAS flood model (Flood risk → {11}{12}{13}).", "Почасовые осадки ERA{0}, {1}{2}{3} {4}:{5} — {6}{7}{8} {9}:{10} (время Мьянмы). Эти осадки заданы в модели паводка HEC-RAS (Риск паводка → {11}{12}{13}).", "ERA{0} နာရီအလိုက် မိုးရေချိန်၊ {1}{2}{3} {4}:{5} — {6}{7}{8} {9}:{10} (မြန်မာစံတော်ချိန်)။ ဤမိုးရေကို HEC-RAS ရေကြီးမှု မော်ဒယ်တွင် ထည့်သွင်းထားသည် (ရေကြီးမှုအန္တရာယ် → {11}{12}{13})။"],
+"{n} kunda jami (Minbu o'rtacha)": ["{0}-day total (Minbu mean)", "Сумма за {0} дней (среднее по Минбу)", "{0} ရက် စုစုပေါင်း (Minbu ပျမ်းမျှ)"],
+"Eng ko'p kun: {n}": ["Wettest day: {0}", "Самый дождливый день: {0}", "မိုးအများဆုံးနေ့: {0}"],
+"Eng kuchli soat: {n} {n}:{n}": ["Most intense hour: {0} {1}:{2}", "Самый сильный час: {0} {1}:{2}", "အပြင်းဆုံးနာရီ: {0} {1}:{2}"],
+"Oldingi {n} kun (tuproq nam edi)": ["Previous {0} days (soil was wet)", "Предыдущие {0} дней (почва была влажной)", "ယခင် {0} ရက် (မြေဆီလွှာ စိုနေခဲ့)"],
+"Xaritadagi qatlam": ["Map layer", "Слой на карте", "မြေပုံအလွှာ"],
+"{n} kun jami": ["{0}-day total", "Сумма за {0} дней", "{0} ရက် စုစုပေါင်း"],
+"Kunlik": ["Daily", "По дням", "နေ့စဉ်"],
+"Eng kuchli soat": ["Most intense hour", "Самый сильный час", "အပြင်းဆုံးနာရီ"],
+"Oldingi {n} kun": ["Previous {0} days", "Предыдущие {0} дней", "ယခင် {0} ရက်"],
+"{n} kunlik yog'in": ["{0} daily rainfall", "Осадки за {0}", "{0} နေ့စဉ် မိုးရေချိန်"],
+"{n} kun jami yog'in": ["{0}-day total rainfall", "Сумма осадков за {0} дней", "{0} ရက် စုစုပေါင်း မိုးရေချိန်"],
+"Eng kuchli {n} soatlik yog'in": ["Most intense {0}-hour rainfall", "Самый сильный {0}-часовой дождь", "အပြင်းဆုံး {0} နာရီ မိုးရေချိန်"],
+"Oldingi {n} kun yog'ini ({n}–{n})": ["Rainfall of previous {0} days ({1}–{2})", "Осадки за предыдущие {0} дней ({1}–{2})", "ယခင် {0} ရက် မိုးရေချိန် ({1}–{2})"],
+"Minbu o'rtacha": ["Minbu mean", "Среднее по Минбу", "Minbu ပျမ်းမျှ"],
+"({n}–{n} mm)": ["({0}–{1} mm)", "({0}–{1} мм)", "({0}–{1} mm)"],
+"Soatlik yog'in, mm": ["Hourly rainfall, mm", "Почасовые осадки, мм", "နာရီအလိုက် မိုးရေချိန်၊ mm"],
+"(Minbu o'rtacha; ustun tepasida — kunlik jami; kunni bosing)": ["(Minbu mean; daily total above the bars; click a day)", "(среднее по Минбу; над столбцами — сумма за день; нажмите на день)", "(Minbu ပျမ်းမျှ; ဘားအပေါ်တွင် နေ့စဉ်စုစုပေါင်း; နေ့ကို နှိပ်ပါ)"],
+"Xaritani bosing: shu joyga yoqqan yog'in chiqadi.": ["Click the map to see the rainfall at that spot.", "Нажмите на карту — покажутся осадки в этой точке.", "မြေပုံကို နှိပ်ပါ — ထိုနေရာ၏ မိုးရေချိန် ပေါ်လာမည်။"],
+"Manba: ERA{n} soatlik yog'in (Open-Meteo), {n}° to'r, Minbu ichidagi {n} ta nuqta; xarita: nuqtalardan {n} m ga interpolyatsiya. Vaqt: Myanma mahalliy vaqti (UTC{n}:{n}).": ["Source: ERA{0} hourly rainfall (Open-Meteo), {1}° grid, {2} points inside Minbu; map: interpolated from the points to {3} m. Time: Myanmar local time (UTC{4}:{5}).", "Источник: почасовые осадки ERA{0} (Open-Meteo), сетка {1}°, {2} точек внутри Минбу; карта: интерполяция точек до {3} м. Время: местное время Мьянмы (UTC{4}:{5}).", "ရင်းမြစ်: ERA{0} နာရီအလိုက် မိုးရေချိန် (Open-Meteo)၊ {1}° ကွက်၊ Minbu အတွင်း အမှတ် {2} ခု; မြေပုံ: အမှတ်များမှ {3} m သို့ interpolation။ အချိန်: မြန်မာစံတော်ချိန် (UTC{4}:{5})။"],
+"🌧 Yog'in (ERA{n}): {n} … {n}": ["🌧 Rainfall (ERA{0}): {1} … {2}", "🌧 Осадки (ERA{0}): {1} … {2}", "🌧 မိုးရေချိန် (ERA{0}): {1} … {2}"],
+"Eng ko'p yoqqan kun": ["Wettest day", "Самый дождливый день", "မိုးအများဆုံးနေ့"],
+"Eng kuchli {n} soat": ["Most intense {0} hour", "Самый сильный {0} час", "အပြင်းဆုံး {0} နာရီ"],
+"balandlik va maydon, km² ({n} m oraliq)": ["elevation and area, km² ({0} m bins)", "высота и площадь, км² (шаг {0} м)", "အမြင့်နှင့် ဧရိယာ, km² ({0} m ကြားကာလ)"],
+"balandlik va maydon, tuman %": ["elevation and area, % of township", "высота и площадь, % района", "အမြင့်နှင့် ဧရိယာ, မြို့နယ် %"],
 "surgichni suring yoki ▶ ni bosing": ["drag the slider or press ▶", "двигайте ползунок или нажмите ▶", "ဆလိုက်ဒါကို ရွှေ့ပါ သို့မဟုတ် ▶ ကိုနှိပ်ပါ"],
 "HEC-RAS natijasi yuklanmoqda…": ["Loading HEC-RAS results…", "Загрузка результатов HEC-RAS…", "HEC-RAS ရလဒ်များ ဖွင့်နေသည်…"],
 "Vaqt": ["Time", "Время", "အချိန်"],
