@@ -236,7 +236,7 @@ html,body{background:var(--bg);font-family:Inter,"Segoe UI",system-ui,-apple-sys
 .barl{display:flex;justify-content:space-between;font-size:11px;color:var(--tx2);margin-top:5px}
 .barl b{color:var(--tx)}
 .ehint{font-size:11.5px;color:var(--tx3);margin-top:8px;line-height:1.4}
-#brow{position:absolute;left:var(--gap);right:var(--gap);bottom:var(--gap);height:var(--brow);display:grid;grid-template-columns:minmax(300px,.95fr) 1fr 1.35fr minmax(260px,1fr);gap:10px}
+#brow{position:absolute;left:var(--gap);right:var(--gap);bottom:var(--gap);height:var(--brow);display:grid;grid-template-columns:minmax(300px,1fr) 1.6fr;gap:10px}
 #brow .card{position:static;display:flex;flex-direction:column;min-width:0;overflow:hidden}
 .rank{display:flex;flex-direction:column;gap:4px;margin-top:8px;flex:1;min-height:0}
 .rank button{display:grid;grid-template-columns:22px 1fr auto;gap:9px;align-items:center;border:1px solid transparent;background:#0b1524;color:var(--tx);
@@ -349,6 +349,45 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
 #tools button{background:rgba(255,255,255,.07)}
 .card h3,.kpi b,.big,.dleg,.rank{text-shadow:0 1px 2px rgba(0,0,0,.55)}
 </style>
+<style id="yangiTartib">/* portal kabi: pastda chapda Balandlik taqsimoti (keng), o'ngda Oqim yo'llari tarkibi (NDVI kartasi shaklida) */
+:root{--brow:272px}
+#brow{grid-template-columns:minmax(0,1.75fr) minmax(360px,1fr)}
+#brow .dcard{padding-top:10px;padding-bottom:8px}
+.dch{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dch h3{margin:0;font-size:13px;white-space:nowrap}
+.pill{font-size:11px;color:var(--tx);border:1px solid var(--panel-b);background:rgba(255,255,255,.05);border-radius:999px;padding:2px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:50%}
+.dbody{display:flex;align-items:center;gap:clamp(14px,2.2vw,34px);flex:1 1 auto;min-height:0;padding:2px 4px 0}
+.dbig{display:block;flex:0 0 auto;width:clamp(112px,10.5vw,190px);height:auto;max-height:100%}
+.dlegB{gap:2px;font-size:12.5px;flex:1 1 auto;min-width:0;max-width:460px;margin:0}
+.dlegB div{display:grid;grid-template-columns:9px 108px minmax(24px,1fr) auto 32px;gap:9px;align-items:center;line-height:20px}
+.dlegB i{width:9px;height:9px}
+.dlegB div span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tx)}
+.dlegB s{display:block;height:7px;border-radius:4px;background:rgba(255,255,255,.07);overflow:hidden;text-decoration:none}
+.dlegB s u{display:block;height:100%;border-radius:4px}
+.dlegB b{margin:0;padding:0;text-align:right}
+.dlegB em{font-style:normal;color:var(--tx3);text-align:right}
+@media (max-width:1500px){ .dlegB{font-size:11.5px} .dlegB div{line-height:17px;gap:6px;grid-template-columns:8px 98px minmax(18px,1fr) auto 30px} }
+.dfoot{margin-top:auto;padding-top:4px;font-size:10.5px;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+/* asboblar paneli: xarita o'ng-yuqorisida (o'ng ustun yonida), ixcham */
+#tools{flex-direction:column;align-items:stretch;gap:1px;padding:5px;width:116px}
+@media (min-width:901px){ body:not(.nopan) #tools{right:var(--gap);top:auto;bottom:calc(var(--brow) + 2*var(--gap))} }
+#tools button.tl{width:auto;height:30px;display:flex;align-items:center;gap:8px;padding:0 8px;background:none;color:var(--tx2);font:inherit;font-size:12px;text-align:left}
+#tools button.tl:hover{background:rgba(255,255,255,.08);color:var(--tx)}
+#tools button.tl.on{background:rgba(59,130,246,.18);color:#dbeafe}
+#tools button.tl svg{flex:0 0 14px;width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#tools .chv{margin-left:auto;width:11px!important;transition:transform .15s}
+#tools .tq{position:relative}
+#tools .tq.och .chv{transform:rotate(-90deg)}
+#tools .tfly{position:absolute;right:calc(100% + 10px);top:0;display:flex;flex-direction:column;gap:2px;padding:6px;min-width:150px;
+  background:rgba(8,13,22,.85);border:1px solid var(--panel-b);border-radius:var(--r);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#tools .tfly[hidden]{display:none}
+#tools .tfly button{width:auto;height:30px;padding:0 10px;text-align:left;font:inherit;font-size:12.5px;background:none;color:var(--tx2)}
+#tools .tfly button:hover{background:rgba(255,255,255,.08);color:var(--tx)}
+#tools .tfly button.on{background:var(--ac);color:#fff}
+#tools .tz{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin:2px 0}
+#tools .tz button{width:auto;height:26px;font-size:15px;display:grid;place-items:center}
+#tools .tsep{display:block;height:1px;background:var(--panel-b);margin:3px 2px}
+</style>
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -399,15 +438,16 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
     <div class="card" id="cBat"></div>
   </div>
   <div id="brow">
-  <div id="ldon" class="card"><h3>Oqim yo'llari tarkibi <small id="donStrT">Strahler tartibi bo'yicha</small></h3>
-    <div class="donrow"><svg id="donStr" width="118" height="118" viewBox="0 0 118 118"></svg><div class="dleg" id="legStr"></div></div></div>
-    <div class="card"><h3>Eng ko'p sel keladigan hududlar <small>HEC-RAS, ga</small></h3><div class="rank diag" id="rank"></div><button class="lnk" data-go="hud">Barchasini ko'rish (70)</button></div>
+    <div class="card" id="cRank" style="display:none"><h3>Eng ko'p sel keladigan hududlar <small>HEC-RAS, ga</small></h3><div class="rank diag" id="rank"></div><button class="lnk" data-go="hud">Barchasini ko'rish (70)</button></div>
     <div class="card"><h3>Balandlik taqsimoti <small id="hSub">maydon, km² (10 m oraliq)</small>
       <div class="tg" id="hTg"><button data-k="m" class="on">Maydon</button><button data-k="y">Yig'indi</button></div></h3>
       <svg id="hArea"></svg></div>
-    <div class="card"><h3>Sel xavfi darajalari <small id="donSelT">HEC-RAS 2D, Yagi 2024</small></h3>
-      <div class="donrow"><svg id="donSel" width="112" height="112" viewBox="0 0 112 112"></svg><div class="dleg" id="legSel"></div></div>
-      <div class="ehint" id="selIz" style="margin-top:6px"></div></div>
+    <div id="ldon" class="card dcard"><div class="dch"><h3>Oqim yo'llari tarkibi</h3><span class="pill" id="donStrT">Strahler tartibi bo'yicha</span></div>
+      <div class="dbody"><svg id="donStr" class="dbig" width="180" height="180" viewBox="0 0 180 180"></svg><div class="dleg dlegB" id="legStr"></div></div>
+      <div class="ehint dfoot" id="strIz"></div></div>
+    <div class="card dcard" id="cSel" style="display:none"><div class="dch"><h3>Sel xavfi darajalari</h3><span class="pill" id="donSelT">HEC-RAS 2D, Yagi 2024</span></div>
+      <div class="dbody"><svg id="donSel" class="dbig" width="180" height="180" viewBox="0 0 180 180"></svg><div class="dleg dlegB" id="legSel"></div></div>
+      <div class="ehint dfoot" id="selIz"></div></div>
   </div>
 </div>
 <div id="vtip"></div>
@@ -440,7 +480,6 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
         <button class="chip on" id="sTarmoq">Oqim yo'llari</button>
         <button class="chip" id="sShakl">Oqim shakli</button>
         <button class="chip on" id="sKol">Ko'lmak va daryo</button>
-        <button class="chip on" id="sAnim">Animatsiya</button>
         <button class="chip" id="sStr" title="Xalqaro standart: eng uchidagi irmoq 1-tartib; ikkita bir xil tartibli oqim qo'shilsa tartib bittaga oshadi, har xil bo'lsa kattasi qoladi">Strahler tartibi</button>
       </div>
       <div class="row"><label for="sMin">Ko'rsatiladigan oqimlar</label><input id="sMin" type="range" min="0" max="6" step="1" value="2"><output id="sMinO" style="flex-basis:78px">≥1 km²</output></div>
@@ -540,10 +579,13 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
 </div>
 
 <div id="tools" class="panel">
-  <button id="kompas" title="Shimolga qaratish"><svg width="22" height="22" viewBox="0 0 22 22"><path d="M11 2l4 9h-8z" fill="#e8584c"/><path d="M11 20l-4-9h8z" fill="#cfd6dd"/></svg></button>
-  <button id="zin" title="Yaqinlashish">+</button>
-  <button id="zout" title="Uzoqlashish">−</button>
-  <button id="tilt" title="Tepadan / qiya ko'rinish">⤢</button>
+  <div class="tq"><button id="mapB" class="tl" title="Xarita ko'rinishi"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span>Xarita</span><svg class="chv" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+    <div id="mapM" class="tfly" hidden><button data-m="0">Sun'iy yo'ldosh</button><button data-m="2">Aralash</button><button data-m="1">Balandlik rangi</button><button data-m="3">Relyef</button></div></div>
+  <button id="tilt" class="tl" title="Tepadan / qiya ko'rinish"><svg viewBox="0 0 24 24"><path d="M3 18l6-8 4 5 3-4 5 7z"/></svg><span>3D</span></button>
+  <div class="tz"><button id="zin" title="Yaqinlashish">+</button><button id="zout" title="Uzoqlashish">−</button><button id="kompas" title="Shimolga qaratish"><svg width="16" height="16" viewBox="0 0 22 22"><path d="M11 2l4 9h-8z" fill="#e8584c"/><path d="M11 20l-4-9h8z" fill="#cfd6dd"/></svg></button></div>
+  <i class="tsep"></i>
+  <button id="tozB" class="tl" title="Tanlovni bekor qilish va butun tumanga qaytish"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg><span>Tozalash</span></button>
+  <button id="fullB" class="tl" title="To'liq ekran"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>To'liq ekran</span></button>
 </div>
 
 
@@ -636,7 +678,7 @@ const css = c => `rgb(${c.map(v => Math.round(v * 255)).join(",")})`;
 // ---------------- holat ----------------
 let Hm, V, F;          // aniq balandlik, haqiqiy maska, to'ldirilgan (to'r uchun)
 let renderer, scene, camera, terrain, wall, edgeLine, profLine, U;
-const S = { exag: 4, mode: 0, shade: .55, sunAz: 315, kont: 0, step: 2, devor: true, anim: true };
+const S = { exag: 4, mode: 0, shade: .55, sunAz: 315, kont: 0, step: 2, devor: true, anim: false };
 const cam = { t: new THREE.Vector3(0, 0, 0), dist: 1, az: 0, pol: .85, fov: 40 };
 let dirty = true;
 
@@ -1737,7 +1779,7 @@ async function init() {
   edgeLine = new THREE.Mesh(fatGeom(pts, (x, z) => fillAt(x, z), true), fatMat(0x7cc4ff, 1.6, .95));
   edgeLine.renderOrder = 2; scene.add(edgeLine);
 
-  initUI();
+  initUI(); toolsUI();
   initDash();
   initSelShp();
   initStrTanlov();
@@ -1923,6 +1965,23 @@ function clampCam() {
 
 // ---------------- boshqaruv ----------------
 let profMode = 0, profA = null, profB = null, profData = null, popAt = null;
+function toolsUI() {
+  const q = document.querySelector("#tools .tq"), mm = $("mapM");
+  const belgi = () => { const m = document.querySelector("#rejim .chip.on"); mm.querySelectorAll("button").forEach(b => b.classList.toggle("on", !!m && b.dataset.m === m.dataset.m)); };
+  $("mapB").onclick = e => { e.stopPropagation(); mm.hidden = !mm.hidden; q.classList.toggle("och", !mm.hidden); belgi(); };
+  mm.onclick = e => { const b = e.target.closest("button"); if (!b) return; document.querySelector(`#rejim .chip[data-m="${b.dataset.m}"]`).click(); belgi(); };
+  document.addEventListener("pointerdown", e => { if (!q.contains(e.target)) { mm.hidden = true; q.classList.remove("och"); } });
+  const t3 = () => $("tilt").classList.toggle("on", cam.pol > .3);
+  setInterval(t3, 400); t3();
+  $("tozB").onclick = () => {
+    if (tomMode) setTom(false);
+    if (profMode) setProf(0);
+    closePop(); $("qidir").value = ""; hudTanla(-1, false); setNav("dash"); home();
+  };
+  const fl = () => { const on = !!document.fullscreenElement; $("fullB").classList.toggle("on", on); $("fullB").querySelector("span").textContent = on ? "Chiqish" : "To'liq ekran"; };
+  $("fullB").onclick = () => { if (document.fullscreenElement) document.exitFullscreen(); else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); };
+  document.addEventListener("fullscreenchange", () => { fl(); setTimeout(resize, 100); });
+}
 function initUI() {
   const cv = renderer.domElement;
   const ptrs = new Map();
@@ -2027,7 +2086,6 @@ function initUI() {
   tog("sTarmoq", on => { netMesh.visible = on; });
   tog("sShakl", on => { U.uShaklOn.value = on ? 1 : 0; sLegend(); });
   tog("sKol", on => { U.uKolOn.value = on ? 1 : 0; });
-  tog("sAnim", on => { S.anim = on; });
   const sm = $("sMin"), smh = () => { const a = MIN_A[+sm.value]; NU.uMinA.value = a; $("sMinO").textContent = "havza ≥" + (a < 1 ? a + " km²" : a + " km²"); dirty = true; };
   sm.oninput = smh; smh();
   tog("sStr", on => { NU.uStr.value = on ? 1 : 0; if (on && !netMesh.visible) $("sTarmoq").click(); sLegend(); });
@@ -2124,6 +2182,9 @@ function clickAt(x, y) {
     if (profMode === 1) { profA = p; profB = null; profMode = 2; hint("B nuqtani bosing"); clearProfLine(); $("profil").style.display = "none"; }
     else { profB = p; profMode = 1; hint("Yangi profil uchun A nuqtani bosing · Esc — chiqish"); makeProfile(); }
     dirty = true; return;
+  }
+  if (hudSel >= 0 && (!p || !exactAt(p.x, p.z) || hudAt(p.x, p.z) !== hudSel)) {   // tanlangan hudud chegarasidan tashqari -> tanlov bekor
+    closePop(); $("qidir").value = ""; hudTanla(-1, false); home(); return;
   }
   if (!p) { closePop(); return; }
   showInfo(p);
@@ -2303,7 +2364,7 @@ function vtip(e, html) {
   t.style.top = Math.max(8, e.clientY - t.offsetHeight - 10) + "px";
 }
 function donut(svg, items, big, small, legEl, fv) {
-  const W = +svg.getAttribute("width"), R = W / 2, ro = R - 2, ri = R - 14, tot = items.reduce((s, d) => s + d.v, 0);
+  const W = +svg.getAttribute("width"), R = W / 2, ro = R - 2, ri = R - (W > 150 ? 18 : W === 100 ? 10 : 14), tot = items.reduce((s, d) => s + d.v, 0);
   let a = -Math.PI / 2, h = "";
   const P = (ang, rr) => `${(R + rr * Math.cos(ang)).toFixed(2)},${(R + rr * Math.sin(ang)).toFixed(2)}`;
   items.forEach((d, i) => {
@@ -2313,8 +2374,13 @@ function donut(svg, items, big, small, legEl, fv) {
   });
   h += `<text x="${R}" y="${R + 3}" text-anchor="middle" fill="#e6edf6" font-size="${W > 115 ? 20 : 18}" font-weight="600">${big}</text>`
     + `<text x="${R}" y="${R + 18}" text-anchor="middle" fill="#93a4b8" font-size="10.5">${small}</text>`;
+  if (W === 100) h = h.replace(/font-size="(18|20)"/, 'font-size="21"').replace(`y="${R + 18}"`, `y="${R + 17}"`);
+  if (W > 150) h = h.replace(/font-size="(18|20)"/, 'font-size="30"').replace(`y="${R + 3}"`, `y="${R + 6}"`).replace(`y="${R + 18}"`, `y="${R + 26}"`).replace('font-size="10.5"', 'font-size="12.5"');
   svg.innerHTML = h;
-  legEl.innerHTML = items.map((d, i) => `<div data-i="${i}"><i style="background:${d.c}"></i>${d.n}<b>${fv(d)}</b></div>`).join("");
+  const mx = Math.max(...items.map(d => d.v), 1e-9);
+  legEl.innerHTML = legEl.classList.contains("dlegB")
+    ? items.map((d, i) => `<div data-i="${i}"><i style="background:${d.c}"></i><span>${d.n}</span><s><u style="width:${(d.v / mx * 100).toFixed(1)}%;background:${d.c}"></u></s><b>${fv(d)}</b><em>${tot > 0 ? fmt(d.v / tot * 100, 0) : 0}%</em></div>`).join("")
+    : items.map((d, i) => `<div data-i="${i}"><i style="background:${d.c}"></i>${d.n}<b>${fv(d)}</b></div>`).join("");
   const hl = i => {
     svg.querySelectorAll("path").forEach(p => p.style.opacity = i < 0 || +p.dataset.i === i ? 1 : .3);
     legEl.querySelectorAll("div").forEach(x => x.classList.toggle("hi", +x.dataset.i === i));
@@ -2328,6 +2394,10 @@ function donut(svg, items, big, small, legEl, fv) {
     };
     el.onpointerleave = e => { hl(-1); vtip(e); };
   });
+}
+function strIz(v) {
+  const tot = v.reduce((a, b) => a + b, 0) || 1, ir = v[0] + v[1], kat = v.slice(3).reduce((a, b) => a + b, 0);
+  $("strIz").innerHTML = `<b style="color:#e6edf6">${fmt(ir / tot * 100, 0)}%</b> oqim yo'llari — irmoqlar (1–2-tartib); soy va chaunglar (4–7) jami <b style="color:#e6edf6">${fmt(kat, 0)} km</b>.`;
 }
 function kpi(ic, l, v, u, s) {
   return `<div class="kpi"><div class="kh"><div class="ki"><svg viewBox="0 0 24 24">${ic}</svg></div>${l}</div><b>${v}<small>${u}</small></b><div class="ks">${s}</div></div>`;
@@ -2447,6 +2517,8 @@ function setNav(n) {
     const h = e.querySelector("h2"); if (h) h.style.display = k === 0 ? "none" : "";
   });
   $("dT").textContent = NAVT[n] || "";
+  $("ldon").style.display = n === "sel" ? "none" : "";      // Sel xavfi bo'limida oqim tarkibi o'rniga sel darajalari
+  $("cSel").style.display = n === "sel" ? "" : "none";
   if (n === "kor") drawHist();
   $("side").scrollTop = 0;
   resize();
@@ -2646,6 +2718,7 @@ function dashFor(i) {
       + kpi(IKON.s, "Sel keladigan joy", fmt(selJ, 0), "ga", `HEC-RAS 2D · tumanning ${fmt(selJ / DASH.sel.minbu_ga * 100, 1)}%`);
     donut($("donStr"), T.map((q, k) => ({ n: `${q.tartib} · ${STR_QISQA[k]}`, v: q.uzunlik_km, c: hexRgb(STR_RGB[Math.min(k, 6)]),
       iz: `havza odatda ${q.havza_km2_oraliq[0]}–${q.havza_km2_oraliq[1]} km²` })), fmt(jkm, 0), "km jami", $("legStr"), d => fmt(d.v, 0) + " km");
+    strIz(T.map(q => q.uzunlik_km));
     donut($("donSel"), SD.map((q, k) => ({ n: SEL_NOM[k], v: q.ga, c: SEL_RGB[k], iz: `${q.ostona_mm} mm yog'inda · jami ${fmt(q.jami_ga, 0)} ga` })),
       fmt(selJ, 0), "ga jami", $("legSel"), d => fmt(d.v, 0) + " ga");
     $("selIz").innerHTML = `Qo'shiladigan maydon: har daraja oldingisiga qo'shadi. Kuchli yomg'irda (120–190 mm) jami <b style="color:#e6edf6">${fmt(SD[2].jami_ga, 0)} ga</b>.`;
@@ -2660,9 +2733,10 @@ function dashFor(i) {
   // hududda bo'lmagan tartiblar ham ro'yxatda qoladi (tanlab, butun tumanda ko'rish uchun)
   donut($("donStr"), SUV.strahler.tartiblar.map((q, k) => ({ n: `${k + 1} · ${STR_QISQA[k]}`, v: t.s[k] || 0, c: hexRgb(STR_RGB[Math.min(k, 6)]) })),
     fmt(km, 0), "km jami", $("legStr"), d => d.v > 0 ? fmt(d.v, 1) + " km" : "—");
+  strIz(SUV.strahler.tartiblar.map((q, k) => t.s[k] || 0));
   if (sg > 0) donut($("donSel"), t.sel.map((v, k) => ({ n: SEL_NOM[k], v, c: SEL_RGB[k], iz: `${SD[k].ostona_mm} mm yog'inda` })).filter(d => d.v > 0),
     fmt(sg, 0), "ga jami", $("legSel"), d => fmt(d.v, 0) + " ga");
-  else { $("donSel").innerHTML = `<circle cx="56" cy="56" r="48" fill="none" stroke="#1b2a40" stroke-width="12"/><text x="56" y="60" text-anchor="middle" fill="#93a4b8" font-size="12">sel yo'q</text>`; $("legSel").innerHTML = ""; }
+  else { $("donSel").innerHTML = `<circle cx="90" cy="90" r="80" fill="none" stroke="#1b2a40" stroke-width="18"/><text x="90" y="95" text-anchor="middle" fill="#93a4b8" font-size="15">sel yo'q</text>`; $("legSel").innerHTML = ""; }
   $("selIz").innerHTML = `Kuchli yomg'irgacha (≤190 mm) jami <b style="color:#e6edf6">${fmt(t.sel[0] + t.sel[1] + t.sel[2], 0)} ga</b>. Sel maydoni bo'yicha tumanda <b style="color:#e6edf6">${HR.sel[i]}/${n}</b>-o'rin.`;
   $("donStrT").textContent = t.n; $("donSelT").textContent = t.n;
   joyH = t.h ? t.h[1] : null;
