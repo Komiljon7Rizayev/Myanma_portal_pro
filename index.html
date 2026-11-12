@@ -209,6 +209,20 @@ h1,h2,p{margin:0}
   font:600 13px var(--body);color:var(--tx);background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(9px);box-shadow:0 6px 18px rgba(0,0,0,.4);animation:drop .2s ease-out}
 .bshow:hover{background:var(--leaf-2);border-color:var(--leaf-2);color:#fff}
 .bshow[hidden]{display:none}
+/* right column fold: the "Rasterlar" pill sits at the corner where the map, the chart row and the right column meet;
+   folded, the column slides out to the right, the map and the charts take the whole width, the same pill brings it back */
+.ui{transition:grid-template-rows .4s cubic-bezier(.3,.7,.2,1),grid-template-columns .4s cubic-bezier(.3,.7,.2,1)}
+.ui.scl{grid-template-columns:minmax(0,1fr) 0px;column-gap:0}
+.side{transition:transform .4s cubic-bezier(.3,.7,.2,1),opacity .3s}
+.ui.scl .side{transform:translateX(112%);opacity:0;pointer-events:none}
+/* vertical tab on the border between the map and the right column, at mid height; folded it stays at the screen edge */
+.ui>.shide{left:auto;bottom:auto;top:50%;right:calc(var(--side) + 14px + 5px - 16px);transform:translateY(-50%);width:32px;height:auto;padding:14px 0;
+  writing-mode:vertical-rl;justify-content:center;gap:8px;pointer-events:auto;animation:none;z-index:4;transition:right .4s cubic-bezier(.3,.7,.2,1)}
+.ui>.shide span{transform:rotate(180deg)}
+.ui.scl>.shide{right:6px}
+.ui.scl{padding-right:44px}
+.hole>.mctl{right:32px}
+.ui.scl .hole>.mctl{right:30px}
 .bot{--sw:clamp(290px,16.5vw,380px);position:relative;grid-area:bot;align-self:start;height:var(--bottom-h);display:grid;grid-template-columns:minmax(0,1fr) var(--sw);gap:10px}
 .bot .card{display:flex;flex-direction:column;gap:6px;overflow:hidden;position:relative}
 .bot header{display:flex;align-items:flex-start;gap:8px}
@@ -504,7 +518,7 @@ html[data-theme="light"] .rhide{background:#eef2ea}
   .side{margin-top:0;padding-top:18px;overflow:visible}
   .side .rcard .rgrid{grid-template-columns:repeat(auto-fill,minmax(86px,1fr))}
   .vlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
-  .bot .bhide{display:none}
+  .bot .bhide,.shide{display:none}
   #donut{height:auto;width:min(60vw,210px)}
   .dist{grid-template-rows:auto auto}
   .who{max-width:140px}
@@ -564,8 +578,6 @@ html[data-theme="light"] .rhide{background:#eef2ea}
 /* day / night switch beside the language menu */
 .thm{flex:none;display:flex;align-items:center;gap:7px;height:30px;padding:0 11px;border-radius:8px;background:var(--glass-2);border:1px solid var(--line);font-size:13px;color:var(--tx);white-space:nowrap}
 .thm:hover{border-color:var(--leaf-2)}
-.fsb{padding:0;width:32px;justify-content:center}
-.fsb[aria-pressed="true"]{background:var(--leaf-2);border-color:var(--leaf-2);color:#fff}
 .thm svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 /* ---------- day (light) theme: html[data-theme="light"] ---------- */
 html[data-theme="light"]{color-scheme:light;
@@ -739,7 +751,8 @@ if(t&&t.exp>n+60000&&(!t.keep||t.keep>n)&&!/[?&]code=/.test(location.search))doc
         <button id="c-tour" aria-pressed="false" title="Uchib ko'rish"><svg viewBox="0 0 16 16"><path d="M2 9.5 14 3l-3.5 11-2.6-4.4z"/><path d="M7.9 9.6 14 3"/></svg></button>
       </div>
       <div class="tourcap" id="tourcap" hidden></div>
-      <button class="bshow" id="bshow" hidden title="Grafiklarni qayta ochish"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 10 4-4 4 4"/></svg>Grafiklar</button>
+      <button class="bshow shide" id="shide" aria-expanded="true" aria-controls="side" title="Rasterlar va indeks qiymatlari ustunini yashirish: xarita kengroq ko'rinadi"><span>Berkitish</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 4 4 4-4 4"/></svg></button>
+      <button class="bshow" id="bshow" hidden title="Grafiklar qatorini qayta ochish"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 10 4-4 4 4"/></svg>Ochish</button>
       <div class="bmg" id="bmg" hidden role="dialog" aria-label="Asosiy xaritalar"><div class="bmg-h"><b>Asosiy xaritalar</b><small>ArcGIS Online</small></div><div class="bmg-cur"><span>Joriy xarita</span><b id="bmg-c"></b></div><div class="bmg-g" id="bmg-g"></div></div>
       <div class="mctl" id="mctl">
         <div class="bmseg" id="bm" role="group" aria-label="Asosiy xarita">
@@ -748,10 +761,11 @@ if(t&&t.exp>n+60000&&(!t.keep||t.keep>n)&&!/[?&]code=/.test(location.search))doc
         </div>
         <button id="breset" title="Hammasini tozalash va boshlang'ich holatga qaytish"><svg viewBox="0 0 16 16"><path d="M2.6 8a5.4 5.4 0 1 0 1.6-3.8M2.5 2.2v2.6h2.6"/></svg>Tozalash</button>
         <button id="bfull" aria-pressed="false" title="Butun dunyo xaritasi"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M2 8h12M8 2c2 2 2.6 4 2.6 6S10 12 8 14M8 2C6 4 5.4 6 5.4 8S6 12 8 14"/></svg>Full</button>
+        <button id="bfs" type="button" aria-pressed="false" title="To'liq ekran"></button>
       </div></div>
       <div hidden aria-hidden="true"><span id="r-name"></span><span id="r-sub"></span><span id="r-share"></span><span id="r-a"></span><span id="r-m"></span><span id="r-x"></span><b id="p-v"></b><i id="p-i"></i></div>
       <div class="bot" id="bot">
-        <button class="bhide" id="bhide" aria-expanded="true" aria-controls="bot" title="Grafiklarni yashirish: xarita kattaroq ko'rinadi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>Grafiklar</button>
+        <button class="bhide" id="bhide" aria-expanded="true" aria-controls="bot" title="Grafiklar qatorini yashirish: xarita kattaroq ko'rinadi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>Berkitish</button>
         <section class="card">
           <header><div><h2>Index qiymatlari</h2></div><span class="chip" id="c1-per"></span></header>
           <div class="plot"><div class="ileg" id="ileg" role="group" aria-label="Indekslar"></div><div class="svgbox" id="c1"></div></div>
@@ -1022,6 +1036,17 @@ var D={
 "Yong'in izi":["Burn trace","След пожара","မီးလောင်ရာ"],
 "Yong'in holati":["Fire condition","Состояние после пожара","မီးလောင်မှု အခြေအနေ"],
 "Kun":["Day","День","နေ့"],
+"Ekran":["Screen","Экран","မျက်နှာပြင်"],
+"Berkitish":["Hide","Скрыть","ဖျောက်ရန်"],
+"Ochish":["Show","Открыть","ဖွင့်ရန်"],
+"Rasterlarni yashirish":["Hide rasters","Скрыть растры","ရာစတာများ ဖျောက်ရန်"],
+"Rasterlarni ko'rsatish":["Show rasters","Показать растры","ရာစတာများ ပြရန်"],
+"Rasterlar va indeks qiymatlari ustunini yashirish: xarita kengroq ko'rinadi":["Hide the rasters and index values column: the map gets wider","Скрыть столбец растров и значений индексов: карта станет шире","ရာစတာနှင့် အညွှန်းတန်ဖိုး ကော်လံ ဖျောက်ရန်"],
+"Rasterlar va indeks qiymatlari ustunini qayta ochish":["Open the rasters and index values column again","Снова открыть столбец растров и значений индексов","ရာစတာနှင့် အညွှန်းတန်ဖိုး ကော်လံ ပြန်ဖွင့်ရန်"],
+"Grafiklarni yashirish":["Hide charts","Скрыть графики","ဇယားများ ဖျောက်ရန်"],
+"Grafiklarni ko'rsatish":["Show charts","Показать графики","ဇယားများ ပြရန်"],
+"Grafiklar qatorini yashirish: xarita kattaroq ko'rinadi":["Hide the chart row: the map gets bigger","Скрыть ряд графиков: карта станет больше","ဇယားတန်း ဖျောက်ရန် - မြေပုံ ပိုကြီးလာမည်"],
+"Grafiklar qatorini qayta ochish":["Open the chart row again","Снова открыть ряд графиков","ဇယားတန်း ပြန်ဖွင့်ရန်"],
 "To'liq ekran":["Full screen","Во весь экран","မျက်နှာပြင်အပြည့်"],
 "To'liq ekrandan chiqish":["Exit full screen","Выйти из полноэкранного режима","မျက်နှာပြင်အပြည့်မှ ထွက်ရန်"],
 "Bu brauzerda to'liq ekran ishlamaydi.":["Full screen does not work in this browser.","В этом браузере полноэкранный режим не работает.","ဤဘရောက်ဇာတွင် မျက်နှာပြင်အပြည့် မရပါ။"],
@@ -1589,11 +1614,11 @@ function setTheme(t){document.documentElement.setAttribute('data-theme',t);try{l
   if(typeof mapTheme==='function')mapTheme()}
 THB.onclick=function(){setTheme(themeIs()==='light'?'dark':'light')};
 /* full screen: the portal fills the whole screen (browser bars gone); pressed again (or Esc) = back to the window */
-var FSB=document.createElement('button');FSB.className='thm fsb';FSB.type='button';THB.parentNode.insertBefore(FSB,THB.nextSibling);
+var FSB=$('bfs');
 var FSE=document.documentElement,FSON=function(){return !!(document.fullscreenElement||document.webkitFullscreenElement)};
 function fsPaint(){var on=FSON();
-  FSB.innerHTML=on?'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4"/></svg>'
-    :'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/></svg>';
+  FSB.innerHTML=(on?'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4"/></svg>'
+    :'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/></svg>')+L('Ekran');
   FSB.title=L(on?'To\'liq ekrandan chiqish':'To\'liq ekran');FSB.setAttribute('aria-label',FSB.title);FSB.setAttribute('aria-pressed',String(on))}
 FSB.onclick=function(){
   if(FSON())(document.exitFullscreen||document.webkitExitFullscreen).call(document);
@@ -1604,7 +1629,7 @@ setTheme(TH0);
 I18N.apply();
 window.__relang=function(){relangArrays();closeMenu();buildFilters();render();if(map)paint();
   /* the open contour popup and the basemap gallery are built with L(): rebuild them in the new language */
-  if(typeof PS!=='undefined'&&PS>=0&&!$('pcard').hidden)pcard();if(!$('bmg').hidden)bmGallery();setTheme(themeIs());fsPaint()};
+  if(typeof PS!=='undefined'&&PS>=0&&!$('pcard').hidden)pcard();if(!$('bmg').hidden)bmGallery();setTheme(themeIs());fsPaint();if(document.querySelector('.ui.scl'))sideFold(true)};
 var rz;addEventListener('resize',function(){clearTimeout(rz);rz=setTimeout(function(){render();if(map)fit(true)},150)});
 
 
@@ -2086,6 +2111,14 @@ $('bhide').onclick=function(){botFold(true)};$('bshow').onclick=function(){botFo
 /* fold / unfold the "Rasterlar" card in the right column; on every opening of the portal all panels start open */
 function rasFold(on){$('side').classList.toggle('rcl',on);$('rhide').setAttribute('aria-expanded',String(!on));$('rshow').hidden=!on;
   if(on)$('rshow').focus();else $('rhide').focus()}
+/* fold / unfold the whole right column (rasters + index values) to the right; one pill does both */
+function sideFold(on){document.querySelector('.ui').classList.toggle('scl',on);var b=$('shide');b.setAttribute('aria-expanded',String(!on));
+  b.innerHTML=on?'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="m10 4-4 4 4 4"/></svg><span>'+L('Ochish')+'</span>'
+    :'<span>'+L('Berkitish')+'</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 4 4 4-4 4"/></svg>';
+  b.title=L(on?'Rasterlar va indeks qiymatlari ustunini qayta ochish':'Rasterlar va indeks qiymatlari ustunini yashirish: xarita kengroq ko\'rinadi');
+  setTimeout(render,430)}
+document.querySelector('.ui').appendChild($('shide'));   /* the tab is placed against the whole panel grid, not the map hole */
+$('shide').onclick=function(){sideFold(!document.querySelector('.ui').classList.contains('scl'))};
 $('rhide').onclick=function(){rasFold(true)};$('rshow').onclick=function(){rasFold(false)};
 /* ArcGIS Online (Esri) basemaps; the chosen one feeds the "Sun'iy yo'ldosh" and "3D" modes and is masked to the township */
 var ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/',WB='https://wayback.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/WMTS/1.0.0/default028mm/MapServer/tile/44710/';
