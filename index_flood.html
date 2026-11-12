@@ -286,9 +286,11 @@ html,body{background:var(--bg);font-family:Inter,"Segoe UI",system-ui,-apple-sys
 #pop{z-index:6;background:rgba(8,13,22,.95)}
 #pop.kichik{min-width:0;padding:5px 26px 5px 10px;font-size:12px;white-space:nowrap}
 #pop.kichik b{font-weight:600}#pop.kichik span{color:var(--tx2);margin-left:6px}
-#cBat{display:none;left:var(--gap);bottom:calc(var(--brow) + 2*var(--gap));width:300px;max-height:calc(100% - var(--brow) - var(--top) - 4*var(--gap));overflow-y:auto;padding:8px 11px;scrollbar-width:thin}
+#cBat{overflow-y:auto;scrollbar-width:thin;padding:10px 14px}
 #cBat h3{font-size:12px}#cBat h3 small{font-size:10px}
-#cBat table{border-collapse:collapse;margin-top:4px;font-size:10.5px;font-variant-numeric:tabular-nums;width:100%}
+#cBat table,#cBat tbody{display:block}#cBat tbody{columns:290px 3;column-gap:30px;column-rule:1px solid rgba(148,163,184,.08)}
+#cBat tr{display:flex;gap:10px;break-inside:avoid}#cBat td:first-child{flex:0 0 118px}#cBat td.sh{flex:1 1 auto}
+#cBat table{border-collapse:collapse;margin-top:6px;font-size:11.5px;font-variant-numeric:tabular-nums;width:100%}
 #cBat td{padding:2px 0;vertical-align:top}#cBat td:first-child{color:var(--tx3);padding-right:10px;white-space:nowrap}
 #cBat td.sh{color:var(--tx);font-weight:600;padding-top:7px}
 #pop:after{border-top-color:rgba(8,13,22,.95)}
@@ -416,7 +418,7 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
     <button data-p="tOn">To'planish joylari <span>—</span></button>
     <button data-p="sKol">Ko'lmak va daryo <span>—</span></button>
   </div>
-  <div class="rsrc">Manba: Copernicus GLO-30, ArcGIS Pro, HEC-RAS 2D, ESA WorldCover, OpenStreetMap.</div>
+  <div class="rsrc"><b style="display:block;color:var(--tx2);font-weight:600;margin-bottom:3px">Muallif: Hayitali</b>Manba: Copernicus GLO-30, ArcGIS Pro, HEC-RAS 2D, ESA WorldCover, OpenStreetMap.</div>
 </nav>
 
 <header id="top">
@@ -439,12 +441,9 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
     <div class="card" id="cJoy"></div>
     <div class="card" id="cNis"></div>
   </div>
-  <div class="card" id="cBat"></div>
   <div id="brow">
     <div class="card" id="cRank" style="display:none"><h3>Eng ko'p sel keladigan hududlar <small>HEC-RAS, ga</small></h3><div class="rank diag" id="rank"></div><button class="lnk" data-go="hud">Barchasini ko'rish (70)</button></div>
-    <div class="card"><h3>Balandlik taqsimoti <small id="hSub">balandlik va maydon, km² (10 m oraliq)</small>
-</h3>
-      <svg id="hArea"></svg></div>
+    <div class="card" id="cBat"></div>
     <div id="ldon" class="card dcard"><div class="dch"><h3>Oqim yo'llari tarkibi</h3><span class="pill" id="donStrT">Strahler tartibi bo'yicha</span></div>
       <div class="dbody"><svg id="donStr" class="dbig" width="180" height="180" viewBox="0 0 180 180"></svg><div class="dleg dlegB" id="legStr"></div></div>
       <div class="ehint dfoot" id="strIz"></div></div>
@@ -591,7 +590,7 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
       <canvas id="hist"></canvas>
       <div id="histTip">Balandlik bo'yicha maydon taqsimoti (10 m oraliq)</div>
     </div>
-    <div class="src" id="src">Boshqaruv: chap tugma — surish, o'ng tugma (yoki Ctrl+chap) — aylantirish/egish, g'ildirak — yaqinlashish, ikki marta bosish — shu joyga uchish.<br><br>
+    <div class="src" id="src">Boshqaruv: chap yoki o'ng tugma — surish, g'ildirakni bosib turib (yoki Ctrl+chap) — aylantirish/egish, g'ildirak — yaqinlashish, ikki marta bosish — shu joyga uchish.<br><br>
     Relyef: Copernicus GLO-30 DEM © DLR e.V. 2010–2014, © Airbus Defence and Space 2014–2018, Yevropa Ittifoqi va ESA Copernicus dasturi doirasida. Bu sirt modeli (DSM): daraxt va binolar ustidan o'lchangan.<br>
     Tasvir: Google sun'iy yo'ldosh tasviri.</div>
   </div>
@@ -643,6 +642,8 @@ const NET_CLS = [["Jarlik / vaqtinchalik o'zan", [115, 199, 255], 2], ["Soy", [5
 const MIN_A = [0.1, 0.3, 1, 3, 10, 50, 300];
 // Strahler tartibi 1..7 ranglari (taqdimot bilan bir xil) va nomlari
 const STR_RGB = [[198, 219, 239], [158, 202, 225], [107, 174, 214], [66, 146, 198], [33, 113, 181], [8, 81, 156], [8, 48, 107]];
+const STR_GURUH = ["irmoq", "irmoqlar", "kichik soy", "soy", "katta soy", "chaung daryosi"];   // 6 va 7-tartib bitta
+const strItems = (v, iz) => STR_GURUH.map((nm, k) => ({ n: k < 5 ? `${k + 1} · ${nm}` : `6–7 · ${nm}`, v: k < 5 ? (v[k] || 0) : (v[5] || 0) + (v[6] || 0), c: hexRgb(STR_RGB[k < 5 ? k : 6]), ...(iz ? { iz: iz[k] } : {}) }));
 const STR_NOM = ["irmoq (eng uchidagi)", "irmoq", "kichik soy", "soy", "katta soy", "chaung", "asosiy chaung"];
 
 const W = META.w, H = META.h, RES = META.res;
@@ -979,7 +980,7 @@ void main(){
   vec2 d = sb - sa; d = length(d) < 1e-4 ? vec2(1.,0.) : normalize(d);
   vec2 n = vec2(-d.y, d.x);
   float wp = uStr > .5 ? .35 + .5 * aT : wpx(aC);
-  if(uOnT > .5 && aC < 98. && abs(aT - uOnT) < .5) wp = max(wp, 2.6);
+  if(uOnT > .5 && aC < 98. && (abs(aT - uOnT) < .5 || (uOnT > 5.5 && aT > 5.5))) wp = max(wp, 2.6);
   a.xy += n * aSide * (wp * uPxK + .7) / uRes * a.w;
   a.z -= uZB * a.w;
   gl_Position = a;
@@ -1002,7 +1003,7 @@ void main(){
   float p = fract((vPh + uTime) / uLam);
   float pulse = smoothstep(0., .04, p) * (1. - smoothstep(.04, .22, p));
   c = mix(c, vec3(1.), pulse * .65 * uAnim * (uSelNet > .5 && vHz < .5 ? .3 : 1.));
-  if(uOnT > .5 && vC < 98.){ if(abs(vT - uOnT) < .5){ c = mix(vec3(.94,.16,.16), vec3(1.,.62,.62), pulse * .6 * uAnim); a = 1.; } else a *= .3; }
+  if(uOnT > .5 && vC < 98.){ if(abs(vT - uOnT) < .5 || (uOnT > 5.5 && vT > 5.5)){ c = mix(vec3(.94,.16,.16), vec3(1.,.62,.62), pulse * .6 * uAnim); a = 1.; } else a *= .3; }
   float edge = 1. - smoothstep(.5, 1., abs(vSide));
   gl_FragColor = vec4(c, (.35 + .65 * edge) * a);
 }`;
@@ -2197,12 +2198,14 @@ function initUI() {
   const ptrs = new Map();
   let drag = null, moved = 0, lastTap = 0;
   cv.addEventListener("contextmenu", e => e.preventDefault());
+  cv.addEventListener("mousedown", e => { if (e.button === 1) e.preventDefault(); });
   cv.addEventListener("pointerdown", e => {
     cv.setPointerCapture(e.pointerId);
     ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
     anim = null; moved = 0;
     if (ptrs.size === 1) {
-      const rot = e.button === 2 || e.ctrlKey || e.shiftKey;
+      if (e.button === 1) e.preventDefault();   // g'ildirak tugmasi: avtoskroll o'rniga aylantirish
+      const rot = e.button === 1 || e.ctrlKey || e.shiftKey;
       drag = { rot, x: e.clientX, y: e.clientY, anchor: rot ? null : groundPick(e.clientX, e.clientY) };
     } else if (ptrs.size === 2) {
       const [a, b] = [...ptrs.values()];
@@ -2624,7 +2627,8 @@ function foiz(hm) {
   return Math.max(0, Math.min(100, s / ST.maydon_km2 * 100));
 }
 function drawArea(hi = -1) {   // y — balandlik (baland joy yuqorida), x — shu balandlikdagi maydon (yig'ilib boradi)
-  const svg = $("hArea"), W = svg.clientWidth, H = svg.clientHeight;
+  const svg = $("hArea"); if (!svg) return;
+  const W = svg.clientWidth, H = svg.clientHeight;
   if (!W || !H) return;
   const hs = META.hist, n = hs.km2.length, tot = hs.km2.reduce((s, v) => s + v, 0), foiz = hKind === "y";
   const cum = [0]; hs.km2.forEach(v => cum.push(cum[cum.length - 1] + v));
@@ -2668,11 +2672,41 @@ function drawArea(hi = -1) {   // y — balandlik (baland joy yuqorida), x — s
   };
   $("hHit").onpointerleave = () => drawArea();
 }
+let TUM = null;
+function tumanBat() {   // hech narsa tanlanmaganda: butun tuman bo'yicha umumiy ma'lumot
+  if (!TUM) {
+    let smin = 1e9, smax = 0, ss = 0, n = 0, c0 = W, c1 = 0, r0 = H, r1 = 0;
+    for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) {
+      if (!V[r * W + c]) continue;
+      const sl = slopeAt(c, r)[0]; if (sl < smin) smin = sl; if (sl > smax) smax = sl; ss += sl; n++;
+      if (c < c0) c0 = c; if (c > c1) c1 = c; if (r < r0) r0 = r; if (r > r1) r1 = r;
+    }
+    const E = META.x0 + (c0 + c1 + 1) / 2 * RES, N = META.y0 - (r0 + r1 + 1) / 2 * RES, [lat, lon] = utm2ll(E, N, META.utm_zona);
+    TUM = { smin, smax, sm: ss / Math.max(1, n), E, N, lat, lon };
+  }
+  const T = TUM, tq = SELM.tq, lc = Object.entries(tq.yer_qoplami_minbu_foiz).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  const hs = Object.entries(tq.hsg_minbu_foiz).filter(e => e[1] > 0).sort((a, b) => b[1] - a[1]);
+  $("cBat").innerHTML = `<h3>Batafsil <small>butun tuman · nuqtani bosing — shu nuqta ma'lumoti chiqadi</small></h3><table>
+    <tr><td>Qiyalik</td><td>min ${fmt(T.smin, 1)}° · max ${fmt(T.smax, 1)}° · o'rtacha ${fmt(T.sm, 1)}°</td></tr>
+    <tr><td>Kenglik, uzunlik</td><td>${T.lat.toFixed(5)}°, ${T.lon.toFixed(5)}° (markaz)</td></tr>
+    <tr><td>UTM 46N</td><td>${Math.round(T.E)} E, ${Math.round(T.N)} N (markaz)</td></tr>
+    <tr><td>Max balandlik</td><td>${fmt(ST.max, 1)} m</td></tr>
+    <tr><td>Min balandlik</td><td>${fmt(ST.min, 1)} m</td></tr>
+    <tr><td>O'rtacha balandlik</td><td>${fmt(ST.mean, 1)} m (mediana ${fmt(ST.median, 1)} m)</td></tr>
+    <tr><td>Qishloq trakti</td><td>Minbu (${HUD.t.length} ta trakt)</td></tr>
+    <tr><td>Maydon</td><td>${fmt(ST.maydon_km2, 0)} km²</td></tr>
+    <tr><td>Oqim yo'llari</td><td>${fmt(SUV.strahler.jami_km, 0)} km · ${fmt(SUV.stat.tarmoq_zichligi_km_km2, 2)} km/km²</td></tr>
+    <tr><td class="sh" colspan="2">Tuproq, qoplama</td></tr>
+    <tr><td>Yer qoplami</td><td>${lc.map(e => e[0] + " " + fmt(e[1], 1) + "%").join(" · ")}</td></tr>
+    <tr><td>Tuproq</td><td>${hs.map(e => e[0] + " guruh " + fmt(e[1], 1) + "%").join(" · ")}</td></tr>
+    <tr><td>CN (AMC II)</td><td>o'rtacha ${fmt(tq.cn_ortacha_minbu, 0)}</td></tr>
+    </table>`;
+}
 function joyKarta(p) {
   const d = p && info(p.x, p.z);
   if (!d) {
     joyH = null;
-    $("cBat").style.display = "none"; $("pop").classList.remove("kichik");
+    tumanBat(); $("pop").classList.remove("kichik");
     $("hT").textContent = "Minbu tumani"; $("hS").textContent = `Magway viloyati, Myanma · ${fmt(ST.maydon_km2, 0)} km² · DEM 30 m`; $("backB").style.display = "none";
     { const pc = v => ((v - ST.min) / Math.max(1, ST.max - ST.min) * 100).toFixed(1);
     $("cJoy").innerHTML = `<div class="jk"><div class="jh"><span class="jic"><svg viewBox="0 0 40 40" width="32" height="32" aria-hidden="true"><defs><linearGradient id="mtxmG2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1e3a8a"/><stop offset=".55" stop-color="#2563eb"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#mtxmG2)"/><path d="M0 29c4.5-2.6 9-2.6 13.5 0s9 2.6 13.5 0 8.5-2.6 13-.4V40H0z" fill="#fff" fill-opacity=".13"/><text x="20" y="17.2" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="11.5" font-weight="800" letter-spacing=".6" fill="#fff">MT</text><path d="M7.5 21.6c2.5-1.7 5-1.7 7.5 0s5 1.7 7.5 0 5-1.7 7.5 0 2.6 1.3 3.6.6" fill="none" stroke="#bae6fd" stroke-width="1.5" stroke-linecap="round"/><text x="20" y="32.6" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="11.5" font-weight="800" letter-spacing=".6" fill="#e0f2fe">XM</text></svg></span><div><h3>Minbu tumani</h3><div class="sub2">Magway viloyati, Myanma</div></div></div>
@@ -2701,10 +2735,9 @@ function joyKarta(p) {
   const tbl = $("pop").querySelector("table");
   if (!document.body.classList.contains("nopan") && innerWidth > 900 && tbl) {
     $("cBat").innerHTML = `<h3>Batafsil <small>shu nuqta, 30 m piksel</small></h3>` + tbl.outerHTML;
-    $("cBat").style.display = "block";
     $("pop").classList.add("kichik");
     $("pop").innerHTML = `<button class="x" onclick="closePop()">×</button><b>${nom}</b><span>${fmt(d.h, 1)} m</span>`;
-  } else { $("pop").classList.remove("kichik"); $("cBat").style.display = "none"; }
+  } else { $("pop").classList.remove("kichik"); tumanBat(); }
   $("hT").textContent = nom; $("backB").style.display = "block";
   $("hS").textContent = `${p.tur ? p.tur + " · " : ""}${hi >= 0 ? HUD.t[hi].n + " trakti · " : ""}${d.lat.toFixed(4)}°N ${d.lon.toFixed(4)}°E · Minbu tumani`;
   $("cJoy").innerHTML = `<h3>${nom}</h3><div class="sub2">${d.lat.toFixed(5)}°, ${d.lon.toFixed(5)}° · UTM ${Math.round(d.E)} E, ${Math.round(d.N)} N</div>
@@ -2930,8 +2963,8 @@ function dashFor(i) {
       + kpi(IKON.b, "Balandlik", `${fmt(ST.min, 0)}–${fmt(ST.max, 0)}`, "m", `o'rtacha ${fmt(ST.mean, 0)} m · dengiz sathidan`)
       + kpi(IKON.o, "Oqim yo'llari", fmt(jkm, 0), "km", `Strahler 1–7 tartib · ${fmt(SUV.stat.tarmoq_zichligi_km_km2, 2)} km/km²`)
       + kpi(IKON.s, "Sel keladigan joy", fmt(selJ, 0), "ga", `HEC-RAS 2D · tumanning ${fmt(selJ / DASH.sel.minbu_ga * 100, 1)}%`);
-    donut($("donStr"), T.map((q, k) => ({ n: `${q.tartib} · ${STR_QISQA[k]}`, v: q.uzunlik_km, c: hexRgb(STR_RGB[Math.min(k, 6)]),
-      iz: `havza odatda ${q.havza_km2_oraliq[0]}–${q.havza_km2_oraliq[1]} km²` })), fmt(jkm, 0), "km jami", $("legStr"), d => fmt(d.v, 0) + " km");
+    donut($("donStr"), strItems(T.map(q => q.uzunlik_km), [0, 1, 2, 3, 4, 5].map(k => `havza odatda ${T[k].havza_km2_oraliq[0]}–${T[k < 5 ? k : T.length - 1].havza_km2_oraliq[1]} km²`)),
+      fmt(jkm, 0), "km jami", $("legStr"), d => fmt(d.v, 0) + " km");
     strIz(T.map(q => q.uzunlik_km));
     donut($("donSel"), SD.map((q, k) => ({ n: SEL_NOM[k], v: q.ga, c: SEL_RGB[k], iz: `${q.ostona_mm} mm yog'inda · jami ${fmt(q.jami_ga, 0)} ga` })),
       fmt(selJ, 0), "ga jami", $("legSel"), d => fmt(d.v, 0) + " ga");
@@ -2945,7 +2978,7 @@ function dashFor(i) {
     + kpi(IKON.o, "Oqim yo'llari", fmt(km, 0), "km", `zichlik ${fmt(km / t.a, 2)} km/km² (tuman ${fmt(HJ.zich, 2)})`)
     + kpi(IKON.s, "Sel keladigan joy", fmt(sg, 0), "ga", `hududning ${fmt(sg / (t.a * 100) * 100, 1)}% · ${HR.sel[i]}/${n}-o'rin`);
   // hududda bo'lmagan tartiblar ham ro'yxatda qoladi (tanlab, butun tumanda ko'rish uchun)
-  donut($("donStr"), SUV.strahler.tartiblar.map((q, k) => ({ n: `${k + 1} · ${STR_QISQA[k]}`, v: t.s[k] || 0, c: hexRgb(STR_RGB[Math.min(k, 6)]) })),
+  donut($("donStr"), strItems(SUV.strahler.tartiblar.map((q, k) => t.s[k] || 0)),
     fmt(km, 0), "km jami", $("legStr"), d => d.v > 0 ? fmt(d.v, 1) + " km" : "—");
   strIz(SUV.strahler.tartiblar.map((q, k) => t.s[k] || 0));
   if (sg > 0) donut($("donSel"), t.sel.map((v, k) => ({ n: SEL_NOM[k], v, c: SEL_RGB[k], iz: `${SD[k].ostona_mm} mm yog'inda` })).filter(d => d.v > 0),
@@ -2973,7 +3006,6 @@ function dashFor(i) {
     <tr><td class="sh" colspan="2">Reyting (70 ta hudud ichida)</td></tr>
     <tr><td>Maydon</td><td>${HR.a[i]}-o'rin</td></tr><tr><td>Oqim yo'llari</td><td>${HR.s[i]}-o'rin</td></tr><tr><td>Ekin maydoni</td><td>${HR.ek[i]}-o'rin</td></tr>
     </table>`;
-  $("cBat").style.display = "block";
   drawArea();
 }
 function hudList() {
@@ -3305,6 +3337,34 @@ Promise.all(kalit.map(function(k){
    Manba: Minbu_3D_portal/flood_til.js -> shablon.html va front/index_flood.html ga ichiga joylangan. */
 (function () {
 var D = {
+"Daraxtzor {n}%": ["Tree cover {0}%", "Леса {0}%", "သစ်တော {0}%"],
+"Butazor {n}%": ["Shrubland {0}%", "Кустарник {0}%", "ချုံပုတ် {0}%"],
+"O'tloq {n}%": ["Grassland {0}%", "Луга {0}%", "မြက်ခင်း {0}%"],
+"Ekinzor {n}%": ["Cropland {0}%", "Пашня {0}%", "စိုက်ခင်း {0}%"],
+"Qurilgan hudud {n}%": ["Built-up {0}%", "Застройка {0}%", "အဆောက်အအုံ {0}%"],
+"Doimiy suv {n}%": ["Permanent water {0}%", "Постоянная вода {0}%", "အမြဲရေ {0}%"],
+"Tuproq, qoplama": ["Soil, land cover", "Почва, покров", "မြေဆီလွှာ၊ မြေဖုံး"],
+"A guruh {n}%": ["group A {0}%", "группа A {0}%", "အုပ်စု A {0}%"],
+"B guruh {n}%": ["group B {0}%", "группа B {0}%", "အုပ်စု B {0}%"],
+"C guruh {n}%": ["group C {0}%", "группа C {0}%", "အုပ်စု C {0}%"],
+"D guruh {n}%": ["group D {0}%", "группа D {0}%", "အုပ်စု D {0}%"],
+"Boshqaruv: chap yoki o'ng tugma — surish, g'ildirakni bosib turib (yoki Ctrl+chap) — aylantirish/egish, g'ildirak — yaqinlashish, ikki marta bosish — shu joyga uchish.": ["Controls: left or right button — pan, hold the wheel button (or Ctrl+left) — rotate/tilt, wheel — zoom, double-click — fly to the spot.", "Управление: левая или правая кнопка — сдвиг, зажатое колёсико (или Ctrl+левая) — вращение/наклон, колёсико — масштаб, двойной щелчок — перелёт к точке.", "ထိန်းချုပ်မှု: ဘယ် သို့မဟုတ် ညာခလုတ် — ရွှေ့ရန်၊ ဘီးခလုတ်ကို ဖိထား (သို့မဟုတ် Ctrl+ဘယ်) — လှည့်/စောင်းရန်၊ ဘီး — ချဲ့ချုံ့ရန်၊ နှစ်ချက်နှိပ် — ထိုနေရာသို့ ပျံရန်။"],
+"Muallif: Hayitali": ["Author: Hayitali", "Автор: Hayitali", "ရေးသားသူ: Hayitali"],
+"irmoqlar": ["tributaries", "притоки", "မြစ်လက်တက်များ"],
+"chaung daryosi": ["chaung river", "река (чаунг)", "ချောင်း မြစ်"],
+"{n}–{n} · chaung daryosi": ["{0}–{1} · chaung river", "{0}–{1} · река (чаунг)", "{0}–{1} · ချောင်း မြစ်"],
+"{n} · irmoqlar": ["{0} · tributaries", "{0} · притоки", "{0} · မြစ်လက်တက်များ"],
+"butun tuman · nuqtani bosing — shu nuqta ma'lumoti chiqadi": ["whole township · click a point to see its data", "весь район · нажмите точку — покажутся её данные", "မြို့နယ်တစ်ခုလုံး · အမှတ်ကိုနှိပ်ပါ — ၎င်း၏ အချက်အလက် ပေါ်လာမည်"],
+"min {n}° · max {n}° · o'rtacha {n}°": ["min {0}° · max {1}° · mean {2}°", "мин {0}° · макс {1}° · среднее {2}°", "အနိမ့် {0}° · အမြင့် {1}° · ပျမ်းမျှ {2}°"],
+"{n}°, {n}° (markaz)": ["{0}°, {1}° (centre)", "{0}°, {1}° (центр)", "{0}°, {1}° (ဗဟို)"],
+"{n} E, {n} N (markaz)": ["{0} E, {1} N (centre)", "{0} E, {1} N (центр)", "{0} E, {1} N (ဗဟို)"],
+"Max balandlik": ["Max elevation", "Макс. высота", "အမြင့်ဆုံး"],
+"Min balandlik": ["Min elevation", "Мин. высота", "အနိမ့်ဆုံး"],
+"O'rtacha balandlik": ["Mean elevation", "Средняя высота", "ပျမ်းမျှ အမြင့်"],
+"{n} m (mediana {n} m)": ["{0} m (median {1} m)", "{0} м (медиана {1} м)", "{0} m (အလယ်ကိန်း {1} m)"],
+"Minbu ({n} ta trakt)": ["Minbu ({0} tracts)", "Минбу ({0} трактов)", "Minbu (ကျေးရွာအုပ်စု {0})"],
+"o'rtacha {n}": ["mean {0}", "среднее {0}", "ပျမ်းမျှ {0}"],
+"{n} km · {n} km/km²": ["{0} km · {1} km/km²", "{0} км · {1} км/км²", "{0} km · {1} km/km²"],
 "Onlayn xaritalar": ["Online maps", "Онлайн-карты", "အွန်လိုင်းမြေပုံများ"],
 "yuklanmoqda {n}%": ["loading {0}%", "загрузка {0}%", "ဖွင့်နေသည် {0}%"],
 "{n}–{n} m · {n} km² ({n}%)": ["{0}–{1} m · {2} km² ({3}%)", "{0}–{1} м · {2} км² ({3}%)", "{0}–{1} m · {2} km² ({3}%)"],
@@ -3614,7 +3674,6 @@ var D = {
 "Suv yig'iladigan havza": ["Contributing catchment", "Водосбор", "ရေဝေရေလဲ"],
 "Irravadi daryosiga quyiladi": ["Flows into the Irrawaddy", "Впадает в Иравади", "ဧရာဝတီမြစ်ထဲ စီးဝင်သည်"],
 "{n} km, {n} m pastga": ["{0} km, {1} m down", "{0} км, на {1} м ниже", "{0} km၊ {1} m အောက်သို့"],
-"Boshqaruv: chap tugma — surish, o'ng tugma (yoki Ctrl+chap) — aylantirish/egish, g'ildirak — yaqinlashish, ikki marta bosish — shu joyga uchish.": ["Controls: left button — pan, right button (or Ctrl+left) — rotate/tilt, wheel — zoom, double-click — fly to that spot.", "Управление: левая кнопка — перемещение, правая (или Ctrl+левая) — вращение/наклон, колесо — масштаб, двойной щелчок — перелёт в точку.", "ထိန်းချုပ်မှု: ဘယ်ခလုတ် — ရွှေ့ရန်၊ ညာခလုတ် (သို့မဟုတ် Ctrl+ဘယ်) — လှည့်/စောင်းရန်၊ ဘီး — ချဲ့/ချုံ့ရန်၊ နှစ်ချက်နှိပ် — ထိုနေရာသို့ ပျံရန်။"],
 "Manbalar va boshqaruv": ["Sources & controls", "Источники и управление", "ရင်းမြစ်နှင့် ထိန်းချုပ်မှု"],
 "Relyef: Copernicus GLO{n} DEM © DLR e.V. {n}–{n}, © Airbus Defence and Space {n}–{n}, Yevropa Ittifoqi va ESA Copernicus dasturi doirasida. Bu sirt modeli (DSM): daraxt va binolar ustidan o'lchangan.": ["Terrain: Copernicus GLO{0} DEM © DLR e.V. {1}–{2}, © Airbus Defence and Space {3}–{4}, provided under the European Union and ESA Copernicus programme. This is a surface model (DSM): measured over the tops of trees and buildings.", "Рельеф: Copernicus GLO{0} DEM © DLR e.V. {1}–{2}, © Airbus Defence and Space {3}–{4}, в рамках программы Copernicus Евросоюза и ЕКА. Это модель поверхности (DSM): измерена по верхушкам деревьев и зданий.", "မြေမျက်နှာသွင်ပြင်: Copernicus GLO{0} DEM © DLR e.V. {1}–{2}, © Airbus Defence and Space {3}–{4}၊ ဥရောပသမဂ္ဂနှင့် ESA Copernicus အစီအစဉ်အောက်တွင်။ ၎င်းသည် မျက်နှာပြင်မော်ဒယ် (DSM) ဖြစ်ပြီး သစ်ပင်နှင့် အဆောက်အအုံ အပေါ်မှ တိုင်းထားသည်။"],
 "Tasvir: Google sun'iy yo'ldosh tasviri.": ["Imagery: Google satellite imagery.", "Снимки: спутниковые снимки Google.", "ပုံရိပ်: Google ဂြိုဟ်တုပုံရိပ်။"],
