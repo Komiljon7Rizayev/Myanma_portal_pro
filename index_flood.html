@@ -1458,10 +1458,7 @@ function selQatlam() {
 function selRows(i) {   // bosilgan katak uchun popup qatorlari
   if (!SL || i < 0 || !SL.cn2[i]) return hecRows(i);
   const lc = LCN(String(SL.lc[i] || 30)), hs = "ABCD"[SL.hsg[i] - 1] || "—";
-  const r = [`<tr><td colspan="2" class="sh">⚠ Tuproq, qoplama${selR ? " va sel" : ""}</td></tr>`,
-    `<tr><td>Yer qoplami</td><td>${lc[0]} (Manning n ${lc[1]})</td></tr>`,
-    `<tr><td>Tuproq</td><td>${hs} guruh, Ks ≈ ${fmt(SL.ks[i] / 4, 1)} mm/soat</td></tr>`,
-    `<tr><td>CN (AMC II)</td><td>${SL.cn2[i]}</td></tr>`];
+  const r = [`<tr><td>Yer qoplami</td><td>${lc[0]}</td></tr>`];
   if (selR) {
     const R = selR, rp = SL.rpi[i];
     r.push(`<tr><td>Yog'in → oqim</td><td>${fmt(R.Prp[rp], 1)} mm → ${fmt(R.Q[i], 1)} mm (AMC ${["", "I", "II", "III"][R.amc[rp]]})</td></tr>`);
@@ -2432,11 +2429,8 @@ function showInfo(p, jForce) {
     <div class="h">${fmt(d.h)} <small>m balandlik</small></div>
     <table>
     <tr><td>Qiyalik</td><td>${fmt(d.sl)}° · ${ASP[Math.round(d.asp / 45) % 8]}ga qaragan</td></tr>
-    <tr><td>Kenglik, uzunlik</td><td>${d.lat.toFixed(5)}°, ${d.lon.toFixed(5)}°</td></tr>
-    <tr><td>UTM 46N</td><td>${Math.round(d.E)} E, ${Math.round(d.N)} N</td></tr>
-    <tr><td>DEM piksel</td><td>ustun ${d.c + 1}, qator ${d.r + 1} (30×30 m)</td></tr>${hudRow(p.x, p.z)}
-    ${(() => { const i = hydCell(p.x, p.z); return i >= 0 && SG.cls[i] ? `<tr><td>Yomg'ir suvi</td><td>${SHAKL[SG.cls[i]]}</td></tr>
-    <tr><td>Yig'ilish maydoni</td><td>${fmtAkm(accAt(i))} dan suv keladi</td></tr>${strRow(i)}` : ""; })()}
+    <tr><td>UTM 46N</td><td>${Math.round(d.E)} E, ${Math.round(d.N)} N</td></tr>${hudRow(p.x, p.z)}
+    ${(() => { const i = hydCell(p.x, p.z); return i >= 0 && SG.cls[i] ? `<tr><td>Yig'ilish maydoni</td><td>${fmtAkm(accAt(i))} dan suv keladi</td></tr>${strRow(i)}` : ""; })()}
     ${tj >= 0 ? topRows(tj) : ""}
     ${selRows(ci)}
     ${yogRows(ci)}
@@ -2981,7 +2975,7 @@ function hudAt(X, Z) {
   }
   return -1;
 }
-function hudRow(X, Z) { const i = hudAt(X, Z); return i >= 0 ? `<tr><td>Qishloq trakti</td><td>${HUD.t[i].n}</td></tr>` : ""; }
+function hudRow(X, Z) { const i = hudAt(X, Z); return i >= 0 ? `<tr><td>Qishloq nomi</td><td>${HUD.t[i].n}</td></tr>` : ""; }
 function hudTanla(i, fly = true, keepPop = false) {
   if (hudSelMesh) { scene.remove(hudSelMesh); hudSelMesh.geometry.dispose(); hudSelMesh = null; }
   hudSel = i;
@@ -3391,6 +3385,7 @@ Promise.all(kalit.map(function(k){
    Manba: Minbu_3D_portal/flood_til.js -> shablon.html va front/index_flood.html ga ichiga joylangan. */
 (function () {
 var D = {
+"Qishloq nomi": ["Village name", "Название села", "ကျေးရွာအမည်"],
 "Daryo bo'ylab balandlik (boshlanish → tugash)": ["Elevation along the river (source → mouth)", "Высота вдоль реки (исток → устье)", "မြစ်တစ်လျှောက် အမြင့် (အစ → အဆုံး)"],
 "Boshlanish": ["Start", "Начало", "အစ"],
 "Tugash": ["End", "Конец", "အဆုံး"],
