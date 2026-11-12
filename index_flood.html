@@ -469,6 +469,7 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
       <div class="chips" id="selRej">
         <button class="chip on" data-r="kun">Haqiqiy kun</button>
         <button class="chip" data-r="loy">Loyiha yomg'iri</button>
+        <button class="chip" data-r="hec" title="HEC-RAS 2D: 2025-06-01 … 06-07, soatma-soat">2025-06-05 (HEC-RAS)</button>
       </div>
       <div id="selKun">
         <div class="row"><label for="selSana">Sana</label><input type="date" id="selSana"></div>
@@ -480,6 +481,14 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
         <div class="row"><label for="selMm">Sutkalik yog'in</label><input id="selMm" type="range" min="10" max="300" step="5" value="100"><output id="selMmO">100 mm</output></div>
         <div class="row"><label for="selAmc">Tuproq namligi</label><select id="selAmc"><option value="1">Quruq (AMC I)</option><option value="2" selected>O'rtacha (AMC II)</option><option value="3">Nam (AMC III)</option></select></div>
         <div id="selLoyInfo" class="hint"></div>
+      </div>
+      <div id="selHec" style="display:none">
+        <div id="hecInfo" class="hint" style="margin-top:2px"></div>
+        <div class="row"><label for="hecT">Vaqt</label><input id="hecT" type="range" min="0" max="163" step="1" value="0"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:2px"><output id="hecTO" style="white-space:nowrap;font-size:15px;font-weight:600;color:#e6edf6"></output><span class="hint" style="margin:0">surgichni suring yoki ▶ ni bosing</span></div>
+        <div class="chips" style="margin-top:6px"><button class="chip" id="hecPlay">▶ Ijro</button><button class="chip" id="hecMax">Eng katta suv</button><button class="chip" id="hecSar">Sentinel-1 vaqti</button></div>
+        <svg id="hecGraf" viewBox="0 0 300 74" style="width:100%;height:auto;margin-top:8px;cursor:pointer;display:block;background:rgba(255,255,255,.03);border-radius:6px"></svg>
+        <div id="hecManba" class="hint" style="margin-top:4px"></div>
       </div>
       <div style="margin-top:8px;display:flex;align-items:center;gap:8px"><button class="btn" id="selB">⚠ Sel xavfini hisoblash</button><span id="selVaqt" class="hint" style="margin:0"></span></div>
       <div class="stats" id="selStats" style="margin-top:8px"></div>
@@ -1391,7 +1400,7 @@ function selQatlam() {
   }
 }
 function selRows(i) {   // bosilgan katak uchun popup qatorlari
-  if (!SL || i < 0 || !SL.cn2[i]) return "";
+  if (!SL || i < 0 || !SL.cn2[i]) return hecRows(i);
   const lc = LCN(String(SL.lc[i] || 30)), hs = "ABCD"[SL.hsg[i] - 1] || "—";
   const r = [`<tr><td colspan="2" class="sh">⚠ Tuproq, qoplama${selR ? " va sel" : ""}</td></tr>`,
     `<tr><td>Yer qoplami</td><td>${lc[0]} (Manning n ${lc[1]})</td></tr>`,
@@ -1415,7 +1424,7 @@ function selRows(i) {   // bosilgan katak uchun popup qatorlari
     if (R.d[i] > 0) r.push(`<tr><td>Suv bosadi</td><td>${fmt(R.d[i], 2)} m chuqur, ${fmt(R.vf[i], 2)} m/s — ${R.ich[i] ? "odatiy o'zan ichida" : SELM.SINF[R.hz[i]] + " xavf"}</td></tr>`);
     else if (SL.hand[i] !== 255) r.push(`<tr><td>O'zandan balandlik</td><td>${fmt(SL.hand[i] / 10, 1)} m — suv yetmaydi</td></tr>`);
   }
-  return r.join("");
+  return r.join("") + hecRows(i);
 }
 function selUI() {
   const top = SELM.minbu_kunlik.map((v, i) => [v, i]).sort((a, b) => b[0] - a[0]).slice(0, 12);
@@ -1451,6 +1460,142 @@ function selNetLeg() {
   if (!el) { el = document.createElement("div"); el.id = "selNetLeg"; el.className = "leg2"; $("selLeg").after(el); }
   el.innerHTML = on ? [["Sel yo'q (<1 m³/s)", [140, 158, 178]], ["Past (<100 W/m²)", [252, 219, 97]], ["O'rta (100–300)", [255, 143, 41]], ["Yuqori (300–1000)", [237, 51, 31]], ["Juda yuqori (≥1000)", [158, 0, 82]]]
     .map(([t, c]) => `<span><i style="height:4px;background:rgb(${c})"></i>${t}</span>`).join("") : "";
+}
+
+// ---------------- HEC-RAS 2D sel hodisasi: 2025-06-01 … 06-07 (soatma-soat suv chuqurligi; hec_tayyorla.py) ----------------
+let HEC = null, hecT = -1, hecPlayId = 0, hecYuk = null;
+const HEC_SINF = [[.1, .3, [186, 222, 255]], [.3, .5, [118, 178, 240]], [.5, 1, [58, 128, 225]], [1, 2, [28, 78, 190]], [2, 1e9, [12, 30, 112]]];
+async function hecYukla() {
+  let m, b;
+  if (window.__D && __D.ol) {
+    const [mb, bb] = await Promise.all([__D.ol("hecm"), __D.ol("hecBin")]);
+    m = JSON.parse(new TextDecoder().decode(mb)); b = new Uint8Array(bb);
+  } else {
+    const [mr, br] = await Promise.all([fetch("data/hec_meta.json"), fetch("data/hec_bin.bin.gz")]);
+    if (!mr.ok || !br.ok) throw new Error("HEC-RAS ma'lumoti topilmadi");
+    m = await mr.json(); b = new Uint8Array(await br.arrayBuffer());
+  }
+  const u = new Uint8Array(await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream("gzip"))).arrayBuffer()), N = m.N, T = m.T;
+  const raw = new Uint32Array(u.buffer.slice(u.byteOffset, u.byteOffset + N * 4));
+  const idx = new Int32Array(N), dr = new Uint8Array(N), map = new Int32Array(SUV.w * SUV.h).fill(-1);
+  for (let j = 0; j < N; j++) { idx[j] = raw[j] & 0x7fffffff; dr[j] = raw[j] >>> 31; map[idx[j]] = j; }
+  const dmax = u.slice(N * 4, N * 5), K = u.slice(N * 5, N * 5 + T * N);
+  for (let t = 1; t < T; t++) { const o = t * N, p = o - N; for (let j = 0; j < N; j++) K[o + j] = (K[o + j] + K[p + j]) & 255; }  // farqlardan tiklash
+  const sar = m.vaqt.findIndex(v => v.slice(0, 13) === m.sar.vaqt.slice(0, 10) + "T" + m.sar.vaqt.slice(11, 13));
+  HEC = { m, N, T, idx, dr, map, dmax, K, sar };
+}
+const hecD = c => c ? (c / 80) * (c / 80) : 0;
+const hecSana = v => v.replace("T", " ");
+function hecKadr(t) { return t < 0 ? HEC.dmax : HEC.K.subarray(t * HEC.N, (t + 1) * HEC.N); }
+function hecChiz() {
+  if (!HEC) return;
+  const t = hecT, k = hecKadr(t), D = datData, sg = [0, 0, 0, 0, 0];
+  D.fill(0);
+  let tash = 0, jami = 0;
+  for (let j = 0; j < HEC.N; j++) {
+    const c = k[j]; if (!c) continue;
+    const d = hecD(c); let s = 0; while (s < 4 && d >= HEC_SINF[s][1]) s++;
+    const col = HEC_SINF[s][2], o = HEC.idx[j] * 4;
+    D[o] = col[0]; D[o + 1] = col[1]; D[o + 2] = col[2]; D[o + 3] = HEC.dr[j] ? 120 : 215;
+    jami++; if (!HEC.dr[j]) { tash++; sg[s]++; }
+  }
+  datT.needsUpdate = true; U.uDatOn.value = 1; dirty = true;
+  const m = HEC.m, ga = .09;
+  $("hecTO").textContent = t < 0 ? "eng katta" : hecSana(m.vaqt[t]);
+  $("hecMax").classList.toggle("on", t < 0); $("hecSar").classList.toggle("on", t === HEC.sar);
+  $("selVaqt").textContent = t < 0 ? "hodisa davomidagi eng katta suv" : hecSana(m.vaqt[t]);
+  $("selStats").innerHTML = [
+    [fmt(tash * ga, 0) + " ga", t < 0 ? "Eng katta suv (o'zandan tashqari)" : "Suv bosgan (o'zandan tashqari)"],
+    [fmt(jami * ga / 100, 1) + " km²", "Jami suv (o'zanlar bilan)"],
+    [fmt(m.eng_katta_tash_ga, 0) + " ga", "Hodisadagi eng katta (o'zandan tashqari)"],
+    [fmt(m.yogin_mm, 1) + " mm", "Yog'in, 7 kun (ERA5, Minbu o'rtacha)"],
+    [fmt(m.sar.sar_ga, 0) + " ga", `Sentinel-1 ko'rgan suv (${m.sar.vaqt})`],
+    [fmt(m.sar.mos_ga, 0) + " ga", `Model bilan mos (model ${fmt(m.sar.model_ga, 0)} ga)`]
+  ].map(([v, s]) => `<div><b>${v}</b><span>${s}</span></div>`).join("");
+  const rgb = c => `rgb(${c.join(",")})`;
+  $("selLeg").innerHTML = HEC_SINF.map(([a, b, c], s) => `<span><i style="height:10px;background:${rgb(c)}"></i>${m.sinf_nom[s]}<b style="margin-left:auto;font-weight:500;color:var(--tx3)">${fmt(sg[s] * ga, 0)} ga</b></span>`).join("")
+    + `<span><i style="height:10px;background:rgba(186,222,255,.5)"></i>Daryo o'zani (och rangda)</span>`;
+  hecGrafKursor();
+  if (popAt && !hecPlayId) showInfo(popAt);
+}
+function hecGraf() {
+  const g = $("hecGraf"), m = HEC.m, W = Math.max(240, Math.round(g.clientWidth || 300)), Hh = 104, T = HEC.T, a = m.tash_ga, amax = Math.max(...a) * 1.08;
+  const x = i => 4 + i / (T - 1) * (W - 8), y = v => Hh - 14 - v / amax * (Hh - 22);
+  const kun = Object.entries(m.era5_kunlik), pmax = Math.max(...kun.map(e => e[1])) || 1;
+  const t0 = Date.parse(m.vaqt[0] + ":00Z");
+  const bar = kun.map(([s, p]) => {
+    const i0 = (Date.parse(s + "T00:00:00Z") - t0) / 36e5, x0 = x(Math.max(0, i0)), x1 = x(Math.min(T - 1, i0 + 24));
+    const h = p / pmax * (Hh - 30);
+    return `<rect x="${x0 + 1}" y="${Hh - 14 - h}" width="${Math.max(0, x1 - x0 - 2)}" height="${h}" fill="rgba(56,189,248,.28)"><title>${s}: ${fmt(p, 1)} mm</title></rect>`
+      + `<text x="${(x0 + x1) / 2}" y="${Hh - 3}" text-anchor="middle" font-size="10" fill="#8b9bb0">${s.slice(8)}.06</text>`;
+  }).join("");
+  const pl = a.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  g.setAttribute("viewBox", `0 0 ${W} ${Hh}`);
+  $("hecGraf").innerHTML = bar + `<polyline points="${pl}" fill="none" stroke="#60a5fa" stroke-width="1.6"/>`
+    + `<line id="hecKur" y1="6" y2="${Hh - 12}" stroke="#f8fafc" stroke-width="1" stroke-dasharray="2 2"/>`
+    + `<text x="${W - 4}" y="9" text-anchor="end" font-size="10" fill="#8b9bb0">ko'k chiziq: suv bosgan ga · ustun: kunlik yog'in</text>`;
+  $("hecGraf").dataset.w = W;
+  $("hecGraf").onclick = e => {
+    const r = $("hecGraf").getBoundingClientRect(), i = Math.round(((e.clientX - r.left) / r.width * W - 4) / (W - 8) * (T - 1));
+    hecStop(); hecT = Math.min(T - 1, Math.max(0, i)); $("hecT").value = hecT; hecChiz();
+  };
+}
+function hecGrafKursor() {
+  const l = document.getElementById("hecKur"); if (!l) return;
+  const W = +$("hecGraf").dataset.w || 300, xx = hecT < 0 ? -10 : 4 + hecT / (HEC.T - 1) * (W - 8);
+  l.setAttribute("x1", xx); l.setAttribute("x2", xx);
+}
+function hecStop() { if (hecPlayId) { clearInterval(hecPlayId); hecPlayId = 0; $("hecPlay").textContent = "▶ Ijro"; $("hecPlay").classList.remove("on"); } }
+function hecRows(i) {
+  if (!HEC || !hecFaol() || i < 0) return "";
+  const j = HEC.map[i], m = HEC.m;
+  const r = [`<tr><td colspan="2" class="sh">🌊 HEC-RAS 2D: ${m.vaqt[0].slice(0, 10)} … ${m.vaqt[HEC.T - 1].slice(5, 10)}</td></tr>`];
+  if (j < 0) { r.push(`<tr><td>Suv</td><td>hodisa davomida suv bosmagan (< ${m.chegara_m} m)</td></tr>`); return r.join(""); }
+  const k = hecKadr(Math.max(hecT, 0));
+  if (hecT >= 0) r.push(`<tr><td>Chuqurlik (${hecSana(m.vaqt[hecT]).slice(5)})</td><td>${k[j] ? fmt(hecD(k[j]), 2) + " m" : "quruq"}</td></tr>`);
+  let tm = 0, tb = -1; for (let t = 0; t < HEC.T; t++) { const c = HEC.K[t * HEC.N + j]; if (c > tm) { tm = c; tb = t; } }
+  r.push(`<tr><td>Eng katta chuqurlik</td><td>${fmt(hecD(HEC.dmax[j]), 2)} m${tb >= 0 ? " (" + hecSana(m.vaqt[tb]).slice(5) + ")" : ""}</td></tr>`);
+  let soat = 0; for (let t = 0; t < HEC.T; t++) if (HEC.K[t * HEC.N + j]) soat++;
+  r.push(`<tr><td>Suv turgan vaqt</td><td>${soat} soat${HEC.dr[j] ? " · daryo o'zani" : ""}</td></tr>`);
+  return r.join("");
+}
+const hecFaol = () => { const b = $("selRej").querySelector(".on"); return !!b && b.dataset.r === "hec"; };
+function hecRejim(on) {
+  ["selB", "selQat", "selNet", "shpB"].forEach(id => { if (!document.getElementById(id)) return; const el = id === "selQat" ? $(id).closest(".row") : $(id).parentNode; el.style.display = on ? "none" : ""; });
+  $("selHec").style.display = on ? "" : "none";
+  const hn = $("secSel").querySelector(":scope > .hint:last-of-type"); if (hn) hn.style.display = on ? "none" : "";   // tezkor model izohi
+  const nl = document.getElementById("selNetLeg"); if (nl) nl.style.display = on ? "none" : "";
+  if (!on) {
+    hecStop(); $("selStats").innerHTML = ""; $("selVaqt").textContent = "";
+    if (selR) selRun(); else { selQatlam(); if (popAt) showInfo(popAt); }   // tezkor model natijasi qayta chiziladi
+    return;
+  }
+  if (NU.uSelNet.value > .5) { NU.uSelNet.value = 0; dirty = true; }
+  if ($("tOn") && $("tOn").classList.contains("on")) $("tOn").click();   // ko'lmaklar qatlami ustma-ust tushmasin
+  if (HEC) { hecChiz(); return; }
+  $("hecInfo").textContent = "HEC-RAS natijasi yuklanmoqda…";
+  hecYuk = hecYuk || hecYukla();
+  hecYuk.then(() => {
+    const m = HEC.m;
+    $("hecT").max = HEC.T - 1;
+    $("hecInfo").innerHTML = `HEC-RAS 2D fizik modeli: ${hecSana(m.vaqt[0])} — ${hecSana(m.vaqt[HEC.T - 1])}, har soatlik suv chuqurligi (≥ ${m.chegara_m} m, 30 m). Eng ko'p yog'in 2-iyun (${fmt(m.era5_kunlik["2025-06-02"] || 0, 1)} mm).`;
+    hecGraf(); $("hecManba").textContent = "Manba: " + m.manba;
+    if (hecT === -1 && !hecRejim.bir) { hecRejim.bir = 1; hecT = m.maydon_ga.indexOf(Math.max(...m.maydon_ga)); }
+    $("hecT").value = Math.max(hecT, 0);
+    if (hecFaol()) hecChiz();
+  }).catch(e => { console.error(e); hecYuk = null; $("hecInfo").textContent = "HEC-RAS natijasini yuklab bo'lmadi: " + e.message; });
+}
+function hecUI() {
+  $("selRej").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) hecRejim(b.dataset.r === "hec"); });
+  $("hecT").oninput = () => { hecStop(); hecT = +$("hecT").value; hecChiz(); };
+  $("hecMax").onclick = () => { hecStop(); hecT = hecT < 0 ? +$("hecT").value : -1; hecChiz(); };
+  $("hecSar").onclick = () => { hecStop(); if (HEC.sar >= 0) { hecT = HEC.sar; $("hecT").value = hecT; hecChiz(); } };
+  $("hecPlay").onclick = () => {
+    if (hecPlayId) { hecStop(); return; }
+    if (hecT < 0 || hecT >= HEC.T - 1) hecT = 0;
+    $("hecPlay").textContent = "❚❚ To'xtatish"; $("hecPlay").classList.add("on");
+    hecPlayId = setInterval(() => { hecT++; if (hecT >= HEC.T - 1) { hecT = HEC.T - 1; hecStop(); } $("hecT").value = hecT; hecChiz(); }, 140);
+  };
 }
 
 // qalin chiziq geometriyasi (xz nuqtalar, balandlik funksiyasi bilan)
@@ -1901,6 +2046,7 @@ function initUI() {
   ["tOn", ...tsub].forEach(id => tog(id, tupd));
   tupd(); topLegend();
   selUI();
+  hecUI();
   const ss = SUV.stat, tk = Object.values(ss.tarmoq_minbu_km).reduce((a, b) => a + b, 0);
   $("sStats").innerHTML = [
     [fmt(tk, 0) + " km", "Oqim yo'llari (Minbu)"], [fmt(ss.tarmoq_zichligi_km_km2, 2) + " km/km²", "Tarmoq zichligi"],
@@ -2804,7 +2950,8 @@ init().catch(e => { $("yukT").textContent = "Xato: " + e.message; console.error(
 <script>
 /* ---------- Minbu Flood: ma'lumotlarni ArcGIS Online'dan yuklash (Minbu Portal logini bilan) ---------- */
 (function(){
-var CFG={"portal": "https://land-tiiame.maps.arcgis.com", "res": {"meta": "d/meta.json", "dem": "d/dem30.bin.gz.txt", "sat": "d/sat15.jpg", "niqob": "d/niqob.png", "suv": "d/suv_meta.json", "suvGrid": "d/suv_grid.bin.gz.txt", "suvNet": "d/suv_tarmoq.bin.gz.txt", "selm": "d/sel_meta.json", "selGrid": "d/sel_grid.bin.gz.txt", "selBin": "d/sel_bin.bin.gz.txt", "dash": "d/dash.json", "hudud": "d/hudud.json", "bolak": "d/royxat.json"}, "enc": {"dem": "b64", "suvGrid": "b64", "suvNet": "b64", "selGrid": "b64", "selBin": "b64"}, "tiles_prefix": "b/", "tiles_ext": ".jpg", "item": "62b3142355fb4095903e49806c904888", "tiles_item": "4623aed3551f4f99943f2f0e7ad5e460", "tiles_items": ["4623aed3551f4f99943f2f0e7ad5e460", "71456975f5264980ad2b75578bf9c9ea"], "tiles_idx": {"41_23": 1, "41_24": 1, "41_25": 1, "41_26": 1, "41_27": 1, "41_28": 1, "41_29": 1, "42_22": 1, "42_23": 1, "42_24": 1, "42_25": 1, "42_26": 1, "42_27": 1, "42_28": 1, "42_29": 1, "43_25": 1, "43_26": 1, "43_27": 1, "43_28": 1, "43_29": 1, "44_27": 1, "4_11": 1, "4_12": 1, "4_13": 1, "4_14": 1, "4_15": 1, "4_16": 1, "4_17": 1, "4_18": 1, "4_19": 1, "4_20": 1, "4_21": 1, "4_22": 1, "5_11": 1, "5_12": 1, "5_13": 1, "5_14": 1, "5_15": 1, "5_16": 1, "5_17": 1, "5_18": 1, "5_19": 1, "5_20": 1, "5_21": 1, "5_22": 1, "5_23": 1, "6_10": 1, "6_11": 1, "6_12": 1, "6_13": 1, "6_14": 1, "6_15": 1, "6_16": 1, "6_17": 1, "6_18": 1, "6_19": 1, "6_20": 1, "6_21": 1, "6_22": 1, "6_23": 1, "7_10": 1, "7_11": 1, "7_12": 1, "7_13": 1, "7_14": 1, "7_15": 1, "7_16": 1, "7_17": 1, "7_18": 1, "7_19": 1, "7_20": 1, "7_21": 1, "7_22": 1, "7_23": 1, "7_24": 1, "7_25": 1, "8_10": 1, "8_11": 1, "8_12": 1, "8_13": 1, "8_14": 1, "8_15": 1, "8_16": 1, "8_17": 1, "8_18": 1, "8_19": 1, "8_20": 1, "8_21": 1, "8_22": 1, "8_23": 1, "8_24": 1, "8_25": 1, "8_26": 1, "8_27": 1, "8_9": 1, "9_10": 1, "9_11": 1, "9_12": 1, "9_13": 1, "9_14": 1, "9_15": 1, "9_16": 1, "9_17": 1, "9_18": 1, "9_19": 1, "9_20": 1, "9_21": 1, "9_22": 1, "9_23": 1, "9_24": 1, "9_25": 1, "9_26": 1, "9_27": 1, "9_28": 1, "9_6": 1, "9_7": 1, "9_8": 1, "9_9": 1}}, LOKAL={"meta": "data/meta.json", "dem": "data/dem30.bin.gz", "sat": "data/sat15.jpg", "niqob": "data/niqob.png", "bolak": "bolak/royxat.json", "suv": "data/suv_meta.json", "suvGrid": "data/suv_grid.bin.gz", "suvNet": "data/suv_tarmoq.bin.gz", "selm": "data/sel_meta.json", "selGrid": "data/sel_grid.bin.gz", "selBin": "data/sel_bin.bin.gz", "dash": "data/dash.json", "hudud": "data/hudud.json"};
+var CFG={"portal": "https://land-tiiame.maps.arcgis.com", "res": {"meta": "d/meta.json", "dem": "d/dem30.bin.gz.txt", "sat": "d/sat15.jpg", "niqob": "d/niqob.png", "suv": "d/suv_meta.json", "suvGrid": "d/suv_grid.bin.gz.txt", "suvNet": "d/suv_tarmoq.bin.gz.txt", "selm": "d/sel_meta.json", "selGrid": "d/sel_grid.bin.gz.txt", "selBin": "d/sel_bin.bin.gz.txt", "dash": "d/dash.json", "hudud": "d/hudud.json", "bolak": "d/royxat.json", "hecm": "d/hec_meta.json", "hecBin": "d/hec_bin.bin.gz.txt"}, "enc": {"dem": "b64", "suvGrid": "b64", "suvNet": "b64", "selGrid": "b64", "selBin": "b64", "hecBin": "b64"}, "tiles_prefix": "b/", "tiles_ext": ".jpg", "item": "62b3142355fb4095903e49806c904888", "tiles_item": "4623aed3551f4f99943f2f0e7ad5e460", "tiles_items": ["4623aed3551f4f99943f2f0e7ad5e460", "71456975f5264980ad2b75578bf9c9ea"], "tiles_idx": {"41_23": 1, "41_24": 1, "41_25": 1, "41_26": 1, "41_27": 1, "41_28": 1, "41_29": 1, "42_22": 1, "42_23": 1, "42_24": 1, "42_25": 1, "42_26": 1, "42_27": 1, "42_28": 1, "42_29": 1, "43_25": 1, "43_26": 1, "43_27": 1, "43_28": 1, "43_29": 1, "44_27": 1, "4_11": 1, "4_12": 1, "4_13": 1, "4_14": 1, "4_15": 1, "4_16": 1, "4_17": 1, "4_18": 1, "4_19": 1, "4_20": 1, "4_21": 1, "4_22": 1, "5_11": 1, "5_12": 1, "5_13": 1, "5_14": 1, "5_15": 1, "5_16": 1, "5_17": 1, "5_18": 1, "5_19": 1, "5_20": 1, "5_21": 1, "5_22": 1, "5_23": 1, "6_10": 1, "6_11": 1, "6_12": 1, "6_13": 1, "6_14": 1, "6_15": 1, "6_16": 1, "6_17": 1, "6_18": 1, "6_19": 1, "6_20": 1, "6_21": 1, "6_22": 1, "6_23": 1, "7_10": 1, "7_11": 1, "7_12": 1, "7_13": 1, "7_14": 1, "7_15": 1, "7_16": 1, "7_17": 1, "7_18": 1, "7_19": 1, "7_20": 1, "7_21": 1, "7_22": 1, "7_23": 1, "7_24": 1, "7_25": 1, "8_10": 1, "8_11": 1, "8_12": 1, "8_13": 1, "8_14": 1, "8_15": 1, "8_16": 1, "8_17": 1, "8_18": 1, "8_19": 1, "8_20": 1, "8_21": 1, "8_22": 1, "8_23": 1, "8_24": 1, "8_25": 1, "8_26": 1, "8_27": 1, "8_9": 1, "9_10": 1, "9_11": 1, "9_12": 1, "9_13": 1, "9_14": 1, "9_15": 1, "9_16": 1, "9_17": 1, "9_18": 1, "9_19": 1, "9_20": 1, "9_21": 1, "9_22": 1, "9_23": 1, "9_24": 1, "9_25": 1, "9_26": 1, "9_27": 1, "9_28": 1, "9_6": 1, "9_7": 1, "9_8": 1, "9_9": 1}}, LOKAL={"meta": "data/meta.json", "dem": "data/dem30.bin.gz", "sat": "data/sat15.jpg", "niqob": "data/niqob.png", "bolak": "bolak/royxat.json", "suv": "data/suv_meta.json", "suvGrid": "data/suv_grid.bin.gz", "suvNet": "data/suv_tarmoq.bin.gz", "selm": "data/sel_meta.json", "selGrid": "data/sel_grid.bin.gz", "selBin": "data/sel_bin.bin.gz", "dash": "data/dash.json", "hudud": "data/hudud.json"};
+var LAZY={"hecm":"data/hec_meta.json","hecBin":"data/hec_bin.bin.gz"};
 var q=new URLSearchParams(location.search), dev=q.get('dev'), TOK=null, $t=document.getElementById('yukT');
 function yoz(t,xato){$t.innerHTML=t;if(xato){var s=document.querySelector('#yuk .sp');if(s)s.style.display='none'}}
 if(!dev){
@@ -2852,6 +2999,7 @@ Promise.all(kalit.map(function(k){
       return new Promise(function(ok,no){var im=new Image();im.onload=function(){URL.revokeObjectURL(u);ok(im)};im.onerror=function(){URL.revokeObjectURL(u);no(new Error('rasm'))};im.src=u});
     });
   };
+  D.ol=function(k){var res=dev?LAZY[k]:(CFG.res||{})[k];if(!res)return Promise.reject(new Error('resurs nomi yo\'q: '+k));return ol(k,res)};
   window.__D=D;
   var s=document.createElement('script');s.textContent=document.getElementById('asosiyKod').textContent;document.body.appendChild(s);
 }).catch(function(e){
@@ -2869,6 +3017,34 @@ Promise.all(kalit.map(function(k){
    Manba: Minbu_3D_portal/flood_til.js -> shablon.html va front/index_flood.html ga ichiga joylangan. */
 (function () {
 var D = {
+"surgichni suring yoki ▶ ni bosing": ["drag the slider or press ▶", "двигайте ползунок или нажмите ▶", "ဆလိုက်ဒါကို ရွှေ့ပါ သို့မဟုတ် ▶ ကိုနှိပ်ပါ"],
+"HEC-RAS natijasi yuklanmoqda…": ["Loading HEC-RAS results…", "Загрузка результатов HEC-RAS…", "HEC-RAS ရလဒ်များ ဖွင့်နေသည်…"],
+"Vaqt": ["Time", "Время", "အချိန်"],
+"▶ Ijro": ["▶ Play", "▶ Пуск", "▶ ဖွင့်ရန်"],
+"❚❚ To'xtatish": ["❚❚ Pause", "❚❚ Пауза", "❚❚ ခဏရပ်ရန်"],
+"Eng katta suv": ["Maximum extent", "Макс. затопление", "အများဆုံး ရေလွှမ်းမှု"],
+"Sentinel{n} vaqti": ["Sentinel{0} time", "Время Sentinel{0}", "Sentinel{0} အချိန်"],
+"eng katta": ["maximum", "максимум", "အများဆုံး"],
+"hodisa davomidagi eng katta suv": ["maximum water during the event", "максимум воды за событие", "ဖြစ်ရပ်အတွင်း အများဆုံးရေ"],
+"Eng katta suv (o'zandan tashqari)": ["Maximum flooded (outside channels)", "Макс. затопление (вне русел)", "အများဆုံး ရေလွှမ်း (ရေလမ်းအပြင်)"],
+"Suv bosgan (o'zandan tashqari)": ["Flooded (outside channels)", "Затоплено (вне русел)", "ရေလွှမ်း (ရေလမ်းအပြင်)"],
+"Jami suv (o'zanlar bilan)": ["Total water (incl. channels)", "Всего воды (вкл. русла)", "စုစုပေါင်းရေ (ရေလမ်းများ အပါအဝင်)"],
+"Hodisadagi eng katta (o'zandan tashqari)": ["Event maximum (outside channels)", "Максимум события (вне русел)", "ဖြစ်ရပ်အများဆုံး (ရေလမ်းအပြင်)"],
+"Yog'in, {n} kun (ERA{n}, Minbu o'rtacha)": ["Rainfall, {0} days (ERA{1}, Minbu mean)", "Осадки, {0} дн. (ERA{1}, среднее по Минбу)", "မိုးရေ၊ {0} ရက် (ERA{1}၊ မင်းဘူး ပျမ်းမျှ)"],
+"Sentinel{n} ko'rgan suv ({n}{n}{n} {n}:{n})": ["Water seen by Sentinel{0} ({1}{2}{3} {4}:{5})", "Вода по Sentinel{0} ({1}{2}{3} {4}:{5})", "Sentinel{0} မြင်ရသောရေ ({1}{2}{3} {4}:{5})"],
+"Model bilan mos (model {n} ga)": ["Matches the model (model {0} ha)", "Совпадает с моделью (модель {0} га)", "မော်ဒယ်နှင့် ကိုက်ညီ (မော်ဒယ် {0} ဟက်တာ)"],
+"Daryo o'zani (och rangda)": ["River channel (lighter shade)", "Русло реки (светлее)", "မြစ်ကြောင်း (အရောင်ဖျော့)"],
+"ko'k chiziq: suv bosgan ga · ustun: kunlik yog'in": ["blue line: flooded ha · bars: daily rainfall", "синяя линия: затоплено, га · столбцы: суточные осадки", "အပြာလိုင်း: ရေလွှမ်း ဟက်တာ · တိုင်: နေ့စဉ်မိုးရေ"],
+"HEC-RAS {n}D fizik modeli: {n}{n}{n} {n}:{n} — {n}{n}{n} {n}:{n}, har soatlik suv chuqurligi (≥ {n} m, {n} m). Eng ko'p yog'in {n}-iyun ({n} mm).": ["HEC-RAS {0}D physical model: {1}{2}{3} {4}:{5} — {6}{7}{8} {9}:{10}, hourly water depth (≥ {11} m, {12} m grid). Heaviest rain on June {13} ({14} mm).", "Физическая модель HEC-RAS {0}D: {1}{2}{3} {4}:{5} — {6}{7}{8} {9}:{10}, почасовая глубина воды (≥ {11} м, сетка {12} м). Сильнейший дождь {13} июня ({14} мм).", "HEC-RAS {0}D ရူပမော်ဒယ်: {1}{2}{3} {4}:{5} — {6}{7}{8} {9}:{10}၊ နာရီအလိုက် ရေအနက် (≥ {11} m, {12} m)။ မိုးအများဆုံး ဇွန် {13} ({14} mm)။"],
+"Suv": ["Water", "Вода", "ရေ"],
+"hodisa davomida suv bosmagan (< {n} m)": ["not flooded during the event (< {0} m)", "не затапливалось за событие (< {0} м)", "ဖြစ်ရပ်အတွင်း ရေမလွှမ်းခဲ့ (< {0} m)"],
+"Chuqurlik ({n}{n} {n}:{n})": ["Depth ({0}{1} {2}:{3})", "Глубина ({0}{1} {2}:{3})", "အနက် ({0}{1} {2}:{3})"],
+"quruq": ["dry", "сухо", "ခြောက်"],
+"Eng katta chuqurlik": ["Maximum depth", "Макс. глубина", "အများဆုံး အနက်"],
+"Suv turgan vaqt": ["Time under water", "Время затопления", "ရေဝပ်ချိန်"],
+"{n} soat": ["{0} h", "{0} ч", "{0} နာရီ"],
+"{n} soat · daryo o'zani": ["{0} h · river channel", "{0} ч · русло реки", "{0} နာရီ · မြစ်ကြောင်း"],
+"HEC-RAS natijasini yuklab bo'lmadi: ": ["Could not load HEC-RAS results: ", "Не удалось загрузить результаты HEC-RAS: ", "HEC-RAS ရလဒ် မဖွင့်နိုင်ပါ: "],
 "Minbu Atlas": ["Minbu Atlas", "Minbu Atlas", "Minbu Atlas"],
 "Minbu toshqin xavfi monitoringi": ["Minbu Flood Risk Monitoring", "Мониторинг паводкового риска Минбу", "မင်းဘူး ရေကြီးမှုအန္တရာယ် စောင့်ကြည့်ရေး"],
 "MTXM — Minbu toshqin xavfi monitoringi": ["MTXM — Minbu Flood Risk Monitoring", "MTXM — Мониторинг паводкового риска Минбу", "MTXM — မင်းဘူး ရေကြီးမှုအန္တရာယ် စောင့်ကြည့်ရေး"],
