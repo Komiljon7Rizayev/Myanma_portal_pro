@@ -2596,7 +2596,7 @@ function daryoProfil() {   // pastki karta: ikki daryoning boshlanishidan quyili
   if (!daryoYol.length) return;
   const d0 = daryoYol[0];
   profData = { ...d0, la: "Boshlanish", lb: "Tugash", daryo: daryoYol };
-  clearProfLine();
+  clearProfLine(); daryoChiz(); daryoKor(true);
   $("pst").innerHTML = daryoYol.map(d => { const ha = d.hs.find(h => h != null), hb = [...d.hs].reverse().find(h => h != null);
     return `<span style="flex:1 1 100%"><b style="color:${d.rang}">━ ${d.nom}</b> · uzunlik <i>${fmtDist(d.L)}</i> · boshlanish <i>${fmt(ha)} m</i> · tugash <i>${fmt(hb)} m</i> · pasayish <i>${fmt(ha - hb, 0)} m</i></span>`; }).join("");
   $("profX").hidden = true; $("balT").textContent = "Daryolar bo'ylab balandlik (boshlanish → tugash)";
@@ -2604,11 +2604,24 @@ function daryoProfil() {   // pastki karta: ikki daryoning boshlanishidan quyili
   const pc = $("pc");
   if (!pc._ev) {
     pc._ev = 1;
-    pc.addEventListener("pointermove", e => { if (profData) drawProfile(e.offsetX); });
+    pc.addEventListener("pointermove", e => { if (profData) drawProfile(e.offsetX, e.offsetY); });
     pc.addEventListener("pointerleave", () => { if (profData) drawProfile(-1); $("pinP").style.display = "none"; profCur = null; dirty = true; });
   }
 }
-function drawDaryo(mx) {
+let daryoMesh = [];
+function daryoChiz() {   // xaritada daryolar — grafikdagi rang bilan
+  if (daryoMesh.length || !daryoYol) return;
+  daryoYol.forEach(d => {
+    const m = new THREE.Mesh(fatGeom(d.pts, (x, z) => validNear(x, z) ? fillAt(x, z) : BASE, false), fatMat(d.rang, 3, .95));
+    m.renderOrder = 3; m.material.depthTest = false; scene.add(m); daryoMesh.push(m);
+  });
+}
+function daryoBelgi(k) {   // grafikda ushlangan daryo xaritada ham ajraladi
+  daryoMesh.forEach((m, i) => { m.material.uniforms.uPx.value = k < 0 ? 3 : i === k ? 6.5 : 2; m.material.uniforms.uA.value = k < 0 || i === k ? .95 : .35; });
+  dirty = true;
+}
+function daryoKor(on) { daryoMesh.forEach(m => m.visible = on); if (!on) daryoBelgi(-1); dirty = true; }
+function drawDaryo(mx, my) {
   const cv = $("pc"), dpr = devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
   cv.width = w * dpr; cv.height = h * dpr;
   const g = cv.getContext("2d"); g.scale(dpr, dpr);
@@ -2636,22 +2649,29 @@ function drawDaryo(mx) {
   g.font = "bold 11.5px system-ui"; g.textAlign = "center";
   for (const [t, x, y, c] of yoz) { const tw = g.measureText(t).width + 10; g.fillStyle = "rgba(8,13,22,.72)"; g.fillRect(x - tw / 2, y - 11, tw, 15); g.fillStyle = c; g.fillText(t, x, y); }
   profCur = null;
+  let tan = -1;
   if (mx >= pad.l && mx <= w - pad.r) {
     const dist = (mx - pad.l) / (w - pad.l - pad.r) * L;
+    // sichqonchaga eng yaqin egri chiziq — shu daryo ushlanadi
+    const nuq = D.map(d => { if (dist > d.L) return null; let i = 0; while (i < d.xs.length - 1 && d.xs[i] < dist) i++; return d.hs[i] == null ? null : i; });
+    let bm = 1e9; nuq.forEach((i, k) => { if (i == null) return; const q = my == null ? k : Math.abs(Y(D[k].hs[i]) - my); if (q < bm) { bm = q; tan = k; } });
     g.strokeStyle = "rgba(255,255,255,.5)"; g.lineWidth = 1; g.beginPath(); g.moveTo(mx, pad.t); g.lineTo(mx, h - pad.b); g.stroke();
-    const qat = [fmtDist(dist)];
-    D.forEach(d => {
-      if (dist > d.L) return;
-      let i = 0; while (i < d.xs.length - 1 && d.xs[i] < dist) i++;
-      const v = d.hs[i]; if (v == null) return;
-      g.fillStyle = d.rang; g.beginPath(); g.arc(X(d.xs[i]), Y(v), 4, 0, 7); g.fill();
-      qat.push(`${d.nom}: ${fmt(v)} m`);
-      if (!profCur) { const [px, pz] = d.pts[i]; profCur = new THREE.Vector3(px, sceneY(v), pz); }
-    });
-    const lbl = qat.join("  ·  "); g.font = "11px system-ui";
+    let lbl = fmtDist(dist);
+    if (tan >= 0) {
+      const d = D[tan], i = nuq[tan], v = d.hs[i];
+      g.beginPath(); let st = false;   // ushlangan daryo chizig'i qalinroq
+      for (let j = 0; j < d.xs.length; j++) { if (d.hs[j] == null) { st = false; continue; } const x = X(d.xs[j]), y = Y(d.hs[j]); st ? g.lineTo(x, y) : g.moveTo(x, y); st = true; }
+      g.strokeStyle = d.rang; g.lineWidth = 3.4; g.stroke();
+      g.fillStyle = "#fff"; g.beginPath(); g.arc(X(d.xs[i]), Y(v), 5, 0, 7); g.fill();
+      g.fillStyle = d.rang; g.beginPath(); g.arc(X(d.xs[i]), Y(v), 3.2, 0, 7); g.fill();
+      lbl = `${d.nom}: ${fmt(v)} m · ${fmtDist(d.xs[i])}`;
+      const [px, pz] = d.pts[i]; profCur = new THREE.Vector3(px, sceneY(v), pz);
+    }
+    g.font = "11px system-ui";
     const tw = g.measureText(lbl).width + 10, bx = Math.min(w - pad.r - tw, Math.max(pad.l, mx + 8));
-    g.fillStyle = "rgba(10,14,20,.88)"; g.fillRect(bx, pad.t, tw, 18); g.fillStyle = "#fff"; g.textAlign = "left"; g.fillText(lbl, bx + 5, pad.t + 13);
+    g.fillStyle = "rgba(10,14,20,.88)"; g.fillRect(bx, pad.t, tw, 18); g.fillStyle = tan >= 0 ? D[tan].rang : "#fff"; g.textAlign = "left"; g.fillText(lbl, bx + 5, pad.t + 13);
   }
+  daryoBelgi(tan);
   dirty = true;
 }
 function profKor(on) {   // on: A–B profil; aks holda daryo bo'ylab profil
@@ -2692,7 +2712,7 @@ function makeProfile(yol) {   // yol berilsa — shu chiziq (daryo) bo'ylab, aks
   });
   for (let i = w; i < hs.length; i++) if (hs[i] != null && hs[i - w] != null) smax = Math.max(smax, Math.abs(hs[i] - hs[i - w]) / (xs[i] - xs[i - w]));
   profData = { xs, hs, pts, L, mx, mn, la: yol ? "Boshlanish" : "A", lb: yol ? "Tugash" : "B" };
-  clearProfLine();
+  clearProfLine(); daryoKor(false);
   if (!yol) profLine = new THREE.Mesh(fatGeom(pts, (x, z) => validNear(x, z) ? fillAt(x, z) : BASE, false), fatMat(0xffd23f, 2.2, 1));
   if (profLine) { profLine.renderOrder = 3; profLine.material.depthTest = false; scene.add(profLine); }
   const ha = hs.find(h => h != null), hb = [...hs].reverse().find(h => h != null);
@@ -2704,13 +2724,13 @@ function makeProfile(yol) {   // yol berilsa — shu chiziq (daryo) bo'ylab, aks
   const pc = $("pc");
   if (!pc._ev) {
     pc._ev = 1;
-    pc.addEventListener("pointermove", e => { if (profData) drawProfile(e.offsetX); });
+    pc.addEventListener("pointermove", e => { if (profData) drawProfile(e.offsetX, e.offsetY); });
     pc.addEventListener("pointerleave", () => { if (profData) drawProfile(-1); $("pinP").style.display = "none"; profCur = null; dirty = true; });
   }
 }
 let profCur = null;
-function drawProfile(mx) {
-  if (profData.daryo) return drawDaryo(mx);
+function drawProfile(mx, my) {
+  if (profData.daryo) return drawDaryo(mx, my);
   const cv = $("pc"), dpr = devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
   cv.width = w * dpr; cv.height = h * dpr;
   const g = cv.getContext("2d"); g.scale(dpr, dpr);
@@ -3489,6 +3509,7 @@ function loop(now) {
   if (hudMesh) hudMesh.material.uniforms.uLift.value = lift * 1.1;
   if (hudSelMesh) hudSelMesh.material.uniforms.uLift.value = lift * 1.3;
   if (profLine) profLine.material.uniforms.uLift.value = lift * 1.5;
+  for (const m of daryoMesh) m.material.uniforms.uLift.value = lift * 1.4;
   renderer.render(scene, camera);
   hudLabels();
   place($("pin"), popAt, !!popAt);
