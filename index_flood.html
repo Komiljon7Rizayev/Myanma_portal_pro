@@ -289,7 +289,9 @@ html,body{background:var(--bg);font-family:Inter,"Segoe UI",system-ui,-apple-sys
 #cBat{display:none!important}
 #brow #profil{position:static;transform:none;left:auto;bottom:auto;width:auto;display:flex;flex-direction:column;padding:10px 14px 8px;z-index:auto}
 #brow #profil #pc{flex:1 1 0;min-height:0;height:auto;margin-top:6px}
-#brow #profil #pc[hidden],#brow #profil .ps[hidden],#brow #profil .x[hidden]{display:none}
+#brow #profil .x[hidden]{display:none}
+#brow #profil .ph .btn{padding:3px 10px;font-size:12px}
+#brow #profil .ps{margin-top:4px;gap:4px 12px;font-size:11.5px}
 #brow #profil .ph{gap:10px}
 #cBat h3{font-size:12px}#cBat h3 small{font-size:10px}
 #cBat table,#cBat tbody{display:block}#cBat tbody{columns:290px 3;column-gap:30px;column-rule:1px solid rgba(148,163,184,.08)}
@@ -448,9 +450,9 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
   <div id="brow">
     <div class="card" id="cRank" style="display:none"><h3>Eng ko'p sel keladigan hududlar <small>HEC-RAS, ga</small></h3><div class="rank diag" id="rank"></div><button class="lnk" data-go="hud">Barchasini ko'rish (70)</button></div>
     <div class="card" id="profil">
-      <div class="ph"><b id="balT">Balandlik taqsimoti</b><small id="hSub" style="color:var(--tx3);font-size:11px">balandlik va maydon, km² (10 m oraliq) · profil: Sozlamalar → Balandlik profili</small><div class="ps" id="pst" hidden></div><button class="x" id="profX" title="Profilni yopish" hidden>×</button></div>
-      <svg id="hArea"></svg>
-      <canvas id="pc" hidden></canvas>
+      <div class="ph"><b id="balT">Daryo bo'ylab balandlik</b><button class="btn" id="profB" title="Ikki nuqta (A va B) bosib, ular orasidagi balandlik kesmasini chizish">⟋ Balandlik profili</button><button class="x" id="profX" title="A–B profilini yopish" hidden>×</button></div>
+      <div class="ps" id="pst"></div>
+      <canvas id="pc"></canvas>
     </div>
     <div id="ldon" class="card dcard"><div class="dch"><h3>Oqim yo'llari tarkibi</h3><span class="pill" id="donStrT">Strahler tartibi bo'yicha</span></div>
       <div class="dbody"><svg id="donStr" class="dbig" width="180" height="180" viewBox="0 0 180 180"></svg><div class="dleg dlegB" id="legStr"></div></div>
@@ -585,8 +587,6 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
     <div class="sec" id="secAsb">
       <h2>Asboblar</h2>
       <div class="chips">
-        <button class="btn" id="profB" title="Ikki nuqta bosib balandlik kesmasini chizish">⟋ Balandlik profili</button>
-        <button class="btn" id="homeB" title="Boshlang'ich ko'rinish">⌂ Butun hudud</button>
       </div>
       <div class="hint">Xaritani bossangiz — o'sha nuqtadagi aniq 30 m piksel balandligi, qiyalik va koordinata chiqadi.</div>
     </div>
@@ -645,8 +645,8 @@ const NET_CLS = [["Jarlik / vaqtinchalik o'zan", [115, 199, 255], 2], ["Soy", [5
 const MIN_A = [0.1, 0.3, 1, 3, 10, 50, 300];
 // Strahler tartibi 1..7 ranglari (taqdimot bilan bir xil) va nomlari
 const STR_RGB = [[198, 219, 239], [158, 202, 225], [107, 174, 214], [66, 146, 198], [33, 113, 181], [8, 81, 156], [8, 48, 107]];
-const STR_GURUH = ["irmoq", "irmoqlar", "kichik soy", "soy", "katta soy", "chaung daryosi"];   // 6 va 7-tartib bitta
-const strItems = (v, iz) => STR_GURUH.map((nm, k) => ({ n: k < 5 ? `${k + 1} · ${nm}` : `6–7 · ${nm}`, v: k < 5 ? (v[k] || 0) : (v[5] || 0) + (v[6] || 0), c: hexRgb(STR_RGB[k < 5 ? k : 6]), ...(iz ? { iz: iz[k] } : {}) }));
+const STR_GURUH = ["irmoq", "irmoqlar", "kichik soy", "soy", "katta soy", "daryo"];   // 6 va 7-tartib bitta
+const strItems = (v, iz) => STR_GURUH.map((nm, k) => ({ n: `${k + 1} · ${nm}`, v: k < 5 ? (v[k] || 0) : (v[5] || 0) + (v[6] || 0), c: hexRgb(STR_RGB[k < 5 ? k : 6]), ...(iz ? { iz: iz[k] } : {}) }));
 const STR_NOM = ["irmoq (eng uchidagi)", "irmoq", "kichik soy", "soy", "katta soy", "chaung", "asosiy chaung"];
 
 const W = META.w, H = META.h, RES = META.res;
@@ -2298,7 +2298,6 @@ function initUI() {
   $("kont").onchange = e => { S.kont = +e.target.value; U.uKont.value = S.kont; dirty = true; };
   $("sifat").onchange = e => { buildTerrain(+e.target.value); };
   $("devorB").onclick = () => { S.devor = !S.devor; $("devorB").classList.toggle("on", S.devor); $("devorB").textContent = S.devor ? "Ko'rsatish" : "Yashirin"; wall.visible = S.devor; dirty = true; };
-  $("homeB").onclick = () => home();
   $("kompas").onclick = () => flyTo({ az: 0 });
   $("zin").onclick = () => flyTo({ dist: Math.max(120, cam.dist * .55) }, 400);
   $("zout").onclick = () => flyTo({ dist: Math.min(4e5, cam.dist * 1.8) }, 400);
@@ -2404,7 +2403,7 @@ function clickAt(x, y) {
   const p = pick(x, y);
   if (tomMode) { if (p && exactAt(p.x, p.z)) doTom(p); return; }
   if (profMode) {
-    if (!p || !exactAt(p.x, p.z)) return;
+    if (!p || !exactAt(p.x, p.z)) { setProf(0); return; }
     if (profMode === 1) { profA = p; profB = null; profMode = 2; hint("B nuqtani bosing"); clearProfLine(); profKor(false); }
     else { profB = p; profMode = 1; hint("Yangi profil uchun A nuqtani bosing · Esc — chiqish"); makeProfile(); }
     dirty = true; return;
@@ -2451,10 +2450,33 @@ function dblAt(x, y) {
 function hint(t) { const h = $("modeHint"); if (t) { h.textContent = t; h.style.display = "block"; } else h.style.display = "none"; }
 
 // ---------------- profil ----------------
-function profKor(on) {   // pastki kartada: balandlik taqsimoti yoki A→B profil
-  $("hArea").style.display = on ? "none" : ""; $("hSub").hidden = on; $("pc").hidden = !on; $("pst").hidden = !on; $("profX").hidden = !on;
-  $("balT").textContent = on ? "Balandlik profili A → B" : "Balandlik taqsimoti";
-  if (!on) drawArea();
+let daryoYol = null;
+function daryoTop() {   // tumandagi eng katta daryo (Irravadidan tashqari): quyilish joyidan yuqoriga eng katta oqim bo'ylab
+  const W_ = SUV.w, H_ = SUV.h, n = W_ * H_, ich = i => SG.cls[i] && SG.cls[i] !== 9;
+  const past = i => { const k = SG.k[i]; if (!k) return -1; const r = Math.floor(i / W_) + HDR[k], c = i % W_ + HDC[k]; return r < 0 || c < 0 || r >= H_ || c >= W_ ? -1 : r * W_ + c; };
+  let e = -1, ea = 0;
+  for (let i = 0; i < n; i++) if (ich(i) && SG.str[i]) { const a = accAt(i); if (a > ea) { ea = a; e = i; } }
+  if (e < 0) return [];
+  const quyi = [];   // pastga: Irravadiga quyilguncha (shu daryo kataklari)
+  for (let i = past(e), g = 0; i >= 0 && SG.cls[i] && SG.str[i] && accAt(i) < ea * 1.5 && g < 20000; i = past(i), g++) quyi.push(i);
+  const yol = [e];
+  for (let i = e, g = 0; g < 200000; g++) {
+    const r0 = Math.floor(i / W_), c0 = i % W_; let b = -1, ba = 0;
+    for (let k = 1; k <= 8; k++) {
+      const r = r0 - HDR[k], c = c0 - HDC[k]; if (r < 0 || c < 0 || r >= H_ || c >= W_) continue;
+      const j = r * W_ + c; if (!SG.cls[j] || past(j) !== i) continue;   // o'zan kataklari (9) ham daryo yo'li
+      const a = accAt(j); if (a > ba) { ba = a; b = j; }
+    }
+    if (b < 0 || !SG.str[b]) break;
+    yol.push(b); i = b;
+  }
+  return yol.reverse().concat(quyi).map(cellXZ);   // boshlanishdan tugashga
+}
+function daryoProfil() { daryoYol = daryoYol || daryoTop(); if (daryoYol.length > 2) makeProfile(daryoYol); }
+function profKor(on) {   // on: A–B profil; aks holda daryo bo'ylab profil
+  $("profX").hidden = !on;
+  $("balT").textContent = on ? "Balandlik profili A → B" : "Daryo bo'ylab balandlik (boshlanish → tugash)";
+  if (!on) daryoProfil();
 }
 function setProf(m) {
   if (m && tomMode) setTom(false);
@@ -2464,13 +2486,20 @@ function setProf(m) {
   dirty = true;
 }
 function clearProfLine() { if (profLine) { scene.remove(profLine); profLine.geometry.dispose(); profLine = null; } }
-function makeProfile() {
-  const L = Math.hypot(profB.x - profA.x, profB.z - profA.z), n = Math.max(2, Math.min(4000, Math.ceil(L / 10)));
-  const xs = [], hs = [], pts = [];
-  for (let i = 0; i <= n; i++) {
-    const t = i / n, x = profA.x + (profB.x - profA.x) * t, z = profA.z + (profB.z - profA.z) * t;
-    const e = exactAt(x, z), hb = validNear(x, z) ? fillAt(x, z) : null;
-    xs.push(t * L); hs.push(e ? hb : null); pts.push([x, z]);
+function makeProfile(yol) {   // yol berilsa — shu chiziq (daryo) bo'ylab, aks holda A → B to'g'ri chiziq
+  let L, n; const xs = [], hs = [], pts = [];
+  if (yol) {
+    L = 0; n = yol.length - 1;
+    yol.forEach(([x, z], i) => { if (i) L += Math.hypot(x - yol[i - 1][0], z - yol[i - 1][1]); xs.push(L); hs.push(validNear(x, z) ? fillAt(x, z) : null); pts.push([x, z]); });
+    const h0 = hs.slice(), k = 7;   // daryo: DEM (DSM) shovqini ~450 m oynada o'rtacha bilan silliqlanadi
+    for (let i = 0; i < h0.length; i++) { let sm = 0, c = 0; for (let q = Math.max(0, i - k); q <= Math.min(h0.length - 1, i + k); q++) if (h0[q] != null) { sm += h0[q]; c++; } hs[i] = c ? sm / c : null; }
+  } else {
+    L = Math.hypot(profB.x - profA.x, profB.z - profA.z); n = Math.max(2, Math.min(4000, Math.ceil(L / 10)));
+    for (let i = 0; i <= n; i++) {
+      const t = i / n, x = profA.x + (profB.x - profA.x) * t, z = profA.z + (profB.z - profA.z) * t;
+      const e = exactAt(x, z), hb = validNear(x, z) ? fillAt(x, z) : null;
+      xs.push(t * L); hs.push(e ? hb : null); pts.push([x, z]);
+    }
   }
   let up = 0, dn = 0, mx = -1e9, mn = 1e9, smax = 0, prev = null;
   const w = Math.max(1, Math.round(30 / (L / n)));   // 30 m qadam (DEM piksel o'lchami)
@@ -2481,15 +2510,15 @@ function makeProfile() {
     prev = h;
   });
   for (let i = w; i < hs.length; i++) if (hs[i] != null && hs[i - w] != null) smax = Math.max(smax, Math.abs(hs[i] - hs[i - w]) / (xs[i] - xs[i - w]));
-  profData = { xs, hs, pts, L, mx, mn };
+  profData = { xs, hs, pts, L, mx, mn, la: yol ? "Boshlanish" : "A", lb: yol ? "Tugash" : "B" };
   clearProfLine();
-  profLine = new THREE.Mesh(fatGeom(pts, (x, z) => validNear(x, z) ? fillAt(x, z) : BASE, false), fatMat(0xffd23f, 2.2, 1));
-  profLine.renderOrder = 3; profLine.material.depthTest = false; scene.add(profLine);
+  if (!yol) profLine = new THREE.Mesh(fatGeom(pts, (x, z) => validNear(x, z) ? fillAt(x, z) : BASE, false), fatMat(0xffd23f, 2.2, 1));
+  if (profLine) { profLine.renderOrder = 3; profLine.material.depthTest = false; scene.add(profLine); }
   const ha = hs.find(h => h != null), hb = [...hs].reverse().find(h => h != null);
-  $("pst").innerHTML = `<span>Uzunlik <i>${fmtDist(L)}</i></span><span>A <i>${fmt(ha)} m</i></span><span>B <i>${fmt(hb)} m</i></span>
+  $("pst").innerHTML = `<span>Uzunlik <i>${fmtDist(L)}</i></span><span>${profData.la} <i>${fmt(ha)} m</i></span><span>${profData.lb} <i>${fmt(hb)} m</i></span>
     <span>Min <i>${fmt(mn)} m</i></span><span>Maks <i>${fmt(mx)} m</i></span><span>Ko'tarilish <i>${Math.round(up)} m</i></span>
     <span>Tushish <i>${Math.round(dn)} m</i></span><span>Maks qiyalik <i>${fmt(Math.atan(smax) * 180 / Math.PI)}°</i></span>`;
-  profKor(true);
+  $("profX").hidden = !!yol; $("balT").textContent = yol ? "Daryo bo'ylab balandlik (boshlanish → tugash)" : "Balandlik profili A → B";
   drawProfile(-1);
   const pc = $("pc");
   if (!pc._ev) {
@@ -2530,8 +2559,8 @@ function drawProfile(mx) {
   g.beginPath(); started = false;
   for (let i = 0; i < xs.length; i++) { if (hs[i] == null) { started = false; continue; } started ? g.lineTo(X(xs[i]), Y(hs[i])) : g.moveTo(X(xs[i]), Y(hs[i])); started = true; }
   g.strokeStyle = "#fff"; g.lineWidth = 1.5; g.stroke();
-  g.font = "bold 11px system-ui"; g.fillStyle = "#60a5fa"; g.textAlign = "left"; g.fillText("A", pad.l + 3, pad.t + 10);
-  g.fillStyle = "#4fb3d9"; g.textAlign = "right"; g.fillText("B", w - pad.r - 3, pad.t + 10);
+  g.font = "bold 11px system-ui"; g.fillStyle = "#60a5fa"; g.textAlign = "left"; g.fillText(profData.la, pad.l + 3, pad.t + 10);
+  g.fillStyle = "#4fb3d9"; g.textAlign = "right"; g.fillText(profData.lb, w - pad.r - 3, pad.t + 10);
   if (mx >= pad.l && mx <= w - pad.r) {
     const d = (mx - pad.l) / (w - pad.l - pad.r) * L, i = Math.round(d / L * (xs.length - 1)), v = hs[i];
     g.strokeStyle = "rgba(255,255,255,.5)"; g.beginPath(); g.moveTo(mx, pad.t); g.lineTo(mx, h - pad.b); g.stroke();
@@ -2646,7 +2675,7 @@ function foiz(hm) {
   return Math.max(0, Math.min(100, s / ST.maydon_km2 * 100));
 }
 function drawArea(hi = -1) {   // y — balandlik (baland joy yuqorida), x — shu balandlikdagi maydon (yig'ilib boradi)
-  const svg = $("hArea"); if (!svg) return;
+  const svg = $("hArea"); if (!svg) { if (!profData) daryoProfil(); else if ($("pc").clientWidth) drawProfile(-1); return; }
   const W = svg.clientWidth, H = svg.clientHeight;
   if (!W || !H) return;
   const hs = META.hist, n = hs.km2.length, tot = hs.km2.reduce((s, v) => s + v, 0), foiz = hKind === "y";
@@ -3357,6 +3386,11 @@ Promise.all(kalit.map(function(k){
    Manba: Minbu_3D_portal/flood_til.js -> shablon.html va front/index_flood.html ga ichiga joylangan. */
 (function () {
 var D = {
+"Daryo bo'ylab balandlik (boshlanish → tugash)": ["Elevation along the river (source → mouth)", "Высота вдоль реки (исток → устье)", "မြစ်တစ်လျှောက် အမြင့် (အစ → အဆုံး)"],
+"Boshlanish": ["Start", "Начало", "အစ"],
+"Tugash": ["End", "Конец", "အဆုံး"],
+"{n} · daryo": ["{0} · river", "{0} · река", "{0} · မြစ်"],
+"daryo": ["river", "река", "မြစ်"],
 "Kanal, ariq, o'zan va oqim yo'llari": ["Canals, ditches, channels and flow paths", "Каналы, арыки, русла и пути стока", "တူးမြောင်း၊ မြောင်း၊ ရေလမ်းကြောင်းနှင့် ရေစီးလမ်းများ"],
 "Shahar, qishloq (qurilgan hudud)": ["Town, village (built-up)", "Город, село (застройка)", "မြို့၊ ရွာ (အဆောက်အအုံ)"],
 "Dala (ekin maydoni)": ["Fields (cropland)", "Поля (пашня)", "လယ်ကွင်း (စိုက်ခင်း)"],
