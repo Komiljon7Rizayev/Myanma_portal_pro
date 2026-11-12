@@ -415,15 +415,6 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
     <button data-n="soz"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Sozlamalar va asboblar</span></button>
     <button data-n="man"><svg viewBox="0 0 24 24"><path d="M5 4h10l4 4v12H5z"/><path d="M9 12h6M9 16h6"/></svg><span>Manbalar</span></button>
   </div>
-  <div class="rlab">Tezkor qatlamlar</div>
-  <div class="rq" id="rq">
-    <button data-p="hOn">Hudud chegaralari <span>—</span></button>
-    <button data-p="hNom">Hudud nomlari <span>—</span></button>
-    <button data-p="sTarmoq">Oqim yo'llari <span>—</span></button>
-    <button data-p="sStr">Strahler tartibi <span>—</span></button>
-    <button data-p="tOn">To'planish joylari <span>—</span></button>
-    <button data-p="sKol">Ko'lmak va daryo <span>—</span></button>
-  </div>
   <div class="rsrc"><b style="display:block;color:var(--tx2);font-weight:600;margin-bottom:3px">Muallif: Hayitali</b>Manba: Copernicus GLO-30, ArcGIS Pro, HEC-RAS 2D, ESA WorldCover, OpenStreetMap.</div>
 </nav>
 
@@ -2886,7 +2877,7 @@ function initDash() {
     $("hSub").textContent = hKind === "m" ? "balandlik va maydon, km² (10 m oraliq)" : "balandlik va maydon, tuman %"; drawArea();
   };
   if ($("seg")) $("seg").onclick = e => { const b = e.target.closest("button"); if (b) document.querySelector(`#rejim .chip[data-m="${b.dataset.m}"]`).click(); };
-  $("rq").onclick = e => { const b = e.target.closest("button"); if (b) $(b.dataset.p).click(); };
+  if ($("rq")) $("rq").onclick = e => { const b = e.target.closest("button"); if (b) $(b.dataset.p).click(); };
   document.addEventListener("click", () => setTimeout(sinxron, 0), true);
   $("panB").onclick = () => {
     const y = document.body.classList.toggle("nopan");
