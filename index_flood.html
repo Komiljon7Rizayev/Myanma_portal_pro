@@ -524,22 +524,20 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
     <div class="sec" id="secSel">
       <h2>Sel xavfi (yomg'irdan toshqin)</h2>
       <div class="chips" id="selRej">
-        <button class="chip on" data-r="kun">Haqiqiy kun</button>
-        <button class="chip" data-r="loy">Loyiha yomg'iri</button>
-        <button class="chip" data-r="hec" title="HEC-RAS 2D: 2025-06-01 … 06-07, soatma-soat">2025-06-05 (HEC-RAS)</button>
+        <button class="chip on" data-r="hec" title="HEC-RAS 2D: 2025-06-01 … 06-07, soatma-soat">2025-06-05 (HEC-RAS)</button>
       </div>
-      <div id="selKun">
+      <div id="selKun" style="display:none">
         <div class="row"><label for="selSana">Sana</label><input type="date" id="selSana"></div>
         <div id="selKunInfo" class="hint" style="margin-top:2px"></div>
         <div class="tlh">Eng sersuv kunlar <span>(Minbu o'rtachasi, bosing — tanlanadi)</span></div>
         <div id="selTop" class="tlist"></div>
       </div>
       <div id="selLoy" style="display:none">
-        <div class="row"><label for="selMm">Sutkalik yog'in</label><input id="selMm" type="range" min="10" max="300" step="5" value="100"><output id="selMmO">100 mm</output></div>
+        <div class="row" hidden><label for="selMm">Sutkalik yog'in</label><input id="selMm" type="range" min="10" max="300" step="5" value="100"><output id="selMmO">100 mm</output></div>
         <div class="row"><label for="selAmc">Tuproq namligi</label><select id="selAmc"><option value="1">Quruq (AMC I)</option><option value="2" selected>O'rtacha (AMC II)</option><option value="3">Nam (AMC III)</option></select></div>
         <div id="selLoyInfo" class="hint"></div>
       </div>
-      <div id="selHec" style="display:none">
+      <div id="selHec">
         <div id="hecInfo" class="hint" style="margin-top:2px"></div>
         <div class="row"><label for="hecT">Vaqt</label><input id="hecT" type="range" min="0" max="163" step="1" value="0"></div>
         <div style="display:flex;align-items:center;gap:8px;margin-top:2px"><output id="hecTO" style="white-space:nowrap;font-size:15px;font-weight:600;color:#e6edf6"></output><span class="hint" style="margin:0">surgichni suring yoki ▶ ni bosing</span></div>
@@ -547,7 +545,7 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
         <svg id="hecGraf" viewBox="0 0 300 74" style="width:100%;height:auto;margin-top:8px;cursor:pointer;display:block;background:rgba(255,255,255,.03);border-radius:6px"></svg>
         <div id="hecManba" class="hint" style="margin-top:4px"></div>
       </div>
-      <div style="margin-top:8px;display:flex;align-items:center;gap:8px"><button class="btn" id="selB">⚠ Sel xavfini hisoblash</button><span id="selVaqt" class="hint" style="margin:0"></span></div>
+      <div style="margin-top:8px;display:flex;align-items:center;gap:8px"><button class="btn" id="selB" hidden>⚠ Sel xavfini hisoblash</button><span id="selVaqt" class="hint" style="margin:0"></span></div>
       <div class="stats" id="selStats" style="margin-top:8px"></div>
       <div class="row" style="margin-top:8px"><label for="selQat">Xarita qatlami</label>
         <select id="selQat">
@@ -563,7 +561,6 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
         </select></div>
       <div class="chips" style="margin-top:6px"><button class="chip" id="selNet" title="O'zanlarni sel kuchi (oqim quvvati) bo'yicha bo'yash">O'zanlar xavf bo'yicha</button></div>
       <div id="selLeg" class="leg2 shakl"></div>
-      <div class="hint"><b style="color:#e6edf6">Kanallar bilan:</b> OpenStreetMap sug'orish kanallari, ariq va zovurlari (domenda 433 km, Minbu ichida 256 km; Mon janubiy va shimoliy kanallari) relyefga o'yib kiritilgan, suv ular bo'ylab ham oqadi. Usul: SCS-CN oqim (tuproq × yer qoplami, oldingi 5 kun namligi) → D8 bo'yicha yig'ilish (yuqori havzalar va kanallar bilan) → TR-55 eng katta sarf → HAND sintetik reyting egri chizig'i bilan sath va suv bosish → D×V xavf sinflari; oqim turi Melton nisbati bo'yicha. Yog'in: Open-Meteo ECMWF IFS 9 km (2022–), tuproq: SoilGrids 2.0, qoplama: ESA WorldCover 2021. Skrining natijasi, kuzatuv bilan kalibrlanmagan.</div>
     </div>
     <div class="sec" id="secSoz">
       <h2>Sozlamalar</h2>
@@ -592,7 +589,8 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
     </div>
     <div class="src" id="src">Boshqaruv: chap yoki o'ng tugma — surish, g'ildirakni bosib turib (yoki Ctrl+chap) — aylantirish/egish, g'ildirak — yaqinlashish, ikki marta bosish — shu joyga uchish.<br><br>
     Relyef: Copernicus GLO-30 DEM © DLR e.V. 2010–2014, © Airbus Defence and Space 2014–2018, Yevropa Ittifoqi va ESA Copernicus dasturi doirasida. Bu sirt modeli (DSM): daraxt va binolar ustidan o'lchangan.<br>
-    Tasvir: Google sun'iy yo'ldosh tasviri.</div>
+    Tasvir: Google sun'iy yo'ldosh tasviri.<br><br>
+    <b style="color:#e6edf6">Kanallar bilan:</b> OpenStreetMap sug'orish kanallari, ariq va zovurlari (domenda 433 km, Minbu ichida 256 km; Mon janubiy va shimoliy kanallari) relyefga o'yib kiritilgan, suv ular bo'ylab ham oqadi. Usul: SCS-CN oqim (tuproq × yer qoplami, oldingi 5 kun namligi) → D8 bo'yicha yig'ilish (yuqori havzalar va kanallar bilan) → TR-55 eng katta sarf → HAND sintetik reyting egri chizig'i bilan sath va suv bosish → D×V xavf sinflari; oqim turi Melton nisbati bo'yicha. Yog'in: Open-Meteo ECMWF IFS 9 km (2022–), tuproq: SoilGrids 2.0, qoplama: ESA WorldCover 2021. Skrining natijasi, kuzatuv bilan kalibrlanmagan.</div>
   </div>
 </div>
 
@@ -2774,7 +2772,8 @@ function setNav(n) {
   $("ldon").style.display = n === "sel" ? "none" : "";      // Sel xavfi bo'limida oqim tarkibi o'rniga sel darajalari
   $("cSel").style.display = n === "sel" ? "" : "none";
   if (n === "kor") drawHist();
-  yogRejim(n === "yog"); if (n === "yog" && YOG) requestAnimationFrame(() => { yogGraf(); yogGrafKursor(); });
+  yogRejim(n === "yog");
+  if (n === "sel") hecRejim(true); if (n === "yog" && YOG) requestAnimationFrame(() => { yogGraf(); yogGrafKursor(); });
   $("side").scrollTop = 0;
   resize();
 }
