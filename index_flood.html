@@ -119,6 +119,7 @@ input[type=date]{background:#1c2632;color:var(--tx);border:1px solid var(--panel
   --r:12px; --gap:14px; --rail:212px; --top:56px; --rc:300px; --brow:214px; --kh:152px;
 }
 html,body{background:var(--bg);font-family:Inter,"Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+#yom{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;display:none}
 #c{background:radial-gradient(ellipse farthest-corner at 50% 42%,#0f2442 0%,#0a1a31 40%,#06101e 75%,#050c17 100%)}
 .chip.on,.btn.on,#tools button.on{background:var(--ac);border-color:var(--ac);color:#fff}
 .tlist button.on{background:rgba(59,130,246,.25)}
@@ -402,6 +403,7 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
 </head>
 <body>
 <canvas id="c"></canvas>
+<canvas id="yom"></canvas>
 
 <nav id="rail">
   <div class="brand"><i class="logo" title="MTXM — Minbu toshqin xavfi monitoringi"><svg viewBox="0 0 40 40" width="38" height="38" aria-hidden="true"><defs><linearGradient id="mtxmG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1e3a8a"/><stop offset=".55" stop-color="#2563eb"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#mtxmG)"/><path d="M0 29c4.5-2.6 9-2.6 13.5 0s9 2.6 13.5 0 8.5-2.6 13-.4V40H0z" fill="#fff" fill-opacity=".13"/><text x="20" y="17.2" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="11.5" font-weight="800" letter-spacing=".6" fill="#fff">MT</text><path d="M7.5 21.6c2.5-1.7 5-1.7 7.5 0s5 1.7 7.5 0 5-1.7 7.5 0 2.6 1.3 3.6.6" fill="none" stroke="#bae6fd" stroke-width="1.5" stroke-linecap="round"/><text x="20" y="32.6" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="11.5" font-weight="800" letter-spacing=".6" fill="#e0f2fe">XM</text></svg></i><b>Minbu toshqin xavfi monitoringi</b></div>
@@ -542,7 +544,7 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
       <div id="selHec">
         <div id="hecInfo" class="hint" style="margin-top:2px"></div>
         <div class="row"><label for="hecT">Vaqt</label><input id="hecT" type="range" min="0" max="163" step="1" value="0"></div>
-        <div style="display:flex;align-items:center;gap:8px;margin-top:2px"><output id="hecTO" style="white-space:nowrap;font-size:15px;font-weight:600;color:#e6edf6"></output><span class="hint" style="margin:0">surgichni suring yoki ▶ ni bosing</span></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:2px"><output id="hecTO" style="white-space:nowrap;font-size:15px;font-weight:600;color:#e6edf6"></output><span id="hecYom" style="font-size:12px;color:#7dd3fc;white-space:nowrap"></span><span class="hint" style="margin:0">surgichni suring yoki ▶ ni bosing</span></div>
         <div class="chips" style="margin-top:6px"><button class="chip" id="hecPlay">▶ Ijro</button><button class="chip" id="hecMax">Eng katta suv</button><button class="chip" id="hecSar">Sentinel-1 vaqti</button></div>
         <svg id="hecGraf" viewBox="0 0 300 74" style="width:100%;height:auto;margin-top:8px;cursor:pointer;display:block;background:rgba(255,255,255,.03);border-radius:6px"></svg>
         <div id="hecManba" class="hint" style="margin-top:4px"></div>
@@ -784,6 +786,23 @@ uniform vec3 uSun, uCamP, uHaze;
 uniform sampler2D uHyd; uniform vec4 uHydR; uniform float uShaklOn, uKolOn, uHavzaOn;
 uniform float uTopOn, uTopPast; uniform vec3 uTopCls; uniform vec2 uHydSz;
 uniform sampler2D uDat; uniform float uDatOn;
+uniform sampler2D uFlow; uniform float uSuvOn, uSuvT, uSuvSc;   // sel suvi: oqim yo'nalishi, vaqt, naqsh o'lchami (m)
+float sHash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float sNoise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3. - 2.*f);
+  return mix(mix(sHash(i), sHash(i + vec2(1., 0.)), f.x), mix(sHash(i + vec2(0., 1.)), sHash(i + vec2(1., 1.)), f.x), f.y); }
+// bitta qatlam: x — to'lqin, y — yaltirash, z — oqim bo'ylab yuruvchi tomchilar
+vec3 suvQat(vec2 p, vec2 d, float ph, float sc){
+  vec2 q = p / sc - d * ph * 2.4;
+  float w = sNoise(q) * .6 + sNoise(q * 2.3 + 7.3) * .4;
+  vec2 g = q * 1.5, id = floor(g), f = fract(g) - .5;
+  vec2 o = (vec2(sHash(id + 1.3), sHash(id + 5.7)) - .5) * .6;
+  float dr = step(.5, sHash(id + 9.1)) * (1. - smoothstep(.05, .17, length(f - o)));
+  return vec3(w, pow(w, 6.) * 3.2, dr);
+}
+vec3 suvNaqsh(vec2 p, vec2 d, float t, float sc){   // ikki fazali oqim xaritasi: naqsh uzluksiz oqadi
+  float a = fract(t), b = fract(t + .5);
+  return mix(suvQat(p, d, a, sc), suvQat(p + 37.1, d, b, sc), abs(a - .5) * 2.);
+}
 varying vec2 vUV; varying vec3 vW;
 // to'planish kodi -> ko'rinadigan guruh (0 = yashirin): 1 ko'lmak, 2 shubhali ko'lmak, 3 hovuz, 4 pastlik
 float topVis(float t){
@@ -880,6 +899,7 @@ void main(){
   else if(uMode < 2.5) col = mix(sat*1.1, hy, .45);
   else col = vec3(.80,.79,.76);
   vec2 hu = (vW.xz - uHydR.xy) / uHydR.zw;
+  float suvA = 0.;
   if(hu.x > 0. && hu.y > 0. && hu.x < 1. && hu.y < 1.){
     vec4 hd = texture2D(uHyd, hu);
     float k = floor(hd.r * 255. + .5);
@@ -908,9 +928,19 @@ void main(){
         col = mix(col, vec3(1.), (1. - smoothstep(1.2, 2.6, abs(cs - SM_T) / fws)) * .95);  // tanlangan obyekt
       }
     }
-    if(uDatOn > .5){ vec4 dt = datSm(hu); col = mix(col, dt.rgb, dt.a); }  // sel / ma'lumot qatlami
+    if(uDatOn > .5){ vec4 dt = datSm(hu);   // sel / ma'lumot qatlami
+      if(uSuvOn > .5 && dt.a > .01){        // HEC-RAS suvi: oqim yo'nalishida harakatlanuvchi to'lqin va tomchilar
+        vec2 fd = texture2D(uFlow, hu).ra * 2. - 1.;
+        float fl = length(fd); vec2 dir = fl > .04 ? fd / max(fl, .35) : vec2(0.);
+        vec3 w = suvNaqsh(vW.xz, dir, uSuvT, uSuvSc);
+        vec3 w2 = suvNaqsh(vW.xz + 911., dir, uSuvT * .61 + .3, uSuvSc * 3.1);
+        float tl = w.x * .65 + w2.x * .35;
+        dt.rgb = dt.rgb * (.74 + .42 * tl) + vec3(.62, .80, 1.) * (w.y * .30 + w2.y * .12) + vec3(.96, .99, 1.) * w.z * .62;
+        suvA = dt.a;
+      }
+      col = mix(col, dt.rgb, dt.a); }
   }
-  col *= mix(1., .28 + .72*sh, sk);
+  col *= mix(1., .28 + .72*sh, sk * (1. - .55 * suvA));
   if(uKont > 0.){
     float f = h / uKont, w = fwidth(f);
     float l = 1. - smoothstep(.6, 1.6, abs(fract(f - .5) - .5) / max(w, 1e-5));
@@ -1437,7 +1467,7 @@ function selQatlam() {
     const o = i * 4;
     if (c) { D[o] = c[0]; D[o + 1] = c[1]; D[o + 2] = c[2]; D[o + 3] = a; } else D[o + 3] = 0;
   }
-  datT.needsUpdate = true; U.uDatOn.value = 1; dirty = true;
+  datT.needsUpdate = true; U.uDatOn.value = 1; U.uSuvOn.value = 0; dirty = true;
   // afsona
   const rgb = c => `rgb(${c.map(Math.round).join(",")})`, el = $("selLeg");
   if (q && q.leg) {
@@ -1539,6 +1569,28 @@ async function hecYukla() {
   for (let t = 1; t < T; t++) { const o = t * N, p = o - N; for (let j = 0; j < N; j++) K[o + j] = (K[o + j] + K[p + j]) & 255; }  // farqlardan tiklash
   const sar = m.vaqt.findIndex(v => v.slice(0, 13) === m.sar.vaqt.slice(0, 10) + "T" + m.sar.vaqt.slice(11, 13));
   HEC = { m, N, T, idx, dr, map, dmax, K, sar };
+  if (!U.uFlow.value) U.uFlow.value = oqimTex();
+}
+function oqimTex() {   // har katak uchun suv oqadigan tomon (D8), ~150 m oynada silliqlangan -> LuminanceAlpha tekstura (x, z)
+  const W_ = SUV.w, H_ = SUV.h, n = W_ * H_, R = 5, IS = Math.SQRT1_2;
+  let fx = new Float32Array(n), fz = new Float32Array(n);
+  for (let i = 0; i < n; i++) { const k = SG.k[i]; if (!k || !SG.cls[i]) continue; const d = HDR[k] && HDC[k] ? IS : 1; fx[i] = HDC[k] * d; fz[i] = HDR[k] * d; }
+  const blur = (a, qadam, uz, qator) => {   // bir yo'nalishda qutili o'rtacha (yuguruvchi yig'indi)
+    const o = new Float32Array(n);
+    for (let q = 0; q < qator; q++) {
+      const b = qadam === 1 ? q * W_ : q; let sm = 0;
+      for (let t = -R; t <= R; t++) if (t >= 0 && t < uz) sm += a[b + t * qadam];
+      for (let t = 0; t < uz; t++) { o[b + t * qadam] = sm / (2 * R + 1); const ch = t - R, kr = t + R + 1; if (ch >= 0) sm -= a[b + ch * qadam]; if (kr < uz) sm += a[b + kr * qadam]; }
+    }
+    return o;
+  };
+  fx = blur(blur(fx, 1, W_, H_), W_, H_, W_); fz = blur(blur(fz, 1, W_, H_), W_, H_, W_);
+  const D = new Uint8Array(n * 2);
+  for (let i = 0; i < n; i++) { D[i * 2] = Math.round(128 + 127 * Math.max(-1, Math.min(1, fx[i]))); D[i * 2 + 1] = Math.round(128 + 127 * Math.max(-1, Math.min(1, fz[i]))); }
+  const t = new THREE.DataTexture(D, W_, H_, THREE.LuminanceAlphaFormat);
+  t.unpackAlignment = 1;
+  t.magFilter = t.minFilter = THREE.LinearFilter; t.generateMipmaps = false; t.needsUpdate = true;
+  return t;
 }
 const hecD = c => c ? (c / 80) * (c / 80) : 0;
 const hecSana = v => v.replace("T", " ");
@@ -1554,7 +1606,8 @@ function hecChiz() {
     D[o] = col[0]; D[o + 1] = col[1]; D[o + 2] = col[2]; D[o + 3] = hecD(c) < .3 ? 175 : 225;
     jami++; sg[s]++; if (!HEC.dr[j]) tash++;
   }
-  datT.needsUpdate = true; U.uDatOn.value = 1; dirty = true;
+  datT.needsUpdate = true; U.uDatOn.value = 1; U.uSuvOn.value = 1; dirty = true;
+  hecYomgir();
   const m = HEC.m, ga = .09;
   $("hecTO").textContent = t < 0 ? "eng katta" : hecSana(m.vaqt[t]);
   $("hecMax").classList.toggle("on", t < 0); $("hecSar").classList.toggle("on", t === HEC.sar);
@@ -1600,7 +1653,43 @@ function hecGrafKursor() {
   const W = +$("hecGraf").dataset.w || 300, xx = hecT < 0 ? -10 : 4 + hecT / (HEC.T - 1) * (W - 8);
   l.setAttribute("x1", xx); l.setAttribute("x2", xx);
 }
-function hecStop() { if (hecPlayId) { clearInterval(hecPlayId); hecPlayId = 0; $("hecPlay").textContent = "▶ Ijro"; $("hecPlay").classList.remove("on"); } }
+function hecStop() { if (hecPlayId) { clearInterval(hecPlayId); hecPlayId = 0; $("hecPlay").textContent = "▶ Ijro"; $("hecPlay").classList.remove("on"); } yomgir(0); }
+// ---- yomg'ir effekti (ijro paytida, shu soatdagi yog'in jadalligiga mos) ----
+let yomId = 0, yomMm = 0, yomK = 0; const yomP = [];
+function hecSoatMm(t) {   // shu soatdagi Minbu o'rtacha yog'ini, mm/soat (ERA5 soatlik; yuklanmagan bo'lsa kunlikdan taxmin)
+  if (!HEC || t < 0) return 0;
+  if (YOG && YOG.m.soat_ort[t] !== undefined) return YOG.m.soat_ort[t];
+  return (HEC.m.era5_kunlik[HEC.m.vaqt[t].slice(0, 10)] || 0) / 10;
+}
+function hecYomgir() {
+  const mm = hecSoatMm(hecT);
+  $("hecYom").textContent = hecT >= 0 ? (mm >= .05 ? "🌧 " + fmt(mm, 1) + " mm/soat" : "yomg'irsiz") : "";
+  yomgir(hecPlayId ? mm : 0);
+}
+function yomgir(mm) {
+  yomMm = mm;
+  if (mm >= .05 && !yomId && !reduceM) { $("yom").style.display = "block"; yomId = requestAnimationFrame(yomTik); }
+}
+function yomTik(now) {
+  const cv = $("yom"), w = innerWidth, h = innerHeight;
+  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+  const g = cv.getContext("2d");
+  yomK += ((yomMm >= .05 ? Math.min(1, .12 + yomMm / 14) : 0) - yomK) * .06;   // jadallik silliq o'zgaradi
+  g.clearRect(0, 0, w, h);
+  if (yomK < .01 && yomMm < .05) { yomId = 0; yomP.length = 0; cv.style.display = "none"; return; }
+  g.fillStyle = `rgba(6,12,26,${(.26 * yomK).toFixed(3)})`; g.fillRect(0, 0, w, h);   // bulutli, qorong'iroq osmon
+  const n = Math.round(900 * yomK * Math.min(1.6, w * h / 1.6e6));
+  while (yomP.length < n) yomP.push({ x: Math.random() * (w + 200), y: Math.random() * h, l: 9 + Math.random() * 16, v: 14 + Math.random() * 12, a: .18 + Math.random() * .4 });
+  yomP.length = Math.min(yomP.length, n);
+  g.lineWidth = 1.1; g.lineCap = "round";
+  for (const p of yomP) {
+    g.strokeStyle = `rgba(190,215,255,${p.a.toFixed(2)})`;
+    g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x - p.l * .28, p.y + p.l); g.stroke();
+    p.y += p.v; p.x -= p.v * .28;
+    if (p.y > h) { p.y = -p.l; p.x = Math.random() * (w + 200); }
+  }
+  yomId = requestAnimationFrame(yomTik);
+}
 function hecRows(i) {
   if (!HEC || !hecFaol() || i < 0) return "";
   const j = HEC.map[i], m = HEC.m;
@@ -1650,6 +1739,7 @@ function hecUI() {
     if (hecPlayId) { hecStop(); return; }
     if (hecT < 0 || hecT >= HEC.T - 1) hecT = 0;
     $("hecPlay").textContent = "❚❚ To'xtatish"; $("hecPlay").classList.add("on");
+    if (!YOG) { yogYuk = yogYuk || yogYukla(); yogYuk.catch(() => { yogYuk = null; }); }   // soatlik yog'in jadalligi uchun
     hecPlayId = setInterval(() => { hecT++; if (hecT >= HEC.T - 1) { hecT = HEC.T - 1; hecStop(); } $("hecT").value = hecT; hecChiz(); }, 140);
   };
 }
@@ -1688,7 +1778,7 @@ function yogChiz() {
     const col = rampAt(YOG_RAMP, Math.max(0, c / 10 - lo) / (mx - lo) * 170);
     D[o] = col[0]; D[o + 1] = col[1]; D[o + 2] = col[2]; D[o + 3] = 175;
   }
-  datT.needsUpdate = true; U.uDatOn.value = 1; dirty = true;
+  datT.needsUpdate = true; U.uDatOn.value = 1; U.uSuvOn.value = 0; dirty = true;
   $("yogQat").querySelectorAll(".chip").forEach(b => b.classList.toggle("on", +b.dataset.q === yogQ || (b.dataset.q === "kun" && q.k === "kun")));
   $("yogKun").style.display = q.k === "kun" ? "" : "none";
   $("yogKun").querySelectorAll(".chip").forEach(b => b.classList.toggle("on", +b.dataset.q === yogQ));
@@ -1969,7 +2059,8 @@ async function init() {
     uWall: { value: 400 }, uRes: { value: new THREE.Vector2(1, 1) },
     uHyd: { value: null }, uHydR: { value: new THREE.Vector4(0, 0, 1, 1) }, uShaklOn: { value: 0 }, uKolOn: { value: 1 }, uHavzaOn: { value: 0 },
     uTopOn: { value: 1 }, uTopPast: { value: 0 }, uTopCls: { value: new THREE.Vector3(1, 1, 1) }, uHydSz: { value: new THREE.Vector2(1, 1) },
-    uDat: { value: null }, uDatOn: { value: 0 }
+    uDat: { value: null }, uDatOn: { value: 0 },
+    uFlow: { value: null }, uSuvOn: { value: 0 }, uSuvT: { value: 0 }, uSuvSc: { value: 120 }
   };
   setSun();
   buildTerrain(S.step);
@@ -2450,11 +2541,12 @@ function hint(t) { const h = $("modeHint"); if (t) { h.textContent = t; h.style.
 
 // ---------------- profil ----------------
 let daryoYol = null;
-function daryoTop() {   // tumandagi eng katta daryo (Irravadidan tashqari): quyilish joyidan yuqoriga eng katta oqim bo'ylab
+const DARYO_RANG = ["#38bdf8", "#fb923c"];
+function daryoTop(taq) {   // eng katta daryo (Irravadidan tashqari): quyilish joyidan yuqoriga eng katta oqim bo'ylab; taq — hisobga olinmaydigan kataklar
   const W_ = SUV.w, H_ = SUV.h, n = W_ * H_, ich = i => SG.cls[i] && SG.cls[i] !== 9;
   const past = i => { const k = SG.k[i]; if (!k) return -1; const r = Math.floor(i / W_) + HDR[k], c = i % W_ + HDC[k]; return r < 0 || c < 0 || r >= H_ || c >= W_ ? -1 : r * W_ + c; };
   let e = -1, ea = 0;
-  for (let i = 0; i < n; i++) if (ich(i) && SG.str[i]) { const a = accAt(i); if (a > ea) { ea = a; e = i; } }
+  for (let i = 0; i < n; i++) if (ich(i) && SG.str[i] && !(taq && taq[i])) { const a = accAt(i); if (a > ea) { ea = a; e = i; } }
   if (e < 0) return [];
   const quyi = [];   // pastga: Irravadiga quyilguncha (shu daryo kataklari)
   for (let i = past(e), g = 0; i >= 0 && SG.cls[i] && SG.str[i] && accAt(i) < ea * 1.5 && g < 20000; i = past(i), g++) quyi.push(i);
@@ -2469,12 +2561,102 @@ function daryoTop() {   // tumandagi eng katta daryo (Irravadidan tashqari): quy
     if (b < 0 || !SG.str[b]) break;
     yol.push(b); i = b;
   }
-  return yol.reverse().concat(quyi).map(cellXZ);   // boshlanishdan tugashga
+  return yol.reverse().concat(quyi);   // boshlanishdan tugashga (katak indekslari)
 }
-function daryoProfil() { daryoYol = daryoYol || daryoTop(); if (daryoYol.length > 2) makeProfile(daryoYol); }
+function daryolar() {   // tumandagi ikki eng katta daryo: 2-si 1-siga quyilmaydiganlar ichidan
+  const W_ = SUV.w, H_ = SUV.h, n = W_ * H_;
+  const past = i => { const k = SG.k[i]; if (!k) return -1; const r = Math.floor(i / W_) + HDR[k], c = i % W_ + HDC[k]; return r < 0 || c < 0 || r >= H_ || c >= W_ ? -1 : r * W_ + c; };
+  const y1 = daryoTop(null), st = new Uint8Array(n);   // 1: 1-daryoga quyiladi, 2: yo'q, 3: tekshirilmoqda
+  y1.forEach(i => st[i] = 1);
+  for (let i = 0; i < n; i++) {
+    if (!SG.str[i] || st[i]) continue;
+    const yol = []; let j = i;
+    while (j >= 0 && !st[j] && yol.length < 300000) { st[j] = 3; yol.push(j); j = past(j); }   // tuman tashqarisidan o'tib qaytadigan oqimlar ham kuzatiladi
+    const v = j >= 0 && st[j] === 1 ? 1 : 2;
+    for (const c of yol) st[c] = v;
+  }
+  for (let i = 0; i < n; i++) st[i] = st[i] === 1 ? 1 : 0;
+  const y2 = daryoTop(st);
+  // nomlar: shimolda quyiladigani — Mon, janubda (Minbu shahri yonida) — Man
+  const oxZ = y => y.length ? cellXZ(y[y.length - 1])[1] : 0;
+  const d = [y1, y2].filter(y => y.length > 2).map(y => ({ yol: y.map(cellXZ), shim: oxZ(y) }));
+  if (d.length === 2) { const s1 = d[0].shim < d[1].shim; d[0].nom = s1 ? "Mon daryosi" : "Man daryosi"; d[1].nom = s1 ? "Man daryosi" : "Mon daryosi"; }
+  else if (d.length) d[0].nom = "Daryo";
+  return d;
+}
+function yolHisob(yol) {   // chiziq bo'ylab masofa va balandlik (DEM shovqini ~450 m oynada silliqlanadi)
+  let L = 0; const xs = [], h0 = [], pts = [];
+  yol.forEach(([x, z], i) => { if (i) L += Math.hypot(x - yol[i - 1][0], z - yol[i - 1][1]); xs.push(L); h0.push(validNear(x, z) ? fillAt(x, z) : null); pts.push([x, z]); });
+  const hs = h0.slice(), k = 7; let mx = -1e9, mn = 1e9;
+  for (let i = 0; i < h0.length; i++) { let sm = 0, c = 0; for (let q = Math.max(0, i - k); q <= Math.min(h0.length - 1, i + k); q++) if (h0[q] != null) { sm += h0[q]; c++; } hs[i] = c ? sm / c : null; if (c) { mx = Math.max(mx, hs[i]); mn = Math.min(mn, hs[i]); } }
+  return { xs, hs, pts, L, mx, mn };
+}
+function daryoProfil() {   // pastki karta: ikki daryoning boshlanishidan quyilishigacha balandligi, bitta grafikda
+  if (!daryoYol) daryoYol = daryolar().map((d, i) => ({ ...yolHisob(d.yol), nom: d.nom, rang: DARYO_RANG[i] }));
+  if (!daryoYol.length) return;
+  const d0 = daryoYol[0];
+  profData = { ...d0, la: "Boshlanish", lb: "Tugash", daryo: daryoYol };
+  clearProfLine();
+  $("pst").innerHTML = daryoYol.map(d => { const ha = d.hs.find(h => h != null), hb = [...d.hs].reverse().find(h => h != null);
+    return `<span style="flex:1 1 100%"><b style="color:${d.rang}">━ ${d.nom}</b> · uzunlik <i>${fmtDist(d.L)}</i> · boshlanish <i>${fmt(ha)} m</i> · tugash <i>${fmt(hb)} m</i> · pasayish <i>${fmt(ha - hb, 0)} m</i></span>`; }).join("");
+  $("profX").hidden = true; $("balT").textContent = "Daryolar bo'ylab balandlik (boshlanish → tugash)";
+  drawProfile(-1);
+  const pc = $("pc");
+  if (!pc._ev) {
+    pc._ev = 1;
+    pc.addEventListener("pointermove", e => { if (profData) drawProfile(e.offsetX); });
+    pc.addEventListener("pointerleave", () => { if (profData) drawProfile(-1); $("pinP").style.display = "none"; profCur = null; dirty = true; });
+  }
+}
+function drawDaryo(mx) {
+  const cv = $("pc"), dpr = devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+  cv.width = w * dpr; cv.height = h * dpr;
+  const g = cv.getContext("2d"); g.scale(dpr, dpr);
+  const D = profData.daryo, L = Math.max(...D.map(d => d.L));
+  const pad = { l: 46, r: 12, t: 10, b: 20 };
+  let lo = Math.min(...D.map(d => d.mn)), hi = Math.max(...D.map(d => d.mx)); const sp = Math.max(10, hi - lo); lo -= sp * .06; hi += sp * .14;
+  const X = d => pad.l + d / L * (w - pad.l - pad.r), Y = v => pad.t + (1 - (v - lo) / (hi - lo)) * (h - pad.t - pad.b);
+  g.strokeStyle = "rgba(255,255,255,.07)"; g.fillStyle = "#6b7886"; g.font = "10.5px system-ui"; g.lineWidth = 1;
+  const ystep = [5, 10, 20, 25, 50, 100, 200].find(s => (hi - lo) / s <= 5) || 200;
+  g.textAlign = "right";
+  for (let v = Math.ceil(lo / ystep) * ystep; v <= hi; v += ystep) { g.beginPath(); g.moveTo(pad.l, Y(v)); g.lineTo(w - pad.r, Y(v)); g.stroke(); g.fillText(v + " m", pad.l - 5, Y(v) + 3); }
+  const xstep = [50, 100, 200, 250, 500, 1000, 2000, 2500, 5000, 10000, 20000].find(s => L / s <= 8) || 20000;
+  g.textAlign = "center";
+  for (let d = 0; d <= L; d += xstep) g.fillText(fmtDist(d), X(d), h - 5);
+  const yoz = [];
+  D.forEach((d, k) => {
+    g.beginPath(); let st = false, x1 = 0, y1 = 0;
+    for (let i = 0; i < d.xs.length; i++) { if (d.hs[i] == null) { st = false; continue; } const x = X(d.xs[i]), y = Y(d.hs[i]); st ? g.lineTo(x, y) : g.moveTo(x, y); st = true; x1 = x; y1 = y; }
+    g.strokeStyle = d.rang; g.lineWidth = 2; g.stroke();
+    g.lineTo(x1, h - pad.b); g.lineTo(X(0), h - pad.b); g.closePath(); g.globalAlpha = .10; g.fillStyle = d.rang; g.fill(); g.globalAlpha = 1;
+    // nom: chiziqning o'rtasida, ustida (ikkinchisi — ostida), o'z rangida
+    const uzun = d.L >= L - 1, im = Math.floor(d.xs.length * (uzun ? .80 : .16)), hm = d.hs[im];   // uzuni — o'ng tomonda, qisqasi — boshida (ustma-ust tushmasin)
+    if (hm != null) yoz.push([d.nom, X(d.xs[im]) + (uzun ? 0 : 34), Y(hm) - 9, d.rang]);
+  });
+  g.font = "bold 11.5px system-ui"; g.textAlign = "center";
+  for (const [t, x, y, c] of yoz) { const tw = g.measureText(t).width + 10; g.fillStyle = "rgba(8,13,22,.72)"; g.fillRect(x - tw / 2, y - 11, tw, 15); g.fillStyle = c; g.fillText(t, x, y); }
+  profCur = null;
+  if (mx >= pad.l && mx <= w - pad.r) {
+    const dist = (mx - pad.l) / (w - pad.l - pad.r) * L;
+    g.strokeStyle = "rgba(255,255,255,.5)"; g.lineWidth = 1; g.beginPath(); g.moveTo(mx, pad.t); g.lineTo(mx, h - pad.b); g.stroke();
+    const qat = [fmtDist(dist)];
+    D.forEach(d => {
+      if (dist > d.L) return;
+      let i = 0; while (i < d.xs.length - 1 && d.xs[i] < dist) i++;
+      const v = d.hs[i]; if (v == null) return;
+      g.fillStyle = d.rang; g.beginPath(); g.arc(X(d.xs[i]), Y(v), 4, 0, 7); g.fill();
+      qat.push(`${d.nom}: ${fmt(v)} m`);
+      if (!profCur) { const [px, pz] = d.pts[i]; profCur = new THREE.Vector3(px, sceneY(v), pz); }
+    });
+    const lbl = qat.join("  ·  "); g.font = "11px system-ui";
+    const tw = g.measureText(lbl).width + 10, bx = Math.min(w - pad.r - tw, Math.max(pad.l, mx + 8));
+    g.fillStyle = "rgba(10,14,20,.88)"; g.fillRect(bx, pad.t, tw, 18); g.fillStyle = "#fff"; g.textAlign = "left"; g.fillText(lbl, bx + 5, pad.t + 13);
+  }
+  dirty = true;
+}
 function profKor(on) {   // on: A–B profil; aks holda daryo bo'ylab profil
   $("profX").hidden = !on;
-  $("balT").textContent = on ? "Balandlik profili A → B" : "Daryo bo'ylab balandlik (boshlanish → tugash)";
+  $("balT").textContent = on ? "Balandlik profili A → B" : "Daryolar bo'ylab balandlik (boshlanish → tugash)";
   if (!on) daryoProfil();
 }
 function setProf(m) {
@@ -2528,6 +2710,7 @@ function makeProfile(yol) {   // yol berilsa — shu chiziq (daryo) bo'ylab, aks
 }
 let profCur = null;
 function drawProfile(mx) {
+  if (profData.daryo) return drawDaryo(mx);
   const cv = $("pc"), dpr = devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
   cv.width = w * dpr; cv.height = h * dpr;
   const g = cv.getContext("2d"); g.scale(dpr, dpr);
@@ -3290,8 +3473,10 @@ function loop(now) {
   updateFine();
   if (now - lastHover > 60) { updateHover(); lastHover = now; }
   if (NU && S.anim && !reduceM && ((netMesh && netMesh.visible) || tomLine) && now - lastAnim > 33) { dirty = true; lastAnim = now; }
+  if (U && U.uSuvOn.value > .5 && U.uDatOn.value > .5 && !reduceM && now - lastAnim > 33) { dirty = true; lastAnim = now; }
   if (!dirty) return;
   dirty = false;
+  if (U) { U.uSuvT.value = (now / 1000 * .32) % 4096; U.uSuvSc.value = Math.min(640, Math.max(20, 2 ** Math.round(Math.log2(cam.dist * .005)))); }
   const lift = cam.dist * .0015 + 2;
   if (NU) {
     NU.uLift.value = lift * 1.3;
@@ -3385,6 +3570,15 @@ Promise.all(kalit.map(function(k){
    Manba: Minbu_3D_portal/flood_til.js -> shablon.html va front/index_flood.html ga ichiga joylangan. */
 (function () {
 var D = {
+"Daryolar bo'ylab balandlik (boshlanish → tugash)": ["Elevation along the rivers (source → mouth)", "Высота вдоль рек (исток → устье)", "မြစ်များတစ်လျှောက် အမြင့် (အစ → အဆုံး)"],
+"━ Mon daryosi": ["━ Mon river", "━ река Мон", "━ မုန်းမြစ်"],
+"━ Man daryosi": ["━ Man river", "━ река Ман", "━ မန်းမြစ်"],
+"· uzunlik": ["· length", "· длина", "· အရှည်"],
+"· boshlanish": ["· start", "· начало", "· အစ"],
+"· tugash": ["· end", "· конец", "· အဆုံး"],
+"· pasayish": ["· drop", "· падение", "· ကျဆင်းမှု"],
+"yomg'irsiz": ["no rain", "без дождя", "မိုးမရွာ"],
+"🌧 {n} mm/soat": ["🌧 {0} mm/h", "🌧 {0} мм/ч", "🌧 {0} mm/နာရီ"],
 "Qishloq nomi": ["Village name", "Название села", "ကျေးရွာအမည်"],
 "Daryo bo'ylab balandlik (boshlanish → tugash)": ["Elevation along the river (source → mouth)", "Высота вдоль реки (исток → устье)", "မြစ်တစ်လျှောက် အမြင့် (အစ → အဆုံး)"],
 "Boshlanish": ["Start", "Начало", "အစ"],
