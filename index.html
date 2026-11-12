@@ -1248,7 +1248,7 @@ $('vp').onclick=function(e){e.preventDefault();
   if(FORECAST_URL){location.href=FORECAST_URL;return}
   var t=document.createElement('div');t.className='toast';t.textContent=L('Index Forecast hozircha tayyorlanmoqda.');document.body.appendChild(t);setTimeout(function(){t.remove()},2600)};
 /* "Flood Mapping" opens the sister portal in this same tab (like one portal); set its address here */
-var WATER_URL='https://embassy-tennessee-industry-repair.trycloudflare.com';
+var WATER_URL='index_flood.html';
 $('wm').onclick=function(e){e.preventDefault();
   if(WATER_URL){location.href=WATER_URL;return}
   var t=document.createElement('div');t.className='toast';t.textContent=L('Flood Mapping havolasi hali qo\'shilmagan.');document.body.appendChild(t);setTimeout(function(){t.remove()},2600)};
