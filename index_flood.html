@@ -2403,11 +2403,13 @@ function clickAt(x, y) {
     else { profB = p; profMode = 1; hint("Yangi profil uchun A nuqtani bosing · Esc — chiqish"); makeProfile(); }
     dirty = true; return;
   }
-  if (hudSel >= 0 && (!p || !exactAt(p.x, p.z) || hudAt(p.x, p.z) !== hudSel)) {   // tanlangan hudud chegarasidan tashqari -> tanlov bekor
-    closePop(); $("qidir").value = ""; hudTanla(-1, false); home(); return;
+  if (!p || !exactAt(p.x, p.z)) {   // xaritadan (tuman chegarasidan) tashqari -> barcha tanlovlar bekor
+    const bor = hudSel >= 0 || !!popAt;
+    closePop(); $("qidir").value = ""; hudTanla(-1, false);
+    if (bor) home();
+    return;
   }
-  if (!p) { closePop(); return; }
-  showInfo(p);
+  showInfo(p);   // boshqa hududdagi nuqta ham to'g'ridan-to'g'ri tanlanadi (hudud ham almashadi)
 }
 function showInfo(p, jForce) {
   const d = info(p.x, p.z); if (!d) { closePop(); return; }
