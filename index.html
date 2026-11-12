@@ -14,7 +14,7 @@
   --tx:#ecf4e6; --tx-2:#a5b9a2; --leaf:#7fd06c; --leaf-2:#3f8f49; --gold:#f0c744; --clay:#e58a4e;
   --st1:#2e7d32; --st2:#6fb544; --st3:#b9d35a; --st4:#f5ec9c; --st0:#55665a;
   --display:"Sora","Segoe UI",system-ui,sans-serif; --body:"Manrope","Segoe UI",system-ui,sans-serif;
-  --r:14px; --bottom-h:236px; --side:286px;
+  --r:14px; --bottom-h:clamp(236px,44vh,400px); --side:300px;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -127,9 +127,26 @@ h1,h2,p{margin:0}
 .mapmsg{position:absolute;inset:0;display:grid;place-items:center;font:300 16px var(--display);text-align:center;padding:24px}
 
 .ui{position:absolute;inset:0;padding:14px;display:grid;gap:10px;pointer-events:none;
-  grid-template-columns:minmax(0,1fr);
+  grid-template-columns:minmax(0,1fr) var(--side);
   grid-template-rows:auto minmax(0,1fr) var(--bottom-h);
-  grid-template-areas:"head" "hole" "bot"}
+  grid-template-areas:"head head" "hole side" "bot side"}
+/* right column: rasters + the index values of the picked contour (or of the village / township) */
+.side{grid-area:side;display:flex;flex-direction:column;gap:10px;min-height:0;overflow:auto;scrollbar-width:thin;scrollbar-color:rgba(127,208,108,.3) transparent}
+.vcard{flex:none;display:flex;flex-direction:column;gap:8px;padding:11px 11px 12px}
+.vcard header small{white-space:normal}
+.vlist{display:flex;flex-direction:column;gap:6px}
+.vi{--c:#7fd06c;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1px 8px;align-items:baseline;width:100%;text-align:left;padding:7px 10px 8px;border-radius:11px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--c) 22%,rgba(10,24,15,.9)),color-mix(in srgb,var(--c) 9%,rgba(10,24,15,.9)));
+  border:1px solid color-mix(in srgb,var(--c) 38%,transparent);transition:border-color .15s,transform .15s}
+.vi:hover{border-color:color-mix(in srgb,var(--c) 75%,transparent);transform:translateY(-1px)}
+.vi[aria-pressed="true"]{border-color:var(--c);box-shadow:0 0 0 1px var(--c),0 6px 16px rgba(0,0,0,.35)}
+.vi .nm{display:flex;align-items:baseline;gap:6px;min-width:0;font-size:11px;color:var(--tx-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vi .nm b{font:700 12px var(--body);color:#fff;letter-spacing:.02em}
+.vi .val{font:600 17px var(--display);color:var(--c);font-variant-numeric:tabular-nums;line-height:1.1}
+.vi .fx{grid-column:1/-1;font:italic 10px var(--body);color:var(--tx-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vi .br{grid-column:1/-1;height:6px;margin-top:5px;border-radius:3px;background:rgba(0,0,0,.3);overflow:hidden}
+.vi .br i{display:block;height:100%;border-radius:3px;background:var(--c);transition:width .35s}
+.vi.na .val{color:var(--tx-2)}
 .ui>*{pointer-events:auto;min-width:0;min-height:0}
 .head{grid-area:head;display:flex;align-items:center;gap:12px;min-width:0}
 .head>div:not(.stats){flex:none;max-width:34%}
@@ -172,22 +189,39 @@ h1,h2,p{margin:0}
 .track{height:7px;margin-top:5px;border-radius:4px;background:var(--glass-2);overflow:hidden}
 .track i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--leaf-2),var(--leaf));transition:width .35s}
 
-.bot{grid-area:bot;display:grid;grid-template-columns:minmax(0,2.3fr) minmax(0,1.08fr);gap:10px}
+/* the bottom row can be folded away (button at the chart's top-left): the chart slides out to the left, the status
+   card to the right, the row closes and the map gets the space; "Grafiklar" at the map's bottom brings them back */
+.ui{transition:grid-template-rows .4s cubic-bezier(.3,.7,.2,1)}
+.ui.bcl{grid-template-rows:auto minmax(0,1fr) 0px}
+.bot .card{transition:transform .4s cubic-bezier(.3,.7,.2,1),opacity .3s}
+.ui.bcl .bot .card:first-of-type{transform:translateX(-112%);opacity:0;pointer-events:none}
+.ui.bcl .bot .card:last-child{transform:translateX(112%);opacity:0;pointer-events:none}
+/* "Grafiklar" pill on the top edge of the chart card (same look as the one that brings the charts back) */
+.bhide{position:absolute;z-index:3;top:-17px;left:calc((100% - var(--sw) - 10px) / 2);transform:translateX(-50%);display:flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:999px;
+  font:600 12px var(--body);color:var(--tx);background:rgba(14,34,21,.92);border:1px solid var(--line);backdrop-filter:blur(9px);box-shadow:0 6px 18px rgba(0,0,0,.4);transition:opacity .2s}
+.ui.bcl .bhide{opacity:0;pointer-events:none}
+.bhide:hover{color:#fff;background:var(--leaf-2);border-color:var(--leaf-2)}
+.bhide svg,.bshow svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.bshow{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:999px;pointer-events:auto;
+  font:600 12px var(--body);color:var(--tx);background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(9px);box-shadow:0 6px 18px rgba(0,0,0,.4);animation:drop .2s ease-out}
+.bshow:hover{background:var(--leaf-2);border-color:var(--leaf-2);color:#fff}
+.bshow[hidden]{display:none}
+.bot{--sw:clamp(420px,24vw,600px);position:relative;grid-area:bot;align-self:start;height:var(--bottom-h);display:grid;grid-template-columns:minmax(0,1fr) var(--sw);gap:10px}
 .bot .card{display:flex;flex-direction:column;gap:6px;overflow:hidden;position:relative}
 .bot header{display:flex;align-items:flex-start;gap:8px}
 .bot header h2{white-space:nowrap}
 .bot header small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bot header>div{min-width:0}
-.bot header .chip{margin-inline:auto;flex:none}
+.bot header .chip{margin-left:auto;flex:none}
 .chip{display:inline-flex;align-items:center;gap:6px;background:var(--glass-2);border:1px solid var(--line);border-radius:999px;padding:3px 11px;font:400 12.5px var(--display);white-space:nowrap}
 .chip i{width:8px;height:8px;border-radius:50%}
 .plot{flex:1;min-height:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px}
-.ileg{display:flex;flex-direction:column;justify-content:center;gap:1px;font-size:11.5px}
-.ileg button{display:flex;align-items:center;gap:7px;padding:2px 6px;border-radius:6px;text-align:left;color:var(--tx-2);white-space:nowrap}
+.ileg{display:flex;flex-direction:column;justify-content:center;gap:6px;font-size:13px;padding-left:2px}
+.ileg button{display:flex;align-items:center;gap:9px;padding:3px 8px;border-radius:6px;text-align:left;color:var(--tx-2);white-space:nowrap}
 .ileg button:hover{background:var(--glass-2);color:var(--tx)}
 .ileg button.on{color:var(--tx);font-weight:600}
 .ileg button.pr{background:var(--glass-2)}
-.ileg i{width:12px;height:12px;border-radius:3px;flex:none;border:1.5px solid;box-sizing:border-box}
+.ileg i{width:14px;height:14px;border-radius:3px;flex:none;border:1.5px solid;box-sizing:border-box}
 .tip .ln{display:flex;align-items:center;gap:6px;font-weight:500}
 .tip .ln i{width:8px;height:8px;border-radius:50%}
 .tip .ln b{margin-left:auto;padding-left:10px;font-weight:700}
@@ -201,17 +235,25 @@ h1,h2,p{margin:0}
 .tip .h{font-weight:700;margin-bottom:1px}
 #hover{left:0;top:0;z-index:9}
 
-.dist{display:grid;grid-template-columns:118px minmax(0,1fr);gap:12px;align-items:center;flex:1;min-height:0}
-.dtab{display:grid;gap:4px;font-size:11.5px;min-width:0}
-.dtab .r{display:grid;grid-template-columns:9px minmax(0,auto) minmax(14px,1fr) auto 32px;gap:7px;align-items:center;font-variant-numeric:tabular-nums}
+/* status card: sizes follow the card width (container units), the ring + rows sit centred so no big empty margins remain */
+.bot .card:last-child{container-type:inline-size}
+.dist{display:grid;grid-template-columns:auto auto;justify-content:center;column-gap:clamp(14px,6cqi,64px);align-items:center;flex:1;min-height:0;padding-inline:clamp(0px,3cqi,28px)}
+#donut{display:block;width:clamp(108px,34cqi,250px);height:auto;max-height:100%;aspect-ratio:1}
+/* narrow card (laptop screens): ring on top, rows centred under it, so the height is used instead of leaving it empty */
+@container (max-width:440px){.dist{grid-template-columns:auto;grid-template-rows:auto auto;justify-items:center;align-content:center;row-gap:14px;padding-inline:0}
+  #donut{width:clamp(108px,42cqi,186px)}.dtab{font-size:12.5px;row-gap:7px;grid-template-columns:auto max-content minmax(30px,26cqi) max-content max-content}}
+/* one column grid for all rows (subgrid): names line up, bars stay short (max 120px), numbers always fit */
+.dtab{display:grid;grid-template-columns:auto max-content minmax(20px,clamp(40px,24cqi,210px)) max-content max-content;justify-content:start;gap:clamp(4px,2.2cqi,16px) clamp(7px,1.6cqi,14px);font-size:clamp(11.5px,2.3cqi,15.5px);min-width:0}
+.dtab .r{grid-column:1/-1;display:grid;grid-template-columns:subgrid;align-items:center;font-variant-numeric:tabular-nums}
+.dtab>p{grid-column:1/-1}
 .dtab .nm{display:flex;flex-direction:column;line-height:1.2;white-space:nowrap}
-.dtab i{width:9px;height:9px;border-radius:50%}
-.dtab .bar{height:6px;border-radius:3px;background:var(--glass-2);position:relative;overflow:hidden}
-.dtab .bar b{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
-.dtab .d{font-size:10px;color:var(--tx-2);white-space:nowrap}
-.dtab .ha{text-align:right}
+.dtab i{width:.8em;height:.8em;border-radius:50%}
+.dtab .bar{height:clamp(6px,1.4cqi,10px);border-radius:5px;background:var(--glass-2);position:relative;overflow:hidden}
+.dtab .bar b{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+.dtab .d{font-size:.78em;color:var(--tx-2);white-space:nowrap}
+.dtab .ha{text-align:right;font-weight:600}
 .dtab .pc{text-align:right;color:var(--tx-2)}
-.dtab .r{cursor:pointer;border-radius:7px;padding:1px 4px;margin:0 -4px}
+.dtab .r{cursor:pointer;border-radius:8px;padding:2px 6px;margin:0 -6px}
 .dtab .r:hover{background:var(--glass-2)}
 .dtab .r.act{background:rgba(127,208,108,.16);outline:1px solid var(--leaf-2)}
 .dtab .r.off{opacity:.38}
@@ -252,24 +294,24 @@ h1,h2,p{margin:0}
 /* raster panel */
 .rcard{flex:none;display:flex;flex-direction:column;gap:9px;padding:11px 11px 12px}
 /* rasters in the left rail: compact squares, 4 per row */
-.rail .rcard h2{font:400 14px var(--display)}
+.side .rcard h2{font:400 14px var(--display)}
 /* rasters in the left rail: 3 per row, each a small map tile tilted in 3D (flattens and lifts on hover / when shown) */
-.rail .rcard{margin-top:10px}
-.rail .rcard .rgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px;padding:4px 2px 2px}
-.rail .rt{font-size:11px}
+.side .rcard{margin-top:0}
+.side .rcard .rgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px;padding:4px 2px 2px}
+.side .rt{font-size:11px}
 /* one fixed 3D pose for every tile (a map slab seen from above at an angle, with a thick edge and a ground shadow);
    hover / chosen only light the edge and lift the slab a little, the angle never changes */
-.rail .rt{position:relative}
-.rail .rt .sq{border-radius:9px;background-color:#0c1d12;background-size:86%;border:1px solid rgba(170,215,160,.22);
+.side .rt{position:relative}
+.side .rt .sq{border-radius:9px;background-color:#0c1d12;background-size:86%;border:1px solid rgba(170,215,160,.22);
   transform:perspective(320px) rotateX(38deg);transform-origin:50% 100%;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 1px 0 #142a1a,0 2px 0 #0f2215,0 3px 0 #0b1a10,0 4px 0 #08140c,0 12px 12px -6px rgba(0,0,0,.7);
   transition:transform .2s ease-out,box-shadow .2s ease-out,border-color .2s}
-.rail .rt:hover .sq{transform:perspective(320px) rotateX(38deg) translateY(-3px);border-color:rgba(127,208,108,.6);
+.side .rt:hover .sq{transform:perspective(320px) rotateX(38deg) translateY(-3px);border-color:rgba(127,208,108,.6);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 1px 0 #1a3a22,0 2px 0 #142d1a,0 3px 0 #0f2215,0 4px 0 #0b1a10,0 16px 14px -6px rgba(0,0,0,.75)}
-.rail .rt[aria-pressed="true"] .sq{transform:perspective(320px) rotateX(38deg) translateY(-3px);border-color:var(--gold);
+.side .rt[aria-pressed="true"] .sq{transform:perspective(320px) rotateX(38deg) translateY(-3px);border-color:var(--gold);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 1px 0 #6b5617,0 2px 0 #54440f,0 3px 0 #3f330b,0 4px 0 #2b2308,0 0 14px rgba(240,199,68,.28),0 16px 14px -6px rgba(0,0,0,.75)}
-.rail .rt:disabled .sq{transform:perspective(320px) rotateX(38deg)}
-@media (prefers-reduced-motion:reduce){.rail .rt .sq{transition:none}}
+.side .rt:disabled .sq{transform:perspective(320px) rotateX(38deg)}
+@media (prefers-reduced-motion:reduce){.side .rt .sq{transition:none}}
 .rmask{font-size:12px;align-items:flex-start;padding:7px 8px;border-radius:9px;background:var(--glass-2)}
 .rmask[hidden]{display:none}
 .rmask span{display:flex;flex-direction:column;gap:1px;line-height:1.25}
@@ -460,7 +502,7 @@ h1,h2,p{margin:0}
   .stats{grid-template-columns:repeat(2,minmax(0,1fr));flex:1 0 100%;max-width:none}
   .head{flex-wrap:wrap}.head>div:not(.stats){max-width:none}
   .wm span,.wm{font-size:12px}
-  .bot{grid-template-columns:minmax(0,1fr)}
+  .bot{grid-template-columns:minmax(0,1fr);height:auto}
   .bot .card{min-height:250px}
   .left,.right{overflow:visible;max-height:none}
   .drawer{position:fixed}
@@ -580,15 +622,6 @@ if(t&&t.exp>n+60000&&(!t.keep||t.keep>n)&&!/[?&]code=/.test(location.search))doc
     <div class="lyr" role="group" aria-label="Kontur shaffofligi">
       <label class="op"><span>Kontur shaffofligi <em id="t-opv">55%</em></span><input type="range" id="t-op" min="0" max="100" value="55" aria-label="Kontur shaffofligi"></label>
     </div>
-    <section class="card rcard" id="rcard">
-      <header><div><h2>Rasterlar</h2><small id="r-per"></small></div></header>
-      <div class="rgrid" id="rgrid"></div>
-      <div class="rleg" id="rleg" hidden></div>
-      <div class="rfoot" id="rfoot" hidden><span>Shaffoflik</span><input type="range" id="rop" min="20" max="100" value="90" aria-label="Raster shaffofligi"></div>
-      <label class="sw rmask" id="rmrow" hidden title="Rasterni kontur chegaralari bilan kesish: faqat ekin konturlari ichidagi piksellar ko'rinadi va qiymat beradi"><input type="checkbox" id="rmask"><span>Konturlar bo'yicha kesish<small>faqat kontur ichidagi piksellar</small></span></label>
-      <p class="rnote" id="rnote"></p>
-      <div class="rinfo" id="rinfo" aria-live="polite"></div>
-    </section>
     <div class="authors" aria-label="Mualliflar">
       <b>Mualliflar</b>
       <div class="au"><img src="data:image/jpeg;base64,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" alt="Rizayev Komiljon" width="44" height="44" id="au-rk" title="Rasmni kattalashtirish"><span>Rizayev Komiljon</span></div>
@@ -622,6 +655,7 @@ if(t&&t.exp>n+60000&&(!t.keep||t.keep>n)&&!/[?&]code=/.test(location.search))doc
         <button id="c-tour" aria-pressed="false" title="Uchib ko'rish"><svg viewBox="0 0 16 16"><path d="M2 9.5 14 3l-3.5 11-2.6-4.4z"/><path d="M7.9 9.6 14 3"/></svg></button>
       </div>
       <div class="tourcap" id="tourcap" hidden></div>
+      <button class="bshow" id="bshow" hidden title="Grafiklarni qayta ochish"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 10 4-4 4 4"/></svg>Grafiklar</button>
       <div class="bmg" id="bmg" hidden role="dialog" aria-label="Asosiy xaritalar"><div class="bmg-h"><b>Asosiy xaritalar</b><small>ArcGIS Online</small></div><div class="bmg-cur"><span>Joriy xarita</span><b id="bmg-c"></b></div><div class="bmg-g" id="bmg-g"></div></div>
       <div class="mctl" id="mctl">
         <div class="bmseg" id="bm" role="group" aria-label="Asosiy xarita">
@@ -632,7 +666,8 @@ if(t&&t.exp>n+60000&&(!t.keep||t.keep>n)&&!/[?&]code=/.test(location.search))doc
         <button id="bfull" aria-pressed="false" title="Butun dunyo xaritasi"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M2 8h12M8 2c2 2 2.6 4 2.6 6S10 12 8 14M8 2C6 4 5.4 6 5.4 8S6 12 8 14"/></svg>Full</button>
       </div></div>
       <div hidden aria-hidden="true"><span id="r-name"></span><span id="r-sub"></span><span id="r-share"></span><span id="r-a"></span><span id="r-m"></span><span id="r-x"></span><b id="p-v"></b><i id="p-i"></i></div>
-      <div class="bot">
+      <div class="bot" id="bot">
+        <button class="bhide" id="bhide" aria-expanded="true" aria-controls="bot" title="Grafiklarni yashirish: xarita kattaroq ko'rinadi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>Grafiklar</button>
         <section class="card">
           <header><div><h2>Index qiymatlari</h2><small>Oylar kesimida, 2022–2026 · chapdan bir nechta indeksni tanlash mumkin</small></div><span class="chip" id="c1-year"></span><span></span></header>
           <div class="plot"><div class="ileg" id="ileg" role="group" aria-label="Indekslar"></div><div class="svgbox" id="c1"></div></div>
@@ -643,6 +678,20 @@ if(t&&t.exp>n+60000&&(!t.keep||t.keep>n)&&!/[?&]code=/.test(location.search))doc
           <p class="dnote" id="dnote"></p>
         </section>
       </div>
+      <aside class="side" id="side" aria-label="Rasterlar va indeks qiymatlari">
+        <section class="card rcard" id="rcard">
+          <header><div><h2>Rasterlar</h2><small id="r-per"></small></div></header>
+          <div class="rgrid" id="rgrid"></div>
+          <div class="rleg" id="rleg" hidden></div>
+          <div class="rfoot" id="rfoot" hidden><span>Shaffoflik</span><input type="range" id="rop" min="20" max="100" value="90" aria-label="Raster shaffofligi"></div>
+          <label class="sw rmask" id="rmrow" hidden title="Kontur maskasi (clip): yoqilganda raster faqat ekin konturlari ichida ko'rinadi va qiymat beradi; o'chirilganda butun raster qoplamasi ko'rinadi"><input type="checkbox" id="rmask" checked><span>Kontur maskasi (clip)<small>o'chirilsa — to'liq raster qoplamasi</small></span></label>
+          <p class="rnote" id="rnote"></p>
+        </section>
+        <section class="card vcard" id="vcard">
+          <header><div><h2 id="v-h">Indeks qiymatlari</h2><small id="v-sub"></small></div></header>
+          <div class="vlist" id="vlist" role="group" aria-label="Indeks qiymatlari"></div>
+        </section>
+      </aside>
     </div>
     <div class="drawer" id="drawer" hidden>
       <header>
@@ -875,6 +924,17 @@ var D={
 "Yil tanlang: yillik o'rtacha ko'rinadi, oylar — Oy filtrida":["Pick a year to see its yearly mean; months are in the Month filter","Выберите год — среднее за год; месяцы — в фильтре «Месяц»","နှစ်ရွေးပါ — နှစ်စဉ် ပျမ်းမျှ ပြမည်၊ လများ — လ စစ်ထုတ်မှုတွင်"],
 "Yongan":["Burned","Горело","မီးလောင်"],
 "Xarita qatlamlari":["Map layers","Слои карты","မြေပုံအလွှာများ"],
+"Indeks qiymatlari":["Index values","Значения индексов","အညွှန်းကိန်း တန်ဖိုးများ"],
+"Kontur qiymatlari":["Contour values","Значения контура","ကွက် တန်ဖိုးများ"],
+"Rasterlar va indeks qiymatlari":["Rasters and index values","Растры и значения индексов","ရာစတာနှင့် အညွှန်းကိန်း တန်ဖိုးများ"],
+"Xaritada shu indeksni ko'rsatish":["Show this index on the map","Показать этот индекс на карте","ဤအညွှန်းကိန်းကို မြေပုံတွင် ပြရန်"],
+"Vegetatsiya holati":["Vegetation condition","Состояние растительности","အပင် အခြေအနေ"],
+"Azot yetishmovchiligi":["Nitrogen deficiency","Дефицит азота","နိုက်ထရိုဂျင် ချို့တဲ့မှု"],
+"Ekin zichligi":["Crop density","Густота посевов","သီးနှံ သိပ်သည်းမှု"],
+"Xlorofill miqdori":["Chlorophyll content","Содержание хлорофилла","ကလိုရိုဖီးလ် ပမာဏ"],
+"Namlik / suv":["Moisture / water","Влажность / вода","စိုထိုင်းဆ / ရေ"],
+"Yong'in izi":["Burn trace","След пожара","မီးလောင်ရာ"],
+"Barg yuzasi":["Leaf area","Площадь листьев","အရွက် ဧရိယာ"],
 "Qisman yongan":["Partially burned","Частично горело","တစ်စိတ်တစ်ပိုင်း မီးလောင်"],
 "<b>{0}</b> maydon yonmagan":["<b>{0}</b> of the area not burned","<b>{0}</b> площади не горело","ဧရိယာ <b>{0}</b> မမီးလောင်ပါ"],
 "Holat taqsimoti":["Status distribution","Распределение по состоянию","အခြေအနေ ဖြန့်ဝေမှု"],
@@ -882,6 +942,11 @@ var D={
 "Qishloq chegaralarini ko'rsatish / yashirish":["Show / hide village boundaries","Показать / скрыть границы сёл","ကျေးရွာနယ်နိမိတ် ပြရန် / ဖျောက်ရန်"],
 "Konturlarni ko'rsatish / yashirish":["Show / hide parcels","Показать / скрыть контуры","မြေကွက်များ ပြရန် / ဖျောက်ရန်"],
 "Qishloqlar ro'yxati":["Village list","Список сёл","ကျေးရွာစာရင်း"],
+"Kontur maskasi (clip)":["Parcel mask (clip)","Маска по контурам (clip)","မြေကွက် mask (clip)"],
+"o'chirilsa — to'liq raster qoplamasi":["off — full raster coverage","выкл. — полное покрытие растра","ပိတ်ထားလျှင် — ရာစတာ အပြည့်"],
+"Grafiklar":["Charts","Графики","ဇယားများ"],
+"Grafiklarni yashirish: xarita kattaroq ko'rinadi":["Hide the charts: the map gets more space","Скрыть графики: карта станет больше","ဇယားများကို ဖျောက်ရန်"],
+"Grafiklarni qayta ochish":["Show the charts again","Снова показать графики","ဇယားများကို ပြန်ပြရန်"],
 "Konturlar bo'yicha kesish":["Clip to parcels","Обрезать по контурам","မြေကွက်များအတိုင်း ဖြတ်ရန်"],
 "faqat kontur ichidagi piksellar":["only pixels inside parcels","только пиксели внутри контуров","မြေကွက်အတွင်းရှိ pixel များသာ"],
 "Rasterni kontur chegaralari bilan kesish: faqat ekin konturlari ichidagi piksellar ko'rinadi va qiymat beradi":["Clip the raster with the parcel boundaries: only pixels inside crop parcels are shown and give a value","Обрезать растр границами контуров: видны и дают значение только пиксели внутри контуров","ရာစတာကို မြေကွက်နယ်နိမိတ်ဖြင့် ဖြတ်ရန် — မြေကွက်အတွင်းရှိ pixel များသာ ပြပြီး တန်ဖိုးပေးသည်"],
@@ -1058,7 +1123,7 @@ $('vp').onclick=function(e){e.preventDefault();
   if(FORECAST_URL){location.href=FORECAST_URL;return}
   var t=document.createElement('div');t.className='toast';t.textContent=L('Index Forecast hozircha tayyorlanmoqda.');document.body.appendChild(t);setTimeout(function(){t.remove()},2600)};
 /* "Flood Mapping" opens the sister portal in this same tab (like one portal); set its address here */
-var WATER_URL='index_flood.html';
+var WATER_URL='https://embassy-tennessee-industry-repair.trycloudflare.com';
 $('wm').onclick=function(e){e.preventDefault();
   if(WATER_URL){location.href=WATER_URL;return}
   var t=document.createElement('div');t.className='toast';t.textContent=L('Flood Mapping havolasi hali qo\'shilmagan.');document.body.appendChild(t);setTimeout(function(){t.remove()},2600)};
@@ -1210,7 +1275,7 @@ function render(){
   $('r-a').textContent=f(c.vha)+' '+L('ga'); $('r-m').textContent=f(c.med,2)+' '+L('ga'); $('r-x').textContent=f(c.max,c.max<10?2:1)+' '+L('ga');
   $('p-v').textContent=pct(gh); $('p-i').style.width=(gh*100).toFixed(1)+'%';
   $('n-all').setAttribute('aria-pressed',String(!isV&&$('drawer').hidden&&S.mode==='size'));
-  syncFilters();chart1();chart2();donut();list();paint();applyCls();rasterPanel();
+  syncFilters();chart1();chart2();donut();list();paint();applyCls();rasterPanel();ivals();
 }
 function gauge(c){
   var a0=-Math.PI/2,a1=a0+Math.max(.02,Math.min(.999,c.share))*2*Math.PI;
@@ -1421,7 +1486,7 @@ render();
 
 /* ---------- rasters (D:\MYANMA_NEW\Raster, class codes 1..50 coloured here by the 4 statuses) ---------- */
 var RAS=window.__RAS||{get:function(p){return fetch('rasters2/'+p).then(function(r){if(!r.ok)throw new Error(r.status+' '+p);return r})}};
-var RM=null,TH={},RC={},RCV={},R={on:null,per:null,op:.9,g:null,busy:null};
+var RM=null,TH={},RC={},RCV={},R={on:null,per:null,op:.9,g:null,busy:null,mask:true};   /* rasters are clipped to the contours by default */
 var RNAME={ndvi:'NDVI',ndre:'NDRE',rvi:'RVI',ci:'CI',ndmi:'NDMI',nbr:'NBR',lai:'LAI'};
 function hex(h){return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]}
 function rPer(){return S.p5?'5y':S.m?YEARS[S.y]+'-'+(S.m<10?'0':'')+S.m:String(YEARS[S.y])}
@@ -1546,7 +1611,8 @@ var LCOL={};
 function contoursOverRaster(on){if(!map||!map.getLayer('parcel-case')||!LCOL.n)return;
   var pv=map.getLayoutProperty('parcel-line','visibility')||'visible';
   map.setLayoutProperty('parcel-case','visibility',on&&pv!=='none'?'visible':'none');
-  map.setPaintProperty('parcel-line','line-color',on?LCOL.r:LCOL.n)}
+  /* over a raster: masked = contour edges in status colours, unmasked = white edges */
+  map.setPaintProperty('parcel-line','line-color',on?(R.mask&&LCOL.m?LCOL.m:LCOL.r):LCOL.n)}
 function boundsOverRaster(on){contoursOverRaster(on);if(!map)return;BLAY.forEach(function(id){if(map.getLayer(id))try{map.moveLayer(id,on?(map.getLayer('parcel-case')?'parcel-case':'parcel-line'):(id.indexOf('town')===0?(map.getLayer('vill-share')?'vill-share':'parcel-fill'):'parcel-fill'))}catch(e){}})}
 function rasterLayerOff(){if(!map)return;if(map.getLayer('ras'))map.removeLayer('ras');if(map.getSource('ras'))map.removeSource('ras');boundsOverRaster(false)}
 function drawRaster(){
@@ -1555,14 +1621,61 @@ function drawRaster(){
   /* colours = the index's own 50-class ramp from raster_legend.csv; the status filter still keeps only that status */
   var x=c.getContext('2d'),im=x.createImageData(g.w,g.h),d=im.data,st=R.st,only=S.fs>=1&&S.fs<=4?S.fs:0;
   var lut=[];for(var q=0;q<51;q++){var hc=rcol(R.ix,R.p,q);lut[q]=hc?hex(hc):null}
-  var mk=R.mask?cmask(g.w,g.h):null;
-  for(var i=0,n=g.a.length;i<n;i++){if(mk&&!mk[i])continue;var cd=g.a[i],cc=lut[cd],s=st[cd];if(cc&&s&&(!only||s===only)){var o=i*4;d[o]=cc[0];d[o+1]=cc[1];d[o+2]=cc[2];d[o+3]=255}}
-  x.putImageData(im,0,0);R.fs=S.fs;
+  for(var i=0,n=g.a.length;i<n;i++){var cd=g.a[i],cc=lut[cd],s=st[cd];if(cc&&s&&(!only||s===only)){var o=i*4;d[o]=cc[0];d[o+1]=cc[1];d[o+2]=cc[2];d[o+3]=255}}
+  x.putImageData(im,0,0);R.fs=S.fs;R.cv=c;R.cvm=null;R.vw=null;
+  if(R.mask){var mk=cmask(g.w,g.h);if(mk){var c2=document.createElement('canvas');c2.width=g.w;c2.height=g.h;var x2=c2.getContext('2d'),im2=x2.createImageData(g.w,g.h),d2=im2.data;
+    for(var j=0,nn=mk.length;j<nn;j++)if(mk[j]){var oo=j*4;d2[oo]=d[oo];d2[oo+1]=d[oo+1];d2[oo+2]=d[oo+2];d2[oo+3]=d[oo+3]}
+    x2.putImageData(im2,0,0);R.cvm=c2}}
+  rasShow();
+}
+function rasPut(cv,coords){
   rasterLayerOff();
-  map.addSource('ras',{type:'canvas',canvas:c,coordinates:RM.bounds,animate:false});
+  map.addSource('ras',{type:'canvas',canvas:cv,coordinates:coords,animate:false});
   map.addLayer({id:'ras',type:'raster',source:'ras',paint:{'raster-opacity':R.op,'raster-resampling':'nearest','raster-fade-duration':0}},map.getLayer('parcel-case')?'parcel-case':'parcel-line');
   boundsOverRaster(true);
 }
+/* which picture is on the map: no clipping = the whole raster; clipped and zoomed out (a raster pixel <= ~1.3 screen px) =
+   the pixel mask on the raster grid; clipped and zoomed in = a picture of the current view (plus a margin) where the
+   raster is cut along the real contour lines (vector paths, anti-aliased), redrawn after every move / zoom */
+function rasShow(){
+  if(!R.cv||!map)return;
+  if(!R.mask||!R.cvm){R.vw=null;rasPut(R.cv,RM.bounds);return}
+  var B0=maplibregl.MercatorCoordinate.fromLngLat(RM.bounds[0]),B2=maplibregl.MercatorCoordinate.fromLngLat(RM.bounds[2]),
+      ws=512*Math.pow(2,map.getZoom()),k=(B2.x-B0.x)/R.g.w*ws;
+  if(k<1.3||!PMC()){if(R.vw!==0){R.vw=0;rasPut(R.cvm,RM.bounds)}return}
+  var cn=map.getCanvas(),Wc=cn.clientWidth,Hc=cn.clientHeight,xs=[],ys=[];
+  [[0,0],[Wc,0],[Wc,Hc],[0,Hc]].forEach(function(p){var m=maplibregl.MercatorCoordinate.fromLngLat(map.unproject(p));xs.push(m.x);ys.push(m.y)});
+  var x0=Math.min.apply(null,xs),x1=Math.max.apply(null,xs),y0=Math.min.apply(null,ys),y1=Math.max.apply(null,ys),ex=(x1-x0)*.3,ey=(y1-y0)*.3;
+  x0=Math.max(B0.x,x0-ex);x1=Math.min(B2.x,x1+ex);y0=Math.max(B0.y,y0-ey);y1=Math.min(B2.y,y1+ey);
+  if(x1<=x0||y1<=y0){R.vw=null;rasPut(R.cvm,RM.bounds);return}
+  var dpr=Math.min(2,devicePixelRatio||1),sc=ws*dpr,W=(x1-x0)*sc,H=(y1-y0)*sc,cap=4096/Math.max(W,H);if(cap<1){sc*=cap;W*=cap;H*=cap}
+  W=Math.max(1,Math.round(W));H=Math.max(1,Math.round(H));
+  var cv=document.createElement('canvas');cv.width=W;cv.height=H;var cx=cv.getContext('2d');cx.imageSmoothingEnabled=false;
+  var gw=R.g.w/(B2.x-B0.x),gh=R.g.h/(B2.y-B0.y);
+  cx.drawImage(R.cv,(x0-B0.x)*gw,(y0-B0.y)*gh,(x1-x0)*gw,(y1-y0)*gh,0,0,W,H);
+  var mc=document.createElement('canvas');mc.width=W;mc.height=H;var mx=mc.getContext('2d',{willReadFrequently:true});mx.fillStyle='#000';
+  var sx=W/(x1-x0),sy=H/(y1-y0),L0=PMC();
+  for(var f0=0;f0<L0.length;f0++){var F=L0[f0],b=F.b;if(b[2]<x0||b[0]>x1||b[3]<y0||b[1]>y1)continue;mx.beginPath();
+    for(var ri=0;ri<F.r.length;ri++){var a=F.r[ri];mx.moveTo((a[0]-x0)*sx,(a[1]-y0)*sy);for(var q=2;q<a.length;q+=2)mx.lineTo((a[q]-x0)*sx,(a[q+1]-y0)*sy);mx.closePath()}
+    mx.fill('evenodd')}
+  cx.globalCompositeOperation='destination-in';cx.drawImage(mc,0,0);
+  R.vw={x0:x0,y0:y0,x1:x1,y1:y1,W:W,H:H,m:mx};
+  var tl=function(x,y){var l=new maplibregl.MercatorCoordinate(x,y).toLngLat();return [l.lng,l.lat]};
+  rasPut(cv,[tl(x0,y0),tl(x1,y0),tl(x1,y1),tl(x0,y1)]);
+}
+/* contour rings in Web-Mercator (0..1) with a bbox per contour, built once for the view clipping */
+var PMCV=null;
+function PMC(){if(PMCV)return PMCV;if(!PGJ)return null;var PI=Math.PI;
+  PMCV=PGJ.features.map(function(ft){var gm=ft.geometry,rs=[],b=[1,1,0,0];if(!gm)return {b:b,r:rs};
+    var add=function(r){var a=new Float64Array(r.length*2);for(var j=0;j<r.length;j++){var X=(r[j][0]+180)/360,la=r[j][1]*PI/180,Y=(1-Math.log(Math.tan(PI/4+la/2))/PI)/2;
+      a[2*j]=X;a[2*j+1]=Y;if(X<b[0])b[0]=X;if(X>b[2])b[2]=X;if(Y<b[1])b[1]=Y;if(Y>b[3])b[3]=Y}rs.push(a)};
+    if(gm.type==='Polygon')gm.coordinates.forEach(add);else if(gm.type==='MultiPolygon')gm.coordinates.forEach(function(p){p.forEach(add)});
+    return {b:b,r:rs}});
+  return PMCV}
+/* inside a contour at this map point? (the clipped view picture when it covers the point, else the raster-grid mask) */
+function inMask(ll,k){var v=R.vw;if(v&&v.m){var m=maplibregl.MercatorCoordinate.fromLngLat(ll);
+    if(m.x>=v.x0&&m.x<v.x1&&m.y>=v.y0&&m.y<v.y1){var px=Math.floor((m.x-v.x0)/(v.x1-v.x0)*v.W),py=Math.floor((m.y-v.y0)/(v.y1-v.y0)*v.H);return v.m.getImageData(px,py,1,1).data[3]>=128}}
+  var mk=cmask(R.g.w,R.g.h);return !mk||!!mk[k]}
 /* "Konturlar bo'yicha kesish": every contour polygon is burned into a pixel mask on the raster's own grid (same
    Web-Mercator mapping the map uses to stretch the raster), so only pixels whose centre lies inside a contour are drawn
    and give a value on hover. Built once per grid size, then reused for every index / period. */
@@ -1581,7 +1694,7 @@ function cmask(w,h){
   return CMK[key]=m;
 }
 function setRMask(on){R.mask=on;$('rmask').checked=on;if(R.g)drawRaster();$('rtip').hidden=true;rasterPanel()}
-$('rmask').onchange=function(){setRMask(this.checked)};function rasterOff(){R.on=null;R.g=null;R.busy=null;rasterLayerOff();$('rtip').hidden=true;rasterPanel()}
+$('rmask').onchange=function(){setRMask(this.checked)};function rasterOff(){R.on=null;R.g=null;R.cv=null;R.cvm=null;R.vw=null;R.busy=null;rasterLayerOff();$('rtip').hidden=true;rasterPanel()}
 $('rgrid').onclick=function(e){var b=e.target.closest('.rt');if(!b||b.disabled)return;var ix=b.dataset.r;if(R.on===ix){rasterOff();return}
   showRaster(ix);if(S.ix!==ix)setIx(ix)};
 $('rop').oninput=function(){R.op=this.value/100;if(map&&map.getLayer('ras'))map.setPaintProperty('ras','raster-opacity',R.op)};
@@ -1598,7 +1711,7 @@ function rHover(pt,ll){
   if(px<0||py<0||px>=g.w||py>=g.h){tip.hidden=true;return false}
   var k=py*g.w+px,c=g.a[k],ix=R.ix,p=R.p;
   /* clipped to contours: outside every contour there is no value */
-  if(R.mask){var mk=cmask(g.w,g.h);if(mk&&!mk[k]){tip.hidden=true;return false}}
+  if(R.mask&&!inMask(ll,k)){tip.hidden=true;return false}
   if(!c||!R.st[c]){
     /* inside the township but no pixel (cloud / no image on that date) */
     if(map.queryRenderedFeatures(pt,{layers:['vill-hit']}).length){
@@ -1731,15 +1844,17 @@ function applyCls(){
 var PS=-1,PSpt=null,PCEN=null;
 function pickParcel(id,pt,ll){
   if(PS>=0)map.setFeatureState({source:'parcels',id:PS},{ps:false});
-  PS=id;PSpt=pt;PCEN=ll||null;if(id<0){$('pcard').hidden=true;chart1();chart2();return}
-  map.setFeatureState({source:'parcels',id:id},{ps:true});pcard();
-  loadPser(id).then(function(){if(PS===id){chart1();chart2();pcard()}}).catch(function(e){if(window.console)console.warn('kontur qatori',e)});
+  PS=id;PSpt=pt;PCEN=ll||null;if(id<0){$('pcard').hidden=true;chart1();chart2();ivals();return}
+  map.setFeatureState({source:'parcels',id:id},{ps:true});pcard();ivals();
+  loadPser(id).then(function(){if(PS===id){chart1();chart2();pcard();ivals()}}).catch(function(e){if(window.console)console.warn('kontur qatori',e)});
 }
 function pcard(){
   var el=$('pcard'),id=PS;if(id<0)return;
   var nm=stn(S.ix),v=V[VI[id]],k=KS?KS[id]:0,a=PAREA?PAREA[id]:0;
   /* the contour's own index value for the chosen year / month (series block), when loaded */
   var P=SER.P&&SER.P.id===id?SER.P[S.ix]:null,val=S.p5?val5(S.ix,id):P?(S.m?P.m[S.y][S.m-1]:P.y[S.y]):undefined;
+  /* 5 years: the mean of the contour's five yearly values (same number as the right "Kontur qiymatlari" card) */
+  if(S.p5&&P&&!(val&&val.cat)){var m5=y5(P.y);if(m5!=null)val=m5}
   var vtxt=val===undefined?'…':val&&val.cat?(val.v!=null?iv(val.v)+' · ':'')+L(val.cat.n[val.code]||''):iv(val);
   el.innerHTML='<button class="x" aria-label="'+L('Yopish')+'">&times;</button><div class="t">'+L('Kontur')+' #'+(id+1)+'</div>'+
     '<div class="v">'+v.name+' · '+f(a,2)+' '+L('ga')+'</div>'+
@@ -1760,6 +1875,35 @@ function pcard(){
     var k=a[id],nm2=stn(ixc);if(!(k>=1&&k<=4))return;
     b.querySelector('i').style.background=STC[k-1];b.title=y+' · '+nm2[k-1]}).catch(function(){})});
 }
+/* right column "Indeks qiymatlari": every index of the picked contour (else of the village / township) for the chosen
+   period: a month = that month's value, a year = its yearly mean, 2022–2026 = mean of the five yearly values.
+   Bar = position inside the index's usual range; a click makes that index the map index. */
+var IXS={ndvi:'Vegetatsiya holati',ndre:'Azot yetishmovchiligi',rvi:'Ekin zichligi',ci:'Xlorofill miqdori',ndmi:'Namlik / suv',nbr:'Yong\'in izi',lai:'Barg yuzasi'};
+var IXR={ndvi:[0,1],ndre:[0,.5],rvi:[0,1],ci:[0,1],ndmi:[-.1,.4],nbr:[-.5,1],lai:[0,1.5]};
+function ivals(){
+  var el=$('vlist');if(!el||!IXS||!IXR)return;   /* render() runs once before this part of the script is reached */
+  var pk=PS>=0,P=pk&&SER.P&&SER.P.id===PS?SER.P:null,sc=scope();
+  $('v-h').textContent=pk?L('Kontur qiymatlari'):L('Indeks qiymatlari');
+  $('v-sub').textContent=(pk?L('Kontur')+' #'+(PS+1):S.sel>=0?V[S.sel].name:L('Minbu tumani'))+' · '+(S.p5?'2022–2026 · '+L('5 yillik o\'rtacha'):YEARS[S.y]+' · '+(S.m?MONUZ[S.m-1]:L('Yillik o\'rtacha')));
+  el.innerHTML=IDX.map(function(x){
+    var v;if(pk){if(!P)v=undefined;else{var o=P[x];v=S.p5?y5(o.y):S.m?o.m[S.y][S.m-1]:o.y[S.y]}}else v=curVal(sc,x);
+    var r=IXR[x],w=v==null?0:Math.max(2,Math.min(100,(v-r[0])/(r[1]-r[0])*100)),fx=(IXINFO[x]&&IXINFO[x].f||'').split(' = ')[0];
+    if(x==='lai')fx='ESA SNAP · Sentinel-2';
+    return '<button class="vi'+(v==null?' na':'')+'" data-x="'+x+'" aria-pressed="'+(S.vsel===x&&S.ix===x)+'" style="--c:'+ICOL[x]+'" title="'+L('Xaritada shu indeksni ko\'rsatish')+'">'+
+      '<span class="nm"><b>'+RNAME[x]+'</b>'+L(IXS[x])+'</span><span class="val">'+(v===undefined?'…':v==null?'—':iv(v))+'</span>'+
+      '<span class="fx">'+fx+'</span><span class="br"><i style="width:'+w.toFixed(1)+'%"></i></span></button>'}).join('');
+}
+/* a click picks that index (card highlighted); a second click on the highlighted card un-picks it and the portal goes back to the default index (NDVI) */
+$('vlist').onclick=function(e){var b=e.target.closest('.vi');if(!b)return;var x=b.dataset.x;
+  if(S.vsel===x&&S.ix===x){S.vsel=null;x='ndvi'}else S.vsel=x;
+  if(!S.ixs||S.ixs.length<2)S.ixs=[x];if(x!==S.ix)setIx(x,false);else ivals()};
+ivals();
+/* fold / unfold the bottom row (chart + status card) */
+function botFold(on){document.querySelector('.ui').classList.toggle('bcl',on);$('bhide').setAttribute('aria-expanded',String(!on));$('bshow').hidden=!on;
+  if(on)$('bshow').focus();else $('bhide').focus();
+  try{localStorage.setItem('minbu.botFold',on?'1':'0')}catch(e){}}
+$('bhide').onclick=function(){botFold(true)};$('bshow').onclick=function(){botFold(false)};
+try{if(localStorage.getItem('minbu.botFold')==='1'){document.querySelector('.ui').classList.add('bcl');$('bshow').hidden=false;$('bhide').setAttribute('aria-expanded','false')}}catch(e){}
 /* ArcGIS Online (Esri) basemaps; the chosen one feeds the "Sun'iy yo'ldosh" and "3D" modes and is masked to the township */
 var ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/',WB='https://wayback.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/WMTS/1.0.0/default028mm/MapServer/tile/44710/';
 /* the default ArcGIS Online basemap gallery ("ArcGIS Online Vector Basemaps", esri_en; list read at build time):
@@ -2054,6 +2198,7 @@ map.on('load',function(){
     var LW=['interpolate',['linear'],['zoom'],9,['case',ON,1.6,.45],12,['case',ON,2.4,1],14,['case',ON,3,1.6],17,['case',ON,3.8,2.4]];
     LCOL.n=['case',ON,'#ffffff',['==',HF,2],'rgba(0,0,0,0)',['==',HF,1],FD,FL];
     LCOL.r=['case',ON,'#ffffff',['==',HF,2],'rgba(0,0,0,0)',['==',HF,1],'rgba(246,243,230,.35)','#f6f3e6'];
+    LCOL.m=['case',ON,'#ffffff',['==',HF,2],'rgba(0,0,0,0)',['==',HF,1],MD,ML];
     map.addLayer({id:'parcel-case',type:'line',source:'parcels',layout:{'line-join':'round',visibility:'none'},paint:{
       'line-color':['case',['==',HF,2],'rgba(0,0,0,0)',['==',HF,1],'rgba(8,20,12,.3)','rgba(8,20,12,.85)'],
       'line-width':['interpolate',['linear'],['zoom'],9,['case',ON,3,1.4],12,['case',ON,4,2.4],14,['case',ON,4.8,3.2],17,['case',ON,5.8,4.2]]}});
@@ -2083,7 +2228,7 @@ map.on('load',function(){
     window.__atlasPick=function(id){pickParcel(id,null)};
     /* "Tozalash": back to the default view (all picks, filters, layers, raster and basemap reset) */
     $('breset').onclick=function(){
-      stopAuto();pickParcel(-1);R.mask=false;$('rmask').checked=false;rasterOff();closeMenu();
+      stopAuto();pickParcel(-1);S.vsel=null;R.mask=true;$('rmask').checked=true;rasterOff();closeMenu();
       S.fs=0;S.ix='ndvi';S.ixs=['ndvi'];S.hl=null;S.y=YEARS.length-1;S.m=0;S.p5=true;S.showP=true;S.showB=true;S.fop=.55;syncLayerBtns();
       $('t-op').value=55;$('t-opv').textContent='55%';map.setPaintProperty('parcel-fill','fill-opacity',S.fop);
       if(S.full)setFull(false);S.bm='dark';basemap();
@@ -2120,6 +2265,7 @@ map.on('load',function(){
       /* click outside the township: drop every pick and go back to the district view, without moving the map */
       if(S.sel>=0||S.fs){S.sel=-1;S.fs=0;render();paint()}});
     map.on('movestart',function(){if(PS>=0)$('pcard').hidden=true});
+    map.on('moveend',function(){if(R.mask&&R.cv)rasShow()});
     map.on('moveend',function(){if(PS>=0){var c=map.project(PCEN||map.getCenter());PSpt={x:c.x,y:c.y};pcard()}});
   }).catch(function(e){fail('Kontur ma\'lumoti ochilmadi: '+e.message)});
 });
