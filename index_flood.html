@@ -286,7 +286,11 @@ html,body{background:var(--bg);font-family:Inter,"Segoe UI",system-ui,-apple-sys
 #pop{z-index:6;background:rgba(8,13,22,.95)}
 #pop.kichik{min-width:0;padding:5px 26px 5px 10px;font-size:12px;white-space:nowrap}
 #pop.kichik b{font-weight:600}#pop.kichik span{color:var(--tx2);margin-left:6px}
-#cBat{overflow-y:auto;scrollbar-width:thin;padding:10px 14px}
+#cBat{display:none!important}
+#brow #profil{position:static;transform:none;left:auto;bottom:auto;width:auto;display:flex;flex-direction:column;padding:10px 14px 8px;z-index:auto}
+#brow #profil #pc{flex:1 1 0;min-height:0;height:auto;margin-top:6px}
+#brow #profil #pc[hidden],#brow #profil .ps[hidden],#brow #profil .x[hidden]{display:none}
+#brow #profil .ph{gap:10px}
 #cBat h3{font-size:12px}#cBat h3 small{font-size:10px}
 #cBat table,#cBat tbody{display:block}#cBat tbody{columns:290px 3;column-gap:30px;column-rule:1px solid rgba(148,163,184,.08)}
 #cBat tr{display:flex;gap:10px;break-inside:avoid}#cBat td:first-child{flex:0 0 118px}#cBat td.sh{flex:1 1 auto}
@@ -443,7 +447,11 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
   </div>
   <div id="brow">
     <div class="card" id="cRank" style="display:none"><h3>Eng ko'p sel keladigan hududlar <small>HEC-RAS, ga</small></h3><div class="rank diag" id="rank"></div><button class="lnk" data-go="hud">Barchasini ko'rish (70)</button></div>
-    <div class="card" id="cBat"></div>
+    <div class="card" id="profil">
+      <div class="ph"><b id="balT">Balandlik taqsimoti</b><small id="hSub" style="color:var(--tx3);font-size:11px">balandlik va maydon, km² (10 m oraliq) · profil: Sozlamalar → Balandlik profili</small><div class="ps" id="pst" hidden></div><button class="x" id="profX" title="Profilni yopish" hidden>×</button></div>
+      <svg id="hArea"></svg>
+      <canvas id="pc" hidden></canvas>
+    </div>
     <div id="ldon" class="card dcard"><div class="dch"><h3>Oqim yo'llari tarkibi</h3><span class="pill" id="donStrT">Strahler tartibi bo'yicha</span></div>
       <div class="dbody"><svg id="donStr" class="dbig" width="180" height="180" viewBox="0 0 180 180"></svg><div class="dleg dlegB" id="legStr"></div></div>
       <div class="ehint dfoot" id="strIz"></div></div>
@@ -452,6 +460,7 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
       <div class="ehint dfoot" id="selIz"></div></div>
   </div>
 </div>
+<div class="card" id="cBat" style="display:none"></div>
 <div id="vtip"></div>
 <div id="hLab"></div>
 
@@ -612,10 +621,6 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
 <div id="pinP" class="pin" style="background:#fff;border-color:#3b82f6"></div>
 <div id="modeHint" class="panel"></div>
 
-<div id="profil" class="panel">
-  <div class="ph"><b>Balandlik profili A → B</b><div class="ps" id="pst"></div><button class="x" id="profX" title="Yopish">×</button></div>
-  <canvas id="pc"></canvas>
-</div>
 
 <div id="yuk"><div class="sp"></div><div id="yukT">Relyef yuklanmoqda…</div></div>
 
@@ -1525,6 +1530,9 @@ function selNetLeg() {
 // ---------------- HEC-RAS 2D sel hodisasi: 2025-06-01 … 06-07 (soatma-soat suv chuqurligi; hec_tayyorla.py) ----------------
 let HEC = null, hecT = -1, hecPlayId = 0, hecYuk = null;
 const HEC_SINF = [[.1, .3, [186, 222, 255]], [.3, .5, [118, 178, 240]], [.5, 1, [58, 128, 225]], [1, 2, [28, 78, 190]], [2, 1e9, [12, 30, 112]]];
+// suv qayerga tushgani bo'yicha: 0 kanal/ariq/o'zan/oqim yo'li, 1 shahar (qurilgan), 2 dala (ekinzor), 3 boshqa ochiq joy
+const HEC_JOY = [["Kanal, ariq, o'zan va oqim yo'llari", [37, 132, 255]], ["Shahar, qishloq (qurilgan hudud)", [230, 40, 40]], ["Dala (ekin maydoni)", [250, 204, 21]], ["Boshqa joy (o'tloq, daraxtzor, butazor)", [150, 160, 170]]];
+const hecJoy = (j, g) => HEC.dr[j] || SG.str[g] > 0 || (SL && SL.lc[g] === 80) ? 0 : !SL ? 3 : SL.lc[g] === 50 ? 1 : SL.lc[g] === 40 ? 2 : 3;
 async function hecYukla() {
   let m, b;
   if (window.__D && __D.ol) {
@@ -1549,15 +1557,14 @@ const hecSana = v => v.replace("T", " ");
 function hecKadr(t) { return t < 0 ? HEC.dmax : HEC.K.subarray(t * HEC.N, (t + 1) * HEC.N); }
 function hecChiz() {
   if (!HEC) return;
-  const t = hecT, k = hecKadr(t), D = datData, sg = [0, 0, 0, 0, 0];
+  const t = hecT, k = hecKadr(t), D = datData, sg = [0, 0, 0, 0];
   D.fill(0);
   let tash = 0, jami = 0;
   for (let j = 0; j < HEC.N; j++) {
     const c = k[j]; if (!c) continue;
-    const d = hecD(c); let s = 0; while (s < 4 && d >= HEC_SINF[s][1]) s++;
-    const col = HEC_SINF[s][2], o = HEC.idx[j] * 4;
-    D[o] = col[0]; D[o + 1] = col[1]; D[o + 2] = col[2]; D[o + 3] = HEC.dr[j] ? 120 : 215;
-    jami++; if (!HEC.dr[j]) { tash++; sg[s]++; }
+    const g = HEC.idx[j], s = hecJoy(j, g), col = HEC_JOY[s][1], o = g * 4;
+    D[o] = col[0]; D[o + 1] = col[1]; D[o + 2] = col[2]; D[o + 3] = hecD(c) < .3 ? 175 : 225;
+    jami++; sg[s]++; if (!HEC.dr[j]) tash++;
   }
   datT.needsUpdate = true; U.uDatOn.value = 1; dirty = true;
   const m = HEC.m, ga = .09;
@@ -1573,8 +1580,8 @@ function hecChiz() {
     [fmt(m.sar.mos_ga, 0) + " ga", `Model bilan mos (model ${fmt(m.sar.model_ga, 0)} ga)`]
   ].map(([v, s]) => `<div><b>${v}</b><span>${s}</span></div>`).join("");
   const rgb = c => `rgb(${c.join(",")})`;
-  $("selLeg").innerHTML = HEC_SINF.map(([a, b, c], s) => `<span><i style="height:10px;background:${rgb(c)}"></i>${m.sinf_nom[s]}<b style="margin-left:auto;font-weight:500;color:var(--tx3)">${fmt(sg[s] * ga, 0)} ga</b></span>`).join("")
-    + `<span><i style="height:10px;background:rgba(186,222,255,.5)"></i>Daryo o'zani (och rangda)</span>`;
+  $("selLeg").innerHTML = HEC_JOY.map(([nm, c], s) => `<span><i style="height:10px;background:${rgb(c)}"></i>${nm}<b style="margin-left:auto;font-weight:500;color:var(--tx3)">${fmt(sg[s] * ga, 0)} ga</b></span>`).join("")
+    + `<span style="color:var(--tx3)">Sayoz suv (< 0.3 m) och rangda; chuqurlik — nuqtani bosing</span>`;
   hecGrafKursor();
   if (popAt && !hecPlayId) showInfo(popAt);
 }
@@ -1616,7 +1623,8 @@ function hecRows(i) {
   let tm = 0, tb = -1; for (let t = 0; t < HEC.T; t++) { const c = HEC.K[t * HEC.N + j]; if (c > tm) { tm = c; tb = t; } }
   r.push(`<tr><td>Eng katta chuqurlik</td><td>${fmt(hecD(HEC.dmax[j]), 2)} m${tb >= 0 ? " (" + hecSana(m.vaqt[tb]).slice(5) + ")" : ""}</td></tr>`);
   let soat = 0; for (let t = 0; t < HEC.T; t++) if (HEC.K[t * HEC.N + j]) soat++;
-  r.push(`<tr><td>Suv turgan vaqt</td><td>${soat} soat${HEC.dr[j] ? " · daryo o'zani" : ""}</td></tr>`);
+  r.push(`<tr><td>Suv turgan vaqt</td><td>${soat} soat</td></tr>`);
+  r.push(`<tr><td>Joy turi</td><td>${HEC_JOY[hecJoy(j, i)][0]}</td></tr>`);
   return r.join("");
 }
 const hecFaol = () => { const b = $("selRej").querySelector(".on"); return !!b && b.dataset.r === "hec"; };
@@ -2397,7 +2405,7 @@ function clickAt(x, y) {
   if (tomMode) { if (p && exactAt(p.x, p.z)) doTom(p); return; }
   if (profMode) {
     if (!p || !exactAt(p.x, p.z)) return;
-    if (profMode === 1) { profA = p; profB = null; profMode = 2; hint("B nuqtani bosing"); clearProfLine(); $("profil").style.display = "none"; }
+    if (profMode === 1) { profA = p; profB = null; profMode = 2; hint("B nuqtani bosing"); clearProfLine(); profKor(false); }
     else { profB = p; profMode = 1; hint("Yangi profil uchun A nuqtani bosing · Esc — chiqish"); makeProfile(); }
     dirty = true; return;
   }
@@ -2443,11 +2451,16 @@ function dblAt(x, y) {
 function hint(t) { const h = $("modeHint"); if (t) { h.textContent = t; h.style.display = "block"; } else h.style.display = "none"; }
 
 // ---------------- profil ----------------
+function profKor(on) {   // pastki kartada: balandlik taqsimoti yoki A→B profil
+  $("hArea").style.display = on ? "none" : ""; $("hSub").hidden = on; $("pc").hidden = !on; $("pst").hidden = !on; $("profX").hidden = !on;
+  $("balT").textContent = on ? "Balandlik profili A → B" : "Balandlik taqsimoti";
+  if (!on) drawArea();
+}
 function setProf(m) {
   if (m && tomMode) setTom(false);
   profMode = m; $("profB").classList.toggle("on", !!m);
   if (m) { closePop(); hint("A nuqtani bosing (boshlanish)"); }
-  else { hint(""); profA = profB = profData = null; clearProfLine(); $("profil").style.display = "none"; $("pinP").style.display = "none"; }
+  else { hint(""); profA = profB = profData = null; clearProfLine(); profKor(false); $("pinP").style.display = "none"; }
   dirty = true;
 }
 function clearProfLine() { if (profLine) { scene.remove(profLine); profLine.geometry.dispose(); profLine = null; } }
@@ -2476,7 +2489,7 @@ function makeProfile() {
   $("pst").innerHTML = `<span>Uzunlik <i>${fmtDist(L)}</i></span><span>A <i>${fmt(ha)} m</i></span><span>B <i>${fmt(hb)} m</i></span>
     <span>Min <i>${fmt(mn)} m</i></span><span>Maks <i>${fmt(mx)} m</i></span><span>Ko'tarilish <i>${Math.round(up)} m</i></span>
     <span>Tushish <i>${Math.round(dn)} m</i></span><span>Maks qiyalik <i>${fmt(Math.atan(smax) * 180 / Math.PI)}°</i></span>`;
-  $("profil").style.display = "block";
+  profKor(true);
   drawProfile(-1);
   const pc = $("pc");
   if (!pc._ev) {
@@ -2739,7 +2752,7 @@ function joyKarta(p) {
   joyH = d.h;
   const nom = p.nom || "Tanlangan nuqta";
   const tbl = $("pop").querySelector("table");
-  if (!document.body.classList.contains("nopan") && innerWidth > 900 && tbl) {
+  if (false && tbl) {
     $("cBat").innerHTML = `<h3>Batafsil <small>shu nuqta, 30 m piksel</small></h3>` + tbl.outerHTML;
     $("pop").classList.add("kichik");
     $("pop").innerHTML = `<button class="x" onclick="closePop()">×</button><b>${nom}</b><span>${fmt(d.h, 1)} m</span>${yogPop(i)}`;
@@ -3344,6 +3357,13 @@ Promise.all(kalit.map(function(k){
    Manba: Minbu_3D_portal/flood_til.js -> shablon.html va front/index_flood.html ga ichiga joylangan. */
 (function () {
 var D = {
+"Kanal, ariq, o'zan va oqim yo'llari": ["Canals, ditches, channels and flow paths", "Каналы, арыки, русла и пути стока", "တူးမြောင်း၊ မြောင်း၊ ရေလမ်းကြောင်းနှင့် ရေစီးလမ်းများ"],
+"Shahar, qishloq (qurilgan hudud)": ["Town, village (built-up)", "Город, село (застройка)", "မြို့၊ ရွာ (အဆောက်အအုံ)"],
+"Dala (ekin maydoni)": ["Fields (cropland)", "Поля (пашня)", "လယ်ကွင်း (စိုက်ခင်း)"],
+"Boshqa joy (o'tloq, daraxtzor, butazor)": ["Other land (grass, trees, shrubs)", "Прочее (луга, леса, кустарник)", "အခြားမြေ (မြက်ခင်း၊ သစ်တော၊ ချုံ)"],
+"Sayoz suv (< {n} m) och rangda; chuqurlik — nuqtani bosing": ["Shallow water (< {0} m) is lighter; depth — click a point", "Мелкая вода (< {0} м) светлее; глубина — нажмите точку", "ရေတိမ် (< {0} m) အရောင်ဖျော့; အနက် — အမှတ်ကိုနှိပ်ပါ"],
+"Joy turi": ["Land type", "Тип места", "နေရာအမျိုးအစား"],
+"balandlik va maydon, km² ({n} m oraliq) · profil: Sozlamalar → Balandlik profili": ["elevation and area, km² ({0} m bins) · profile: Settings → Elevation profile", "высота и площадь, км² (шаг {0} м) · профиль: Настройки → Профиль высот", "အမြင့်နှင့် ဧရိယာ, km² ({0} m) · ပရိုဖိုင်: ဆက်တင် → အမြင့်ပရိုဖိုင်"],
 "· {n} yog'in:": ["· {0} rain:", "· осадки {0}:", "· {0} မိုးရေ:"],
 "· {n} kun jami:": ["· {0}-day total:", "· за {0} дней:", "· {0} ရက် စုစုပေါင်း:"],
 "· eng kuchli soat:": ["· most intense hour:", "· самый сильный час:", "· အပြင်းဆုံးနာရီ:"],
