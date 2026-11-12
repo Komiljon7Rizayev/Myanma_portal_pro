@@ -1805,53 +1805,67 @@ let xarK = null, xarAsl = null, xarFineAsl = null, xarNav = 0;
 const xarTex = {};
 function xarTayyorla(k) {   // butun tuman uchun UTM tekstura: Web Mercator bo'laklari affin o'zgartirish bilan chiziladi
   if (xarTex[k]) return xarTex[k];
-  const L = XARITALAR[k], Z = 14, CW = 4096, CH = Math.round(CW * H / W), s = W * RES / CW;
+  // bosqichlar: avval qo'pol (z11, ~15 bo'lak — ~1 s; so'ng z12), keyin aniq (z14, kamera qaragan joydan boshlab)
+  const L = XARITALAR[k], CW = 4096, CH = Math.round(CW * H / W), s = W * RES / CW;
   const cv = document.createElement("canvas"); cv.width = CW; cv.height = CH;
   const ctx = cv.getContext("2d"); ctx.fillStyle = "#1b2430"; ctx.fillRect(0, 0, CW, CH);
   const t = new THREE.CanvasTexture(cv); t.flipY = false; t.anisotropy = renderer.capabilities.getMaxAnisotropy();
-  const n2 = 256 * 2 ** Z;
-  const merc = (u, v) => {
-    const [lat, lon] = utm2ll(META.x0 + u * s, META.y0 - v * s, META.utm_zona), f = lat * Math.PI / 180;
-    return [(lon + 180) / 360 * n2, (1 - Math.log(Math.tan(f) + 1 / Math.cos(f)) / Math.PI) / 2 * n2];
+  const daraja = Z => {
+    const n2 = 256 * 2 ** Z;
+    const merc = (u, v) => {
+      const [lat, lon] = utm2ll(META.x0 + u * s, META.y0 - v * s, META.utm_zona), f = lat * Math.PI / 180;
+      return [(lon + 180) / 360 * n2, (1 - Math.log(Math.tan(f) + 1 / Math.cos(f)) / Math.PI) / 2 * n2];
+    };
+    const p0 = merc(0, 0), p1 = merc(CW, 0), p2 = merc(0, CH);   // affin: kanvas (u,v) -> mercator piksel
+    const a = (p1[0] - p0[0]) / CW, b = (p2[0] - p0[0]) / CH, d = (p1[1] - p0[1]) / CW, e = (p2[1] - p0[1]) / CH;
+    const det = a * e - b * d, ia = e / det, ib = -b / det, id = -d / det, ie = a / det;   // teskari matritsa
+    const p3 = merc(CW, CH), xs = [p0, p1, p2, p3].map(p => p[0]), ys = [p0, p1, p2, p3].map(p => p[1]);
+    const tx0 = Math.floor(Math.min(...xs) / 256), tx1 = Math.floor(Math.max(...xs) / 256), ty0 = Math.floor(Math.min(...ys) / 256), ty1 = Math.floor(Math.max(...ys) / 256);
+    const Xo = tx0 * 256, Yo = ty0 * 256, ox = p0[0] - Xo, oy = p0[1] - Yo;
+    const m = [ia, id, ib, ie, -(ia * ox + ib * oy), -(id * ox + ie * oy)];
+    // kamera qaragan joy (kanvas -> mercator bo'lak) — aniq bo'laklar shu yerdan boshlanadi
+    const cu = (cam.t.x + W * RES / 2) / s, cvv = (cam.t.z + H * RES / 2) / s;
+    const cx = (p0[0] + a * cu + b * cvv) / 256, cy = (p0[1] + d * cu + e * cvv) / 256;
+    const q = [];
+    for (let y = ty0; y <= ty1; y++) for (let x = tx0; x <= tx1; x++) q.push({ Z, x, y, Xo, Yo, m, r: Math.hypot(x + .5 - cx, y + .5 - cy) });
+    return q.sort((p, r) => p.r - r.r);
   };
-  // affin: kanvas (u,v) -> mercator piksel; 3 burchakdan
-  const p0 = merc(0, 0), p1 = merc(CW, 0), p2 = merc(0, CH);
-  const a = (p1[0] - p0[0]) / CW, b = (p2[0] - p0[0]) / CH, d = (p1[1] - p0[1]) / CW, e = (p2[1] - p0[1]) / CH;
-  const det = a * e - b * d, ia = e / det, ib = -b / det, id = -d / det, ie = a / det;   // teskari matritsa
-  const p3 = merc(CW, CH), xs = [p0, p1, p2, p3].map(p => p[0]), ys = [p0, p1, p2, p3].map(p => p[1]);
-  const tx0 = Math.floor(Math.min(...xs) / 256), tx1 = Math.floor(Math.max(...xs) / 256), ty0 = Math.floor(Math.min(...ys) / 256), ty1 = Math.floor(Math.max(...ys) / 256);
-  const Xo = tx0 * 256, Yo = ty0 * 256, ox = p0[0] - Xo, oy = p0[1] - Yo;
-  const navbat = [];
-  for (let y = ty0; y <= ty1; y++) for (let x = tx0; x <= tx1; x++) navbat.push([x, y]);
-  const cx = (tx0 + tx1) / 2, cy = (ty0 + ty1) / 2; navbat.sort((p, q) => Math.hypot(p[0] - cx, p[1] - cy) - Math.hypot(q[0] - cx, q[1] - cy));
+  const qop = daraja(11).concat(daraja(12)), aniq = daraja(14), navbat = qop.concat(aniq);
   const img = url => new Promise(r => { const i = new Image(); i.crossOrigin = "anonymous"; i.onload = () => r(i); i.onerror = () => r(null); i.src = url; });
-  const R = { t, jami: navbat.length, tayyor: 0, c: L.c };
-  let yangi = false;
-  const chiz = (ims, x, y) => {
-    // mercator (X-Xo, Y-Yo) -> kanvas: [u,v] = inv * ([X,Y] - p0)
-    ctx.setTransform(ia, id, ib, ie, -(ia * ox + ib * oy), -(id * ox + ie * oy));
-    ims.forEach(im => { if (im) ctx.drawImage(im, x * 256 - Xo, y * 256 - Yo, 256, 256); });
+  const R = { t, jami: navbat.length, tayyor: 0, c: L.c, qop: qop.length, q11: qop.filter(b => b.Z === 11).length };
+  let yangi = false, oxirgi = 0;
+  const chiz = (ims, b) => {
+    ctx.setTransform(...b.m);
+    ims.forEach(im => { if (im) ctx.drawImage(im, b.x * 256 - b.Xo, b.y * 256 - b.Yo, 256, 256); });
     ctx.setTransform(1, 0, 0, 1, 0, 0); yangi = true;
   };
+  // bo'laklar tartib bilan chiziladi: qo'pol bosqich tugamaguncha aniq bo'laklar kutib turadi (ustidan yozilib ketmasin)
+  let chizildi = 0; const tayyorlar = new Map();
+  const navChiz = () => { while (tayyorlar.has(chizildi)) { chiz(tayyorlar.get(chizildi), navbat[chizildi]); tayyorlar.delete(chizildi); chizildi++; } };
+  let keyingi = 0;
   const ishchi = async () => {
-    while (navbat.length) {
-      const [x, y] = navbat.shift(), sd = (x + y) % 4;
-      const ims = await Promise.all(L.u.map(u => img(u.replace("{z}", Z).replace("{x}", x).replace("{y}", y).replace("{s}", sd))));
-      chiz(ims, x, y); R.tayyor++;
+    while (keyingi < navbat.length) {
+      const n = keyingi++, b = navbat[n], sd = (b.x + b.y) % 4;
+      const ims = await Promise.all(L.u.map(u => img(u.replace("{z}", b.Z).replace("{x}", b.x).replace("{y}", b.y).replace("{s}", sd))));
+      tayyorlar.set(n, ims); R.tayyor++;
+      if (n >= R.qop || chizildi < R.qop) navChiz();
+      if ((chizildi === R.qop || chizildi === R.q11) && yangi) { t.needsUpdate = true; yangi = false; oxirgi = performance.now(); dirty = true; }   // qo'pol xarita darhol
     }
   };
-  for (let i = 0; i < 12; i++) ishchi();
-  const tik = setInterval(() => {
-    if (yangi) { t.needsUpdate = true; yangi = false; dirty = true; }
+  for (let i = 0; i < 24; i++) ishchi();
+  const tik = setInterval(() => {   // katta teksturani juda tez-tez yuklamaslik (sekinlashtiradi)
+    navChiz();
+    const now = performance.now();
+    if (yangi && (now - oxirgi > 1200 || R.tayyor >= R.jami)) { t.needsUpdate = true; yangi = false; oxirgi = now; dirty = true; }
     xarHolat();
-    if (R.tayyor >= R.jami) clearInterval(tik);
-  }, 300);
+    if (R.tayyor >= R.jami && chizildi >= navbat.length && !yangi) clearInterval(tik);
+  }, 250);
   return (xarTex[k] = R);
 }
 function xarHolat() {
   const el = document.getElementById("mapH"); if (!el) return;
   const R = xarK && xarTex[xarK];
-  el.textContent = !R ? "" : (R.tayyor < R.jami ? `yuklanmoqda ${Math.round(R.tayyor / R.jami * 100)}% · ` : "") + "© " + R.c;
+  el.textContent = !R ? "" : (R.tayyor < R.qop ? `yuklanmoqda ${Math.round(R.tayyor / R.qop * 100)}% · ` : R.tayyor < R.jami ? `tiniqlashmoqda ${Math.round((R.tayyor - R.qop) / (R.jami - R.qop) * 100)}% · ` : "") + "© " + R.c;
 }
 function xaritaTanla(k) {   // k = null -> portalning o'z sun'iy yo'ldosh tasviri
   if (xarAsl === null) { xarAsl = U.uSat.value; xarFineAsl = fineOn; }
