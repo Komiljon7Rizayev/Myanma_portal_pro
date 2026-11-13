@@ -568,7 +568,7 @@ body.nopan .bkB{display:none}
     <div class="card dcard" id="cTop" style="display:none"><div class="dch"><h3>To'planish joylari tarkibi</h3><span class="pill">maydon bo'yicha, ga</span></div>
       <div class="dbody"><svg id="donTop" class="dbig" width="180" height="180" viewBox="0 0 180 180"></svg><div class="dleg dlegB" id="legTop"></div></div>
       <div class="ehint dfoot" id="topIz"></div></div>
-    <div class="card dcard" id="cSel" style="display:none"><div class="dch"><h3>Sel xavfi darajalari</h3><span class="pill" id="donSelT">HEC-RAS 2D, Yagi 2024</span></div>
+    <div class="card dcard" id="cSel" style="display:none"><div class="dch"><h3>Eng katta suv — joy turi bo'yicha</h3><span class="pill" id="donSelT">HEC-RAS 2D</span></div>
       <div class="dbody"><svg id="donSel" class="dbig" width="180" height="180" viewBox="0 0 180 180"></svg><div class="dleg dlegB" id="legSel"></div></div>
       <div class="ehint dfoot" id="selIz"></div></div>
   </div>
@@ -1797,6 +1797,23 @@ function yerKadr() {   // 3D sahna: tanlangan nuqtaga yerga yaqin balandlikdan q
 const hecD = c => c ? (c / 80) * (c / 80) : 0;
 const hecSana = v => v.replace("T", " ");
 function hecKadr(t) { return t < 0 ? HEC.dmax : HEC.K.subarray(t * HEC.N, (t + 1) * HEC.N); }
+const HEC_JOY_Q = ["Kanal, ariq, o'zan", "Shahar, qishloq", "Dala (ekin)", "Boshqa joy"];
+function selDon() {   // hodisa davomidagi eng katta suv maydoni, joy turi bo'yicha (butun tuman yoki tanlangan hudud)
+  if (!$("donSel")) return;
+  const tn = hudSel >= 0 ? HUD.t[hudSel].n : null;
+  if (!HEC) { $("donSel").innerHTML = `<circle cx="90" cy="90" r="80" fill="none" stroke="#1b2a40" stroke-width="18"/><text x="90" y="95" text-anchor="middle" fill="#93a4b8" font-size="13">yuklanmoqda…</text>`;
+    $("legSel").innerHTML = ""; $("selIz").textContent = ""; $("donSelT").textContent = tn || "HEC-RAS 2D"; return; }
+  if (!HEC.hud) { HEC.hud = new Int16Array(HEC.N); for (let j = 0; j < HEC.N; j++) { const [x, z] = cellXZ(HEC.idx[j]); HEC.hud[j] = hudAt(x, z); } }
+  const sg = [0, 0, 0, 0];
+  for (let j = 0; j < HEC.N; j++) if (HEC.dmax[j] && (hudSel < 0 || HEC.hud[j] === hudSel)) sg[hecJoy(j, HEC.idx[j])]++;
+  const ga = .09, jami = sg.reduce((a, b) => a + b, 0) * ga, rgb = c => `rgb(${c.join(",")})`;
+  const hod = (($("selRej").querySelector(".chip.on") || {}).textContent || "HEC-RAS 2D").replace(" (HEC-RAS)", "");
+  $("donSelT").textContent = tn || hod;
+  if (jami > 0) donut($("donSel"), HEC_JOY.map(([nm, c], s) => ({ n: HEC_JOY_Q[s], v: sg[s] * ga, c: rgb(c), iz: nm })).filter(d => d.v > 0),
+    fmt(jami, 0), "ga jami", $("legSel"), d => fmt(d.v, 0) + " ga");
+  else { $("donSel").innerHTML = `<circle cx="90" cy="90" r="80" fill="none" stroke="#1b2a40" stroke-width="18"/><text x="90" y="95" text-anchor="middle" fill="#93a4b8" font-size="15">sel yo'q</text>`; $("legSel").innerHTML = ""; }
+  $("selIz").innerHTML = `HEC-RAS 2D, ${hod}${tn ? " · " + tn : ""}: har bir joy suv eng ko'p bo'lgan paytida.`;
+}
 function hecChiz() {
   if (!HEC) return;
   const t = hecT, k = hecKadr(t), D = datData, sg = [0, 0, 0, 0];
@@ -1927,7 +1944,7 @@ function hecRejim(on) {
     const m = HEC.m, kun = Object.entries(m.era5_kunlik).sort((a, b) => b[1] - a[1])[0] || ["", 0];
     $("hecT").max = HEC.T - 1;
     $("hecInfo").innerHTML = `HEC-RAS 2D fizik modeli: ${hecSana(m.vaqt[0])} — ${hecSana(m.vaqt[HEC.T - 1])}, har soatlik suv chuqurligi (≥ ${m.chegara_m} m, 30 m). Eng ko'p yog'in ${kun[0].slice(8)}.${kun[0].slice(5, 7)} (${fmt(kun[1], 1)} mm).`;
-    hecGraf(); $("hecManba").textContent = "Manba: " + m.manba;
+    hecGraf(); selDon(); $("hecManba").textContent = "Manba: " + m.manba;
     hecT = m.maydon_ga.indexOf(Math.max(...m.maydon_ga));   // hodisa eng katta bo'lgan soat
     $("hecT").value = hecT;
     if (hecFaol()) hecChiz();
@@ -3521,10 +3538,8 @@ function dashFor(i) {
     donut($("donStr"), strItems(T.map(q => q.uzunlik_km), [0, 1, 2, 3, 4, 5].map(k => `havza odatda ${T[k].havza_km2_oraliq[0]}–${T[k < 5 ? k : T.length - 1].havza_km2_oraliq[1]} km²`)),
       fmt(jkm, 0), "km jami", $("legStr"), d => fmt(d.v, 0) + " km");
     strIz(T.map(q => q.uzunlik_km));
-    donut($("donSel"), SD.map((q, k) => ({ n: SEL_NOM[k], v: q.ga, c: SEL_RGB[k], iz: `${q.ostona_mm} mm yog'inda · jami ${fmt(q.jami_ga, 0)} ga` })),
-      fmt(selJ, 0), "ga jami", $("legSel"), d => fmt(d.v, 0) + " ga");
-    $("selIz").innerHTML = `Qo'shiladigan maydon: har daraja oldingisiga qo'shadi. Kuchli yomg'irda (120–190 mm) jami <b style="color:#e6edf6">${fmt(SD[2].jami_ga, 0)} ga</b>.`;
-    $("donStrT").textContent = "Strahler tartibi bo'yicha"; $("donSelT").textContent = "HEC-RAS 2D, Yagi 2024";
+    selDon();
+    $("donStrT").textContent = "Strahler tartibi bo'yicha";
     joyKarta(null); return;
   }
   const t = HUD.t[i], sg = hudSelGa(t), km = hudKm(t), n = HUD.t.length;
@@ -3536,11 +3551,8 @@ function dashFor(i) {
   donut($("donStr"), strItems(SUV.strahler.tartiblar.map((q, k) => t.s[k] || 0)),
     fmt(km, 0), "km jami", $("legStr"), d => d.v > 0 ? fmt(d.v, 1) + " km" : "—");
   strIz(SUV.strahler.tartiblar.map((q, k) => t.s[k] || 0));
-  if (sg > 0) donut($("donSel"), t.sel.map((v, k) => ({ n: SEL_NOM[k], v, c: SEL_RGB[k], iz: `${SD[k].ostona_mm} mm yog'inda` })).filter(d => d.v > 0),
-    fmt(sg, 0), "ga jami", $("legSel"), d => fmt(d.v, 0) + " ga");
-  else { $("donSel").innerHTML = `<circle cx="90" cy="90" r="80" fill="none" stroke="#1b2a40" stroke-width="18"/><text x="90" y="95" text-anchor="middle" fill="#93a4b8" font-size="15">sel yo'q</text>`; $("legSel").innerHTML = ""; }
-  $("selIz").innerHTML = `Kuchli yomg'irgacha (≤190 mm) jami <b style="color:#e6edf6">${fmt(t.sel[0] + t.sel[1] + t.sel[2], 0)} ga</b>. Sel maydoni bo'yicha tumanda <b style="color:#e6edf6">${HR.sel[i]}/${n}</b>-o'rin.`;
-  $("donStrT").textContent = t.n; $("donSelT").textContent = t.n;
+  selDon();
+  $("donStrT").textContent = t.n;
   joyH = t.h ? t.h[1] : null;
   $("hT").textContent = t.n; $("backB").style.display = "block";
   $("hS").textContent = `Qishloq trakti · ${t.c} · Minbu tumani`;
