@@ -315,10 +315,6 @@ h1,h2,p{margin:0}
 /* "Rasterlar" pill on the top edge of the rasters card (same look as "Grafiklar"); folded = card hidden, the index
    values move up and a "Rasterlar" pill at the top of the column brings the card back */
 .side{padding-top:18px;margin-top:-18px}
-.rhide{left:50%}
-.side.rcl #rcard{display:none}
-.rshow{position:static;transform:none;align-self:center;flex:none}
-html[data-theme="light"] .rhide{background:#eef2ea}
 .side .rcard .rgrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px;padding:4px 2px 2px}
 .side .rt{font-size:12px}
 /* one fixed 3D pose for every tile (a map slab seen from above at an angle, with a thick edge and a ground shadow);
@@ -449,6 +445,9 @@ html[data-theme="light"] .rhide{background:#eef2ea}
 .op em{font-style:normal;color:var(--tx);font-variant-numeric:tabular-nums}
 .op input{accent-color:var(--leaf);width:100%;margin:0}
 /* picked contour card */
+.pcard{cursor:grab;touch-action:none;user-select:none}
+.pcard.drag{cursor:grabbing;box-shadow:0 18px 40px rgba(0,0,0,.6)}
+.pcard button{cursor:pointer}
 .pcard{position:absolute;left:0;top:0;z-index:11;width:224px;background:rgba(22,44,30,.95);border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:10px 12px;box-shadow:0 12px 30px rgba(0,0,0,.5);font-size:13px;display:flex;flex-direction:column;gap:6px}
 .pcard .x{position:absolute;right:6px;top:4px;width:24px;height:24px;border-radius:7px;font-size:17.5px;color:var(--tx-2)}
 .pcard .x:hover{background:var(--glass-2);color:var(--tx)}
@@ -777,9 +776,7 @@ if(t&&t.exp>n+60000&&(!t.keep||t.keep>n)&&!/[?&]code=/.test(location.search))doc
         </section>
       </div>
       <aside class="side" id="side" aria-label="Rasterlar va indeks qiymatlari">
-        <button class="bshow rshow" id="rshow" hidden title="Rasterlarni qayta ochish"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 10 4-4 4 4"/></svg>Rasterlar</button>
         <section class="card rcard" id="rcard">
-          <button class="bhide rhide" id="rhide" aria-expanded="true" aria-controls="rcard" title="Rasterlarni yashirish"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>Rasterlar</button>
           <header><div><h2>Rasterlar</h2><small id="r-per"></small></div></header>
           <div class="rgrid" id="rgrid"></div>
           <div class="rleg" id="rleg" hidden></div>
@@ -1248,7 +1245,7 @@ $('vp').onclick=function(e){e.preventDefault();
   if(FORECAST_URL){location.href=FORECAST_URL;return}
   var t=document.createElement('div');t.className='toast';t.textContent=L('Index Forecast hozircha tayyorlanmoqda.');document.body.appendChild(t);setTimeout(function(){t.remove()},2600)};
 /* "Flood Mapping" opens the sister portal in this same tab (like one portal); set its address here */
-var WATER_URL='index_flood.html';
+var WATER_URL='https://embassy-tennessee-industry-repair.trycloudflare.com';
 $('wm').onclick=function(e){e.preventDefault();
   if(WATER_URL){location.href=WATER_URL;return}
   var t=document.createElement('div');t.className='toast';t.textContent=L('Flood Mapping havolasi hali qo\'shilmagan.');document.body.appendChild(t);setTimeout(function(){t.remove()},2600)};
@@ -1790,6 +1787,26 @@ function rasPut(cv,coords){
    raster is cut along the real contour lines (vector paths, anti-aliased), redrawn after every move / zoom */
 function rasShow(){
   if(!R.cv||!map)return;
+  /* a contour is picked: the raster only under that contour (picture of its bbox, cut along its real outline) */
+  var pk=typeof PS!=='undefined'&&PS>=0&&PMC()?PMC()[PS]:null;
+  if(pk&&pk.r.length){
+    var P0=maplibregl.MercatorCoordinate.fromLngLat(RM.bounds[0]),P2=maplibregl.MercatorCoordinate.fromLngLat(RM.bounds[2]),bb=pk.b,
+        mxp=(bb[2]-bb[0])*.04,myp=(bb[3]-bb[1])*.04,a0=Math.max(P0.x,bb[0]-mxp),a1=Math.min(P2.x,bb[2]+mxp),c0=Math.max(P0.y,bb[1]-myp),c1=Math.min(P2.y,bb[3]+myp);
+    if(a1>a0&&c1>c0){
+      var s2=2048/Math.max(a1-a0,c1-c0),W2=Math.max(1,Math.round((a1-a0)*s2)),H2=Math.max(1,Math.round((c1-c0)*s2));
+      var cv2=document.createElement('canvas');cv2.width=W2;cv2.height=H2;var c2=cv2.getContext('2d');c2.imageSmoothingEnabled=false;
+      var gw2=R.g.w/(P2.x-P0.x),gh2=R.g.h/(P2.y-P0.y);
+      c2.drawImage(R.cv,(a0-P0.x)*gw2,(c0-P0.y)*gh2,(a1-a0)*gw2,(c1-c0)*gh2,0,0,W2,H2);
+      var mk2=document.createElement('canvas');mk2.width=W2;mk2.height=H2;var m2=mk2.getContext('2d',{willReadFrequently:true});m2.fillStyle='#000';m2.beginPath();
+      var sx2=W2/(a1-a0),sy2=H2/(c1-c0);
+      pk.r.forEach(function(a){m2.moveTo((a[0]-a0)*sx2,(a[1]-c0)*sy2);for(var q=2;q<a.length;q+=2)m2.lineTo((a[q]-a0)*sx2,(a[q+1]-c0)*sy2);m2.closePath()});
+      m2.fill('evenodd');
+      c2.globalCompositeOperation='destination-in';c2.drawImage(mk2,0,0);
+      R.vw={x0:a0,y0:c0,x1:a1,y1:c1,W:W2,H:H2,m:m2,pk:true};
+      var tl2=function(x,y){var l=new maplibregl.MercatorCoordinate(x,y).toLngLat();return [l.lng,l.lat]};
+      rasPut(cv2,[tl2(a0,c0),tl2(a1,c0),tl2(a1,c1),tl2(a0,c1)]);return}
+  }
+  if(R.vw&&R.vw.pk)R.vw=null;
   if(!R.mask||!R.cvm){R.vw=null;rasPut(R.cv,RM.bounds);return}
   var B0=maplibregl.MercatorCoordinate.fromLngLat(RM.bounds[0]),B2=maplibregl.MercatorCoordinate.fromLngLat(RM.bounds[2]),
       ws=512*Math.pow(2,map.getZoom()),k=(B2.x-B0.x)/R.g.w*ws;
@@ -1875,6 +1892,7 @@ function mapTheme(){if(!map||!map.getLayer('land'))return;var lt=themeIs()==='li
   cveil(true)}
 /* inside a contour at this map point? (the clipped view picture when it covers the point, else the raster-grid mask) */
 function inMask(ll,k){var v=R.vw;if(v&&v.m){var m=maplibregl.MercatorCoordinate.fromLngLat(ll);
+    if(v.pk&&!(m.x>=v.x0&&m.x<v.x1&&m.y>=v.y0&&m.y<v.y1))return false;
     if(m.x>=v.x0&&m.x<v.x1&&m.y>=v.y0&&m.y<v.y1){var px=Math.floor((m.x-v.x0)/(v.x1-v.x0)*v.W),py=Math.floor((m.y-v.y0)/(v.y1-v.y0)*v.H);return v.m.getImageData(px,py,1,1).data[3]>=128}}
   var mk=cmask(R.g.w,R.g.h);return !mk||!!mk[k]}
 /* "Konturlar bo'yicha kesish": every contour polygon is burned into a pixel mask on the raster's own grid (same
@@ -1903,6 +1921,18 @@ var RB=null;
 function rnum(x){var a=Math.abs(x);return f(x,a>=10?1:a>=1?2:2)}
 /* one value for a pixel: the middle of its class (rasters store class codes, e.g. NDVI 0,44–0,46 -> 0,45) */
 function rmid(c){var v=Math.round((c[0]+c[1])/2*1000)/1000;return f(v,Math.abs(v)>=10?1:Math.round(v*100)===v*100?2:3)}
+/* raster value card beside the pointer: right, left, below or above it - the first place inside the map that does not
+   cover the open contour card (else the place that covers it least) */
+function tipPlace(tip,pt){
+  tip.hidden=false;var W=$('map').clientWidth,H=$('map').clientHeight,tw=tip.offsetWidth,th=tip.offsetHeight,G=16;
+  var pc=$('pcard'),P=pc&&!pc.hidden?{l:pc.offsetLeft-6,t:pc.offsetTop-6,r:pc.offsetLeft+pc.offsetWidth+6,b:pc.offsetTop+pc.offsetHeight+6}:null;
+  var cl=function(x,y){return [Math.max(8,Math.min(W-tw-8,x)),Math.max(8,Math.min(H-th-8,y))]};
+  var C=[cl(pt.x+G,pt.y-th/2),cl(pt.x-tw-G,pt.y-th/2),cl(pt.x-tw/2,pt.y+G),cl(pt.x-tw/2,pt.y-th-G)];
+  /* a clamped spot must still leave the pointer free */
+  var ov=function(c,R){if(!R)return 0;var w=Math.min(c[0]+tw,R.r)-Math.max(c[0],R.l),h=Math.min(c[1]+th,R.b)-Math.max(c[1],R.t);return w>0&&h>0?w*h:0};
+  var me={l:pt.x-4,t:pt.y-4,r:pt.x+4,b:pt.y+4},best=null,bs=1e18;
+  C.forEach(function(c){var s=ov(c,P)*10+ov(c,me)*1000;if(s<bs){bs=s;best=c}});
+  tip.style.left=best[0]+'px';tip.style.top=best[1]+'px'}
 function rHover(pt,ll){
   var tip=$('rtip');
   if(!R.g||!RM){tip.hidden=true;return false}
@@ -1912,13 +1942,12 @@ function rHover(pt,ll){
   if(px<0||py<0||px>=g.w||py>=g.h){tip.hidden=true;return false}
   var k=py*g.w+px,c=g.a[k],ix=R.ix,p=R.p;
   /* clipped to contours: outside every contour there is no value */
-  if(R.mask&&!inMask(ll,k)){tip.hidden=true;return false}
+  if((R.mask||(R.vw&&R.vw.pk))&&!inMask(ll,k)){tip.hidden=true;return false}
   if(!c||!R.st[c]){
     /* inside the township but no pixel (cloud / no image on that date) */
     if(map.queryRenderedFeatures(pt,{layers:['vill-hit']}).length){
       tip.innerHTML='<div class="h"><span>'+RNAME[ix]+' · '+rLabel(p)+'</span></div><div class="v"><b style="font-size:14px">'+L('Kosmik tasvir mavjud emas')+'</b></div>';
-      tip.hidden=false;var W0=$('map').clientWidth,H0=$('map').clientHeight,tw0=tip.offsetWidth,th0=tip.offsetHeight,x0=pt.x+16;if(x0+tw0>W0-8)x0=pt.x-tw0-16;
-      tip.style.left=x0+'px';tip.style.top=Math.max(8,Math.min(H0-th0-8,pt.y-th0/2))+'px';return true}
+      tipPlace(tip,pt);return true}
     tip.hidden=true;return false}
   var s=R.st[c],nm=stn(ix),CT=rcat(ix,p);
   /* rows: every index of this period at the same pixel */
@@ -1932,8 +1961,7 @@ function rHover(pt,ll){
     var rc=rcol(q,p,cc)||STC[s2];
     return lab+'<i><b style="width:'+w.toFixed(0)+'%;background:'+rc+'"></b></i><em title="'+rnum(l2[cc][0])+'–'+rnum(l2[cc][1])+'">'+rmid(l2[cc])+'</em>';
   }).join('')}
-  function place(){tip.hidden=false;var W=$('map').clientWidth,H=$('map').clientHeight,tw=tip.offsetWidth,th=tip.offsetHeight;
-    var x=pt.x+16,y=pt.y-th/2;if(x+tw>W-8)x=pt.x-tw-16;y=Math.max(8,Math.min(H-th-8,y));tip.style.left=x+'px';tip.style.top=y+'px'}
+  function place(){tipPlace(tip,pt)}
   var dt=RM.periods[p][ix].date,head='<div class="h"><span>'+RNAME[ix]+' · '+(dt?dt.split('-').reverse().join('.'):rLabel(p))+'</span><span>'+Math.round(10.65*(RM.step||1))+' m</span></div>';
   if(CT){
     var chips='<div class="rcat">'+CT.n.map(function(n2,i){return n2?'<span'+(i===c?' class="on"':'')+'><i style="background:'+CT.c[i]+'"></i>'+L(n2)+'</span>':''}).join('')+'</div>';
@@ -2042,10 +2070,13 @@ function applyCls(){
   }).catch(function(e){if(window.console)console.warn('status fayli ochilmadi',e)});
 }
 /* picked contour: white outline + card with its status over the years */
-var PS=-1,PSpt=null,PCEN=null;
+var PS=-1,PSpt=null,PCEN=null,PCD=null;
 function pickParcel(id,pt,ll){
   if(PS>=0)map.setFeatureState({source:'parcels',id:PS},{ps:false});
-  PS=id;PSpt=pt;PCEN=ll||null;if(id<0){$('pcard').hidden=true;chart1();chart2();ivals();return}
+  PS=id;PSpt=pt;PCEN=ll||null;PCD=null;
+  /* a shown raster follows the pick: only under the picked contour, or under all contours again */
+  if(R.cv)rasShow();
+  if(id<0){$('pcard').hidden=true;chart1();chart2();ivals();return}
   map.setFeatureState({source:'parcels',id:id},{ps:true});pcard();ivals();
   loadPser(id).then(function(){if(PS===id){chart1();chart2();pcard();ivals()}}).catch(function(e){if(window.console)console.warn('kontur qatori',e)});
 }
@@ -2064,8 +2095,34 @@ function pcard(){
     '<div class="yrs" id="pc-yrs" title="'+L('Yil tanlang: yillik o\'rtacha ko\'rinadi, oylar — Oy filtrida')+'">'+YEARS.map(function(y,i){return '<button data-y="'+i+'"'+(!S.p5&&i===S.y?' class="on"':'')+'><i style="background:'+STC[4]+'"></i>'+y+'</button>'}).join('')+'</div>'+
     '<button class="vb">'+L('Qishloqni tanlash')+'</button>';
   el.hidden=false;
+  /* placed in the free map area (between the panels), right of the clicked point or left of it when there is no room;
+     once dragged by the user it stays where it was put */
   var W=$('map').clientWidth,H=$('map').clientHeight,p=PSpt||{x:W/2,y:H/2},w=el.offsetWidth,h=el.offsetHeight;
-  el.style.left=Math.max(8,Math.min(W-w-8,p.x+14))+'px';el.style.top=Math.max(8,Math.min(H-h-8,p.y-h/2))+'px';
+  var rm=$('map').getBoundingClientRect(),rh=$('hole').getBoundingClientRect(),A={l:8,t:8,r:W-8,b:H-8};
+  if(rh.width>w+16&&rh.height>h+16)A={l:rh.left-rm.left+4,t:rh.top-rm.top+4,r:rh.right-rm.left-4,b:rh.bottom-rm.top-4};
+  var x,y;
+  if(PCD){x=PCD.x;y=PCD.y;A={l:8,t:8,r:W-8,b:H-8}}
+  else{
+    /* never over the picked contour: its box on screen, then the side (right / left / below / above) with the most free
+       room that fits the card; if none fits, the corner of the free area farthest from the contour */
+    var cb=null,F0=PMC()&&PMC()[id];
+    if(F0&&F0.b[2]>F0.b[0]){var q0=new maplibregl.MercatorCoordinate(F0.b[0],F0.b[1]).toLngLat(),q1=new maplibregl.MercatorCoordinate(F0.b[2],F0.b[3]).toLngLat(),
+      s0=map.project(q0),s1=map.project(q1);cb={l:Math.min(s0.x,s1.x),r:Math.max(s0.x,s1.x),t:Math.min(s0.y,s1.y),b:Math.max(s0.y,s1.y)}}
+    if(!cb)cb={l:p.x-6,r:p.x+6,t:p.y-6,b:p.y+6};
+    var G=14,cx0=(cb.l+cb.r)/2,cy0=(cb.t+cb.b)/2,cand=[
+      {room:A.r-cb.r,fit:A.r-cb.r>=w+G,x:cb.r+G,y:cy0-h/2},
+      {room:cb.l-A.l,fit:cb.l-A.l>=w+G,x:cb.l-G-w,y:cy0-h/2},
+      {room:A.b-cb.b,fit:A.b-cb.b>=h+G,x:cx0-w/2,y:cb.b+G},
+      {room:cb.t-A.t,fit:cb.t-A.t>=h+G,x:cx0-w/2,y:cb.t-G-h}].filter(function(c){return c.fit}).sort(function(a,b){return b.room-a.room});
+    if(cand.length){x=cand[0].x;y=cand[0].y}
+    else{x=cx0<(A.l+A.r)/2?A.r-w:A.l;y=cy0<(A.t+A.b)/2?A.b-h:A.t}
+  }
+  el.style.left=Math.round(Math.max(A.l,Math.min(A.r-w,x)))+'px';el.style.top=Math.round(Math.max(A.t,Math.min(A.b-h,y)))+'px';
+  el.onpointerdown=function(e){if(e.button!==0||e.target.closest('button'))return;e.preventDefault();
+    var sx=e.clientX,sy=e.clientY,ox=el.offsetLeft,oy=el.offsetTop;el.classList.add('drag');el.setPointerCapture(e.pointerId);
+    el.onpointermove=function(ev){var nx=Math.max(4,Math.min(W-w-4,ox+ev.clientX-sx)),ny=Math.max(4,Math.min(H-h-4,oy+ev.clientY-sy));
+      el.style.left=nx+'px';el.style.top=ny+'px';PCD={x:nx,y:ny}};
+    el.onpointerup=el.onpointercancel=function(){el.classList.remove('drag');el.onpointermove=null;el.onpointerup=el.onpointercancel=null}};
   el.querySelector('.x').onclick=function(){pickParcel(-1)};
   el.querySelector('.vb').onclick=function(){var vi=VI[id];pickParcel(-1);select(vi)};
   /* year chips: switch the whole portal to that year, the contour stays picked */
@@ -2108,9 +2165,6 @@ function botFold(on){document.querySelector('.ui').classList.toggle('bcl',on);$(
   if(on)$('bshow').focus();else $('bhide').focus();
 }
 $('bhide').onclick=function(){botFold(true)};$('bshow').onclick=function(){botFold(false)};
-/* fold / unfold the "Rasterlar" card in the right column; on every opening of the portal all panels start open */
-function rasFold(on){$('side').classList.toggle('rcl',on);$('rhide').setAttribute('aria-expanded',String(!on));$('rshow').hidden=!on;
-  if(on)$('rshow').focus();else $('rhide').focus()}
 /* fold / unfold the whole right column (rasters + index values) to the right; one pill does both */
 function sideFold(on){document.querySelector('.ui').classList.toggle('scl',on);var b=$('shide');b.setAttribute('aria-expanded',String(!on));
   b.innerHTML=on?'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="m10 4-4 4 4 4"/></svg><span>'+L('Ochish')+'</span>'
@@ -2119,7 +2173,6 @@ function sideFold(on){document.querySelector('.ui').classList.toggle('scl',on);v
   setTimeout(render,430)}
 document.querySelector('.ui').appendChild($('shide'));   /* the tab is placed against the whole panel grid, not the map hole */
 $('shide').onclick=function(){sideFold(!document.querySelector('.ui').classList.contains('scl'))};
-$('rhide').onclick=function(){rasFold(true)};$('rshow').onclick=function(){rasFold(false)};
 /* ArcGIS Online (Esri) basemaps; the chosen one feeds the "Sun'iy yo'ldosh" and "3D" modes and is masked to the township */
 var ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/',WB='https://wayback.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/WMTS/1.0.0/default028mm/MapServer/tile/44710/';
 /* the default ArcGIS Online basemap gallery ("ArcGIS Online Vector Basemaps", esri_en; list read at build time):
@@ -2486,8 +2539,8 @@ map.on('load',function(){
       if(vf){select(vf.properties.v===S.sel?-1:vf.properties.v);return}
       /* click outside the township: drop every pick and go back to the district view, without moving the map */
       if(S.sel>=0||S.fs){S.sel=-1;S.fs=0;render();paint()}});
-    map.on('movestart',function(){if(PS>=0)$('pcard').hidden=true});
-    map.on('moveend',function(){if(R.mask&&R.cv)rasShow();cveil()});
+    map.on('movestart',function(){if(PS>=0&&!PCD)$('pcard').hidden=true});
+    map.on('moveend',function(){if(R.mask&&R.cv&&!(R.vw&&R.vw.pk))rasShow();cveil()});
     mapTheme();
     map.on('moveend',function(){if(PS>=0){var c=map.project(PCEN||map.getCenter());PSpt={x:c.x,y:c.y};pcard()}});
   }).catch(function(e){fail('Kontur ma\'lumoti ochilmadi: '+e.message)});
