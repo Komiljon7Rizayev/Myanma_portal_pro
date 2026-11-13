@@ -1710,55 +1710,61 @@ function oqimTex() {   // har katak uchun suv oqadigan tomon (D8), ~150 m oynada
   t.magFilter = t.minFilter = THREE.LinearFilter; t.generateMipmaps = false; t.needsUpdate = true;
   return t;
 }
-function selNuqChiz() {   // tanlangan nuqtadagi sel: yon tomondan (yerdan) kesim, odam bo'yi bilan solishtirib
-  const cv = $("selNuqCv"); if (!cv || $("cSelNuq").style.display !== "block") return;
+let yerRT = null, yerCam = null, yerOn = false, yerLast = 0, yerBuf = null, yerCv2 = null, yerImg = null;
+function selNuqChiz() {   // tanlangan nuqtadagi sel: 3D sahnani yerga yaqin kameradan ko'rsatish (chizish loop'da — yerKadr)
+  const cv = $("selNuqCv"); if (!cv || $("cSelNuq").style.display !== "block") { yerOn = false; return; }
+  if (HEC && popAt) { yerOn = true; yerLast = 0; dirty = true; $("selNuqT").textContent = hecT >= 0 ? hecSana(HEC.m.vaqt[hecT]).slice(5) : "eng katta"; return; }
+  yerOn = false;
   const dpr = devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight; if (!w) return;
   cv.width = w * dpr; cv.height = h * dpr;
   const g = cv.getContext("2d"); g.scale(dpr, dpr);
   const yoz = (t, x, y, f, c, al) => { g.font = f; g.fillStyle = c; g.textAlign = al || "left"; g.fillText(t, x, y); };
   const tushun = (t1, t2) => { g.fillStyle = "#0b1422"; g.fillRect(0, 0, w, h); yoz(t1, w / 2, h / 2 - 6, "600 12.5px system-ui", "#e6edf6", "center"); yoz(t2, w / 2, h / 2 + 13, "11px system-ui", "#8b9bb0", "center"); };
   if (!HEC) { tushun("Sel modeli yuklanmoqda…", ""); $("selNuqT").textContent = ""; return; }
-  if (!popAt) { tushun("Xaritada nuqta bosing", "shu joyga sel qanday kelishi yerdan ko'rinadi"); $("selNuqT").textContent = ""; return; }
+  tushun("Xaritada nuqta bosing", "shu joyga sel qanday kelishi yerdan ko'rinadi"); $("selNuqT").textContent = "";
+}
+function yerKadr() {   // 3D sahna: tanlangan nuqtaga yerga yaqin balandlikdan qarab
+  const cv = $("selNuqCv"); if (!yerOn || !popAt || !HEC || !renderer || $("cSelNuq").style.display !== "block") return;
+  const dpr = Math.min(devicePixelRatio || 1, 2), w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
+  const W_ = Math.round(w * dpr), H_ = Math.round(h * dpr);
+  if (cv.width !== W_ || cv.height !== H_) { cv.width = W_; cv.height = H_; }
+  if (!yerRT || yerRT.width !== W_ || yerRT.height !== H_) {
+    if (yerRT) yerRT.dispose();
+    yerRT = new THREE.WebGLRenderTarget(W_, H_); yerBuf = new Uint8Array(W_ * H_ * 4);
+    yerCv2 = document.createElement("canvas"); yerCv2.width = W_; yerCv2.height = H_; yerImg = new ImageData(W_, H_);
+  }
+  if (!yerCam) yerCam = new THREE.PerspectiveCamera(55, 1, 1, 3e5);
   const ci = hydCell(popAt.x, popAt.z), j = ci >= 0 ? HEC.map[ci] : -1, t = Math.max(hecT, 0);
   const dNow = j >= 0 ? hecD(hecT < 0 ? HEC.dmax[j] : HEC.K[t * HEC.N + j]) : 0, dMax = j >= 0 ? hecD(HEC.dmax[j]) : 0;
-  // kesim: oqimga ko'ndalang, ±70 m
-  const k = ci >= 0 ? SG.k[ci] : 0; let ux = 1, uz = 0;
-  if (k) { const l = Math.hypot(HDC[k], HDR[k]); ux = -HDR[k] / l; uz = HDC[k] / l; }
-  const R = 70, n = 71, xs = [], gs = [];
-  for (let i = 0; i < n; i++) { const sx = -R + 2 * R * i / (n - 1), X = popAt.x + ux * sx, Z = popAt.z + uz * sx; xs.push(sx); gs.push(validNear(X, Z) ? fillAt(X, Z) : null); }
-  const g0 = validNear(popAt.x, popAt.z) ? fillAt(popAt.x, popAt.z) : gs[(n - 1) / 2] || 0;
-  for (let i = 0; i < n; i++) if (gs[i] == null) gs[i] = g0;
-  const wse = g0 + dNow, lo = g0 - 2.2, hi = g0 + Math.max(3.4, dMax + 1.4);
-  const pad = 0, X = s => pad + (s + R) / (2 * R) * (w - 2 * pad), Y = v => h - 34 - (v - lo) / (hi - lo) * (h - 46);
-  // osmon (yomg'ir bo'lsa qorong'iroq) va yomg'ir
+  const g0 = validNear(popAt.x, popAt.z) ? fillAt(popAt.x, popAt.z) : BASE;
+  // kamera: asosiy xarita qaragan tomondan, nuqtadan 230 m orqada, yerdan past balandlikda
+  const fx = Math.sin(cam.az), fz = -Math.cos(cam.az), D = 230, ex = popAt.x - fx * D, ez = popAt.z - fz * D;
+  let gMax = g0; for (let q = 0; q <= 8; q++) { const x = popAt.x - fx * D * q / 8, z = popAt.z - fz * D * q / 8; if (validNear(x, z)) gMax = Math.max(gMax, fillAt(x, z)); }
+  yerCam.aspect = W_ / H_; yerCam.position.set(ex, sceneY(gMax) + 12 * S.exag + 8, ez);
+  yerCam.up.set(0, 1, 0); yerCam.lookAt(popAt.x, sceneY(g0 + dNow), popAt.z); yerCam.updateProjectionMatrix(); yerCam.updateMatrixWorld();
+  const cp = U.uCamP.value.clone(), sc = U.uSuvSc.value;
+  U.uCamP.value.copy(yerCam.position); U.uSuvSc.value = 20;
+  renderer.setRenderTarget(yerRT); renderer.clear(); renderer.render(scene, yerCam);
+  renderer.readRenderTargetPixels(yerRT, 0, 0, W_, H_, yerBuf); renderer.setRenderTarget(null);
+  U.uCamP.value.copy(cp); U.uSuvSc.value = sc;
+  const row = W_ * 4; for (let y = 0; y < H_; y++) yerImg.data.set(yerBuf.subarray((H_ - 1 - y) * row, (H_ - y) * row), y * row);
+  yerCv2.getContext("2d").putImageData(yerImg, 0, 0);
+  const g = cv.getContext("2d"); g.setTransform(1, 0, 0, 1, 0, 0);
+  // osmon (yomg'ir bo'lsa qorong'iroq), ustidan 3D ko'rinish
   const mm = hecSoatMm(hecT), qor = Math.min(1, mm / 12);
-  const sky = g.createLinearGradient(0, 0, 0, h);
+  const sky = g.createLinearGradient(0, 0, 0, H_);
   sky.addColorStop(0, `rgb(${Math.round(70 - 40 * qor)},${Math.round(120 - 70 * qor)},${Math.round(180 - 100 * qor)})`); sky.addColorStop(1, `rgb(${Math.round(150 - 80 * qor)},${Math.round(185 - 95 * qor)},${Math.round(215 - 100 * qor)})`);
-  g.fillStyle = sky; g.fillRect(0, 0, w, h);
-  if (mm >= .05) { g.strokeStyle = "rgba(220,235,255,.55)"; g.lineWidth = 1; const nn = Math.round(25 + mm * 14); g.beginPath();
-    for (let i = 0; i < nn; i++) { const x = Math.random() * w, y = Math.random() * (h - 40); g.moveTo(x, y); g.lineTo(x - 3, y + 9); } g.stroke(); }
-  // yer
-  const joy = j >= 0 ? hecJoy(j, ci) : (SL && SL.lc[ci] === 50 ? 1 : SL && SL.lc[ci] === 40 ? 2 : 3);
-  g.beginPath(); g.moveTo(X(xs[0]), h); xs.forEach((s, i) => g.lineTo(X(s), Y(gs[i]))); g.lineTo(X(xs[n - 1]), h); g.closePath();
-  const yer = g.createLinearGradient(0, Y(g0), 0, h); yer.addColorStop(0, "#8a6a45"); yer.addColorStop(1, "#4a3826"); g.fillStyle = yer; g.fill();
-  g.beginPath(); xs.forEach((s, i) => i ? g.lineTo(X(s), Y(gs[i])) : g.moveTo(X(s), Y(gs[i]))); g.strokeStyle = joy === 2 ? "#a3c45a" : joy === 1 ? "#9a9a9a" : "#6aa84f"; g.lineWidth = 3; g.stroke();
-  // joy belgilari: shahar — uy, dala — ekin
-  const ox = X(0);
-  if (joy === 1) { const hx = X(22), hy = Y(gs[Math.round((22 + R) / (2 * R) * (n - 1))]), hu = (Y(0) - Y(3.2)); g.fillStyle = "#d6c9b5"; g.fillRect(hx - hu * .6, hy - hu, hu * 1.2, hu); g.fillStyle = "#9b3b2c"; g.beginPath(); g.moveTo(hx - hu * .75, hy - hu); g.lineTo(hx, hy - hu * 1.55); g.lineTo(hx + hu * .75, hy - hu); g.fill(); g.fillStyle = "#5b4636"; g.fillRect(hx - hu * .12, hy - hu * .5, hu * .24, hu * .5); }
-  if (joy === 2) { g.strokeStyle = "#7fb03a"; g.lineWidth = 1.4; for (let s = -60; s <= 60; s += 6) { if (Math.abs(s) < 5) continue; const i = Math.round((s + R) / (2 * R) * (n - 1)), y = Y(gs[i]), hh = Y(0) - Y(.9); g.beginPath(); g.moveTo(X(s), y); g.lineTo(X(s) + 2, y - hh); g.stroke(); } }
-  // odam (1.7 m) — o'lcham uchun
-  const pk = Y(g0) - Y(g0 + 1.7), py = Y(g0);
-  g.fillStyle = "#1f2937"; g.beginPath(); g.arc(ox, py - pk * .9, pk * .1, 0, 7); g.fill();
-  g.fillRect(ox - pk * .09, py - pk * .8, pk * .18, pk * .42); g.fillRect(ox - pk * .085, py - pk * .38, pk * .07, pk * .38); g.fillRect(ox + pk * .015, py - pk * .38, pk * .07, pk * .38);
-  // suv
-  if (dNow > 0) {
-    let i0 = (n - 1) / 2, i1 = i0; while (i0 > 0 && gs[i0 - 1] < wse) i0--; while (i1 < n - 1 && gs[i1 + 1] < wse) i1++;
-    g.beginPath(); g.moveTo(X(xs[i0]), Y(wse));
-    for (let i = i0; i <= i1; i++) g.lineTo(X(xs[i]), Y(wse) + Math.sin(i * .9 + performance.now() / 300) * 1.2);
-    for (let i = i1; i >= i0; i--) g.lineTo(X(xs[i]), Y(Math.min(gs[i], wse)));
-    g.closePath(); const sv = g.createLinearGradient(0, Y(wse), 0, Y(g0)); sv.addColorStop(0, "rgba(96,165,250,.82)"); sv.addColorStop(1, "rgba(30,64,175,.9)"); g.fillStyle = sv; g.fill();
-    g.strokeStyle = "rgba(219,234,254,.9)"; g.lineWidth = 1.5; g.beginPath(); g.moveTo(X(xs[i0]), Y(wse)); g.lineTo(X(xs[i1]), Y(wse)); g.stroke();
-  }
+  g.fillStyle = sky; g.fillRect(0, 0, W_, H_); g.drawImage(yerCv2, 0, 0);
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const yoz = (t, x, y, f, c, al) => { g.font = f; g.fillStyle = c; g.textAlign = al || "left"; g.fillText(t, x, y); };
+  if (mm >= .05 && !reduceM) { g.strokeStyle = "rgba(220,235,255,.5)"; g.lineWidth = 1; const nn = Math.round(25 + mm * 14); g.beginPath();
+    for (let i = 0; i < nn; i++) { const x = Math.random() * w, y = Math.random() * (h - 30); g.moveTo(x, y); g.lineTo(x - 3, y + 9); } g.stroke(); }
+  // belgilangan nuqta
+  const v = new THREE.Vector3(popAt.x, sceneY(g0 + dNow), popAt.z).project(yerCam);
+  if (v.z < 1) { const px = (v.x + 1) / 2 * w, py = (1 - v.y) / 2 * h;
+    g.strokeStyle = "#fff"; g.lineWidth = 2; g.beginPath(); g.moveTo(px, py); g.lineTo(px, py - 22); g.stroke();
+    g.fillStyle = "#ef4444"; g.beginPath(); g.arc(px, py - 26, 6, 0, 7); g.fill(); g.stroke();
+    g.fillStyle = "rgba(255,255,255,.9)"; g.beginPath(); g.ellipse(px, py, 5, 2.2, 0, 0, 7); g.fill(); }
   // yozuvlar
   const hol = dNow <= 0 ? "quruq" : dNow < .3 ? "to'piqqacha" : dNow < .6 ? "tizzagacha" : dNow < 1.1 ? "beldan" : dNow < 1.7 ? "ko'krakdan" : "boshdan oshgan";
   g.fillStyle = "rgba(8,13,22,.78)"; g.fillRect(6, 6, 150, 40);
@@ -1773,7 +1779,6 @@ function selNuqChiz() {   // tanlangan nuqtadagi sel: yon tomondan (yerdan) kesi
     g.strokeStyle = "#60a5fa"; g.lineWidth = 1.4; g.stroke();
     if (hecT >= 0) { const x = 6 + hecT / (HEC.T - 1) * (w - 12); g.strokeStyle = "#f8fafc"; g.beginPath(); g.moveTo(x, h - 25); g.lineTo(x, h - 2); g.stroke(); }
   } else yoz("bu nuqtaga sel kelmaydi (HEC-RAS 2D)", w / 2, h - 9, "11px system-ui", "#8b9bb0", "center");
-  $("selNuqT").textContent = hecT >= 0 ? hecSana(HEC.m.vaqt[hecT]).slice(5) : "eng katta";
 }
 const hecD = c => c ? (c / 80) * (c / 80) : 0;
 const hecSana = v => v.replace("T", " ");
@@ -3732,6 +3737,7 @@ function loop(now) {
   if (profLine) profLine.material.uniforms.uLift.value = lift * 1.5;
   for (const m of daryoMesh) m.material.uniforms.uLift.value = lift * 1.4;
   renderer.render(scene, camera);
+  if (yerOn && now - yerLast > 50) { yerLast = now; yerKadr(); }
   hudLabels();
   place($("pin"), popAt, !!popAt);
   if (popAt && $("pin").style.display === "block") { $("pop").style.left = $("pin").style.left; $("pop").style.top = $("pin").style.top; $("pop").style.display = "block"; }
