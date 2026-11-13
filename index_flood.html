@@ -396,6 +396,7 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
 #tools .tfly{position:absolute;right:calc(100% + 10px);top:0;display:flex;flex-direction:column;gap:2px;padding:6px;min-width:150px;
   background:rgba(8,13,22,.85);border:1px solid var(--panel-b);border-radius:var(--r);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 #tools .tfly[hidden]{display:none}
+.chip[hidden]{display:none!important}
 #tools .tfly .tlab{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;padding:6px 10px 2px;white-space:nowrap}
 #tools .tfly{top:auto;bottom:0;max-height:calc(100vh - 140px);overflow-y:auto}
 #tools .tfly button{width:auto;height:30px;padding:0 10px;text-align:left;font:inherit;font-size:12.5px;background:none;color:var(--tx2)}
@@ -592,9 +593,9 @@ body.nopan .bkB{display:none}
     <div class="sec" id="secSuv">
       <h2>Yomg'ir suvi oqimi</h2>
       <div class="chips">
-        <button class="chip on" id="sTarmoq">Oqim yo'llari</button>
+        <button class="chip on" id="sTarmoq" hidden>Oqim yo'llari</button>
         <button class="chip" id="sShakl">Oqim shakli</button>
-        <button class="chip on" id="sKol">Ko'lmak va daryo</button>
+        <button class="chip on" id="sKol" hidden>Ko'lmak va daryo</button>
         <button class="chip" id="sStr" title="Xalqaro standart: eng uchidagi irmoq 1-tartib; ikkita bir xil tartibli oqim qo'shilsa tartib bittaga oshadi, har xil bo'lsa kattasi qoladi">Strahler tartibi</button>
       </div>
       <div class="row"><label for="sMin">Ko'rsatiladigan oqimlar</label><input id="sMin" type="range" min="0" max="6" step="1" value="2"><output id="sMinO" style="flex-basis:78px">≥1 km²</output></div>
