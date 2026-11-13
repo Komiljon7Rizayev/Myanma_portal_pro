@@ -640,7 +640,8 @@ body.nopan .bkB{display:none}
     <div class="sec" id="secSel">
       <h2>Sel xavfi (yomg'irdan toshqin)</h2>
       <div class="chips" id="selRej">
-        <button class="chip on" data-r="hec" title="HEC-RAS 2D: 2025-06-01 … 06-07, soatma-soat">2025-06-05 (HEC-RAS)</button>
+        <button class="chip on" data-r="hec" data-h="25" title="HEC-RAS 2D: 2025-06-01 … 06-07, soatma-soat">2025-06-05 (HEC-RAS)</button>
+        <button class="chip" data-r="hec" data-h="23" title="HEC-RAS 2D: 2023-05-12 … 05-16 (Mocha), soatma-soat">2023-05-13…15 (HEC-RAS)</button>
       </div>
       <div id="selKun" style="display:none">
         <div class="row"><label for="selSana">Sana</label><input type="date" id="selSana"></div>
@@ -1660,17 +1661,21 @@ function selNetLeg() {
 
 // ---------------- HEC-RAS 2D sel hodisasi: 2025-06-01 … 06-07 (soatma-soat suv chuqurligi; hec_tayyorla.py) ----------------
 let HEC = null, hecT = -1, hecPlayId = 0, hecYuk = null;
+const HEC_HOD = { 25: { m: "hecm", b: "hecBin", f: ["data/hec_meta.json", "data/hec_bin.bin.gz"] },
+  23: { m: "hec23m", b: "hec23Bin", f: ["data/hec_2023_meta.json", "data/hec_2023_bin.bin.gz"] } };
+const HEC_C = {}, hecYukP = {};
+const hecTanHod = () => { const b = $("selRej").querySelector(".chip.on"); return (b && b.dataset.h) || "25"; };
 const HEC_SINF = [[.1, .3, [186, 222, 255]], [.3, .5, [118, 178, 240]], [.5, 1, [58, 128, 225]], [1, 2, [28, 78, 190]], [2, 1e9, [12, 30, 112]]];
 // suv qayerga tushgani bo'yicha: 0 kanal/ariq/o'zan/oqim yo'li, 1 shahar (qurilgan), 2 dala (ekinzor), 3 boshqa ochiq joy
 const HEC_JOY = [["Kanal, ariq, o'zan va oqim yo'llari", [37, 132, 255]], ["Shahar, qishloq (qurilgan hudud)", [230, 40, 40]], ["Dala (ekin maydoni)", [250, 204, 21]], ["Boshqa joy (o'tloq, daraxtzor, butazor)", [150, 160, 170]]];
 const hecJoy = (j, g) => HEC.dr[j] || SG.str[g] > 0 || (SL && SL.lc[g] === 80) ? 0 : !SL ? 3 : SL.lc[g] === 50 ? 1 : SL.lc[g] === 40 ? 2 : 3;
-async function hecYukla() {
-  let m, b;
+async function hecYukla(k) {
+  let m, b; const H = HEC_HOD[k];
   if (window.__D && __D.ol) {
-    const [mb, bb] = await Promise.all([__D.ol("hecm"), __D.ol("hecBin")]);
+    const [mb, bb] = await Promise.all([__D.ol(H.m), __D.ol(H.b)]);
     m = JSON.parse(new TextDecoder().decode(mb)); b = new Uint8Array(bb);
   } else {
-    const [mr, br] = await Promise.all([fetch("data/hec_meta.json"), fetch("data/hec_bin.bin.gz")]);
+    const [mr, br] = await Promise.all([fetch(H.f[0]), fetch(H.f[1])]);
     if (!mr.ok || !br.ok) throw new Error("HEC-RAS ma'lumoti topilmadi");
     m = await mr.json(); b = new Uint8Array(await br.arrayBuffer());
   }
@@ -1681,8 +1686,8 @@ async function hecYukla() {
   const dmax = u.slice(N * 4, N * 5), K = u.slice(N * 5, N * 5 + T * N);
   for (let t = 1; t < T; t++) { const o = t * N, p = o - N; for (let j = 0; j < N; j++) K[o + j] = (K[o + j] + K[p + j]) & 255; }  // farqlardan tiklash
   const sar = m.vaqt.findIndex(v => v.slice(0, 13) === m.sar.vaqt.slice(0, 10) + "T" + m.sar.vaqt.slice(11, 13));
-  HEC = { m, N, T, idx, dr, map, dmax, K, sar };
-  if (!U.uFlow.value) U.uFlow.value = oqimTex();
+  return (HEC_C[k] = { m, N, T, idx, dr, map, dmax, K, sar, k });
+
 }
 function oqimTex() {   // har katak uchun suv oqadigan tomon (D8), ~150 m oynada silliqlangan -> LuminanceAlpha tekstura (x, z)
   const W_ = SUV.w, H_ = SUV.h, n = W_ * H_, R = 5, IS = Math.SQRT1_2;
@@ -1794,7 +1799,7 @@ function hecChiz() {
     [fmt(tash * ga, 0) + " ga", t < 0 ? "Eng katta suv (o'zandan tashqari)" : "Suv bosgan (o'zandan tashqari)"],
     [fmt(jami * ga / 100, 1) + " km²", "Jami suv (o'zanlar bilan)"],
     [fmt(m.eng_katta_tash_ga, 0) + " ga", "Hodisadagi eng katta (o'zandan tashqari)"],
-    [fmt(m.yogin_mm, 1) + " mm", "Yog'in, 7 kun (ERA5, Minbu o'rtacha)"],
+    [fmt(m.yogin_mm, 1) + " mm", `Yog'in, ${Math.round(HEC.T / 24)} kun (ERA5, Minbu o'rtacha)`],
     [fmt(m.sar.sar_ga, 0) + " ga", `Sentinel-1 ko'rgan suv (${m.sar.vaqt})`],
     [fmt(m.sar.mos_ga, 0) + " ga", `Model bilan mos (model ${fmt(m.sar.model_ga, 0)} ga)`]
   ].map(([v, s]) => `<div><b>${v}</b><span>${s}</span></div>`).join("");
@@ -1813,7 +1818,7 @@ function hecGraf() {
     const i0 = (Date.parse(s + "T00:00:00Z") - t0) / 36e5, x0 = x(Math.max(0, i0)), x1 = x(Math.min(T - 1, i0 + 24));
     const h = p / pmax * (Hh - 30);
     return `<rect x="${x0 + 1}" y="${Hh - 14 - h}" width="${Math.max(0, x1 - x0 - 2)}" height="${h}" fill="rgba(56,189,248,.28)"><title>${s}: ${fmt(p, 1)} mm</title></rect>`
-      + `<text x="${(x0 + x1) / 2}" y="${Hh - 3}" text-anchor="middle" font-size="10" fill="#8b9bb0">${s.slice(8)}.06</text>`;
+      + `<text x="${(x0 + x1) / 2}" y="${Hh - 3}" text-anchor="middle" font-size="10" fill="#8b9bb0">${s.slice(8)}.${s.slice(5, 7)}</text>`;
   }).join("");
   const pl = a.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
   g.setAttribute("viewBox", `0 0 ${W} ${Hh}`);
@@ -1836,7 +1841,8 @@ function hecStop() { if (hecPlayId) { clearInterval(hecPlayId); hecPlayId = 0; $
 let yomId = 0, yomMm = 0, yomK = 0; const yomP = [];
 function hecSoatMm(t) {   // shu soatdagi Minbu o'rtacha yog'ini, mm/soat (ERA5 soatlik; yuklanmagan bo'lsa kunlikdan taxmin)
   if (!HEC || t < 0) return 0;
-  if (YOG && YOG.m.soat_ort[t] !== undefined) return YOG.m.soat_ort[t];
+  if (HEC.m.soat_mm) return HEC.m.soat_mm[t] || 0;
+  if (YOG && YOG.m.id === HEC.m.id && YOG.m.soat_ort[t] !== undefined) return YOG.m.soat_ort[t];
   return (HEC.m.era5_kunlik[HEC.m.vaqt[t].slice(0, 10)] || 0) / 10;
 }
 function hecYomgir() {
@@ -1895,18 +1901,24 @@ function hecRejim(on) {
   }
   if (NU.uSelNet.value > .5) { NU.uSelNet.value = 0; dirty = true; }
   if ($("tOn") && $("tOn").classList.contains("on")) $("tOn").click();   // ko'lmaklar qatlami ustma-ust tushmasin
-  if (HEC) { hecChiz(); return; }
-  $("hecInfo").textContent = "HEC-RAS natijasi yuklanmoqda…";
-  hecYuk = hecYuk || hecYukla();
-  hecYuk.then(() => {
-    const m = HEC.m;
+  const k = hecTanHod();
+  if (HEC && HEC.k === k) { hecChiz(); return; }
+  hecStop();
+  const tayyor = h => {
+    if (hecTanHod() !== k) return;   // yuklanguncha boshqa hodisa tanlangan
+    HEC = h; if (!U.uFlow.value) U.uFlow.value = oqimTex();
+    const m = HEC.m, kun = Object.entries(m.era5_kunlik).sort((a, b) => b[1] - a[1])[0] || ["", 0];
     $("hecT").max = HEC.T - 1;
-    $("hecInfo").innerHTML = `HEC-RAS 2D fizik modeli: ${hecSana(m.vaqt[0])} — ${hecSana(m.vaqt[HEC.T - 1])}, har soatlik suv chuqurligi (≥ ${m.chegara_m} m, 30 m). Eng ko'p yog'in 2-iyun (${fmt(m.era5_kunlik["2025-06-02"] || 0, 1)} mm).`;
+    $("hecInfo").innerHTML = `HEC-RAS 2D fizik modeli: ${hecSana(m.vaqt[0])} — ${hecSana(m.vaqt[HEC.T - 1])}, har soatlik suv chuqurligi (≥ ${m.chegara_m} m, 30 m). Eng ko'p yog'in ${kun[0].slice(8)}.${kun[0].slice(5, 7)} (${fmt(kun[1], 1)} mm).`;
     hecGraf(); $("hecManba").textContent = "Manba: " + m.manba;
-    if (hecT === -1 && !hecRejim.bir) { hecRejim.bir = 1; hecT = m.maydon_ga.indexOf(Math.max(...m.maydon_ga)); }
-    $("hecT").value = Math.max(hecT, 0);
+    hecT = m.maydon_ga.indexOf(Math.max(...m.maydon_ga));   // hodisa eng katta bo'lgan soat
+    $("hecT").value = hecT;
     if (hecFaol()) hecChiz();
-  }).catch(e => { console.error(e); hecYuk = null; $("hecInfo").textContent = "HEC-RAS natijasini yuklab bo'lmadi: " + e.message; });
+  };
+  if (HEC_C[k]) { tayyor(HEC_C[k]); return; }
+  $("hecInfo").textContent = "HEC-RAS natijasi yuklanmoqda…";
+  hecYukP[k] = hecYukP[k] || hecYukla(k);
+  hecYukP[k].then(tayyor).catch(e => { console.error(e); hecYukP[k] = null; $("hecInfo").textContent = "HEC-RAS natijasini yuklab bo'lmadi: " + e.message; });
 }
 function hecUI() {
   $("selRej").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) hecRejim(b.dataset.r === "hec"); });
@@ -3733,8 +3745,8 @@ init().catch(e => { $("yukT").textContent = "Xato: " + e.message; console.error(
 <script>
 /* ---------- Minbu Flood: ma'lumotlarni ArcGIS Online'dan yuklash (Minbu Portal logini bilan) ---------- */
 (function(){
-var CFG={"portal": "https://land-tiiame.maps.arcgis.com", "res": {"meta": "d/meta.json", "dem": "d/dem30.bin.gz.txt", "sat": "d/sat15.jpg", "niqob": "d/niqob.png", "suv": "d/suv_meta.json", "suvGrid": "d/suv_grid.bin.gz.txt", "suvNet": "d/suv_tarmoq.bin.gz.txt", "selm": "d/sel_meta.json", "selGrid": "d/sel_grid.bin.gz.txt", "selBin": "d/sel_bin.bin.gz.txt", "dash": "d/dash.json", "hudud": "d/hudud.json", "bolak": "d/royxat.json", "hecm": "d/hec_meta.json", "hecBin": "d/hec_bin.bin.gz.txt", "yogm": "d/yogin_meta.json", "yogBin": "d/yogin_bin.bin.gz.txt"}, "enc": {"dem": "b64", "suvGrid": "b64", "suvNet": "b64", "selGrid": "b64", "selBin": "b64", "hecBin": "b64", "yogBin": "b64"}, "tiles_prefix": "b/", "tiles_ext": ".jpg", "item": "62b3142355fb4095903e49806c904888", "tiles_item": "4623aed3551f4f99943f2f0e7ad5e460", "tiles_items": ["4623aed3551f4f99943f2f0e7ad5e460", "71456975f5264980ad2b75578bf9c9ea"], "tiles_idx": {"41_23": 1, "41_24": 1, "41_25": 1, "41_26": 1, "41_27": 1, "41_28": 1, "41_29": 1, "42_22": 1, "42_23": 1, "42_24": 1, "42_25": 1, "42_26": 1, "42_27": 1, "42_28": 1, "42_29": 1, "43_25": 1, "43_26": 1, "43_27": 1, "43_28": 1, "43_29": 1, "44_27": 1, "4_11": 1, "4_12": 1, "4_13": 1, "4_14": 1, "4_15": 1, "4_16": 1, "4_17": 1, "4_18": 1, "4_19": 1, "4_20": 1, "4_21": 1, "4_22": 1, "5_11": 1, "5_12": 1, "5_13": 1, "5_14": 1, "5_15": 1, "5_16": 1, "5_17": 1, "5_18": 1, "5_19": 1, "5_20": 1, "5_21": 1, "5_22": 1, "5_23": 1, "6_10": 1, "6_11": 1, "6_12": 1, "6_13": 1, "6_14": 1, "6_15": 1, "6_16": 1, "6_17": 1, "6_18": 1, "6_19": 1, "6_20": 1, "6_21": 1, "6_22": 1, "6_23": 1, "7_10": 1, "7_11": 1, "7_12": 1, "7_13": 1, "7_14": 1, "7_15": 1, "7_16": 1, "7_17": 1, "7_18": 1, "7_19": 1, "7_20": 1, "7_21": 1, "7_22": 1, "7_23": 1, "7_24": 1, "7_25": 1, "8_10": 1, "8_11": 1, "8_12": 1, "8_13": 1, "8_14": 1, "8_15": 1, "8_16": 1, "8_17": 1, "8_18": 1, "8_19": 1, "8_20": 1, "8_21": 1, "8_22": 1, "8_23": 1, "8_24": 1, "8_25": 1, "8_26": 1, "8_27": 1, "8_9": 1, "9_10": 1, "9_11": 1, "9_12": 1, "9_13": 1, "9_14": 1, "9_15": 1, "9_16": 1, "9_17": 1, "9_18": 1, "9_19": 1, "9_20": 1, "9_21": 1, "9_22": 1, "9_23": 1, "9_24": 1, "9_25": 1, "9_26": 1, "9_27": 1, "9_28": 1, "9_6": 1, "9_7": 1, "9_8": 1, "9_9": 1}}, LOKAL={"meta": "data/meta.json", "dem": "data/dem30.bin.gz", "sat": "data/sat15.jpg", "niqob": "data/niqob.png", "bolak": "bolak/royxat.json", "suv": "data/suv_meta.json", "suvGrid": "data/suv_grid.bin.gz", "suvNet": "data/suv_tarmoq.bin.gz", "selm": "data/sel_meta.json", "selGrid": "data/sel_grid.bin.gz", "selBin": "data/sel_bin.bin.gz", "dash": "data/dash.json", "hudud": "data/hudud.json"};
-var LAZY={"hecm":"data/hec_meta.json","hecBin":"data/hec_bin.bin.gz","yogm":"data/yogin_meta.json","yogBin":"data/yogin_bin.bin.gz"};
+var CFG={"portal": "https://land-tiiame.maps.arcgis.com", "res": {"meta": "d/meta.json", "dem": "d/dem30.bin.gz.txt", "sat": "d/sat15.jpg", "niqob": "d/niqob.png", "suv": "d/suv_meta.json", "suvGrid": "d/suv_grid.bin.gz.txt", "suvNet": "d/suv_tarmoq.bin.gz.txt", "selm": "d/sel_meta.json", "selGrid": "d/sel_grid.bin.gz.txt", "selBin": "d/sel_bin.bin.gz.txt", "dash": "d/dash.json", "hudud": "d/hudud.json", "bolak": "d/royxat.json", "hecm": "d/hec_meta.json", "hecBin": "d/hec_bin.bin.gz.txt", "yogm": "d/yogin_meta.json", "yogBin": "d/yogin_bin.bin.gz.txt", "hec23m": "d/hec_2023_meta.json", "hec23Bin": "d/hec_2023_bin.bin.gz.txt"}, "enc": {"dem": "b64", "suvGrid": "b64", "suvNet": "b64", "selGrid": "b64", "selBin": "b64", "hecBin": "b64", "yogBin": "b64", "hec23Bin": "b64"}, "tiles_prefix": "b/", "tiles_ext": ".jpg", "item": "62b3142355fb4095903e49806c904888", "tiles_item": "4623aed3551f4f99943f2f0e7ad5e460", "tiles_items": ["4623aed3551f4f99943f2f0e7ad5e460", "71456975f5264980ad2b75578bf9c9ea"], "tiles_idx": {"41_23": 1, "41_24": 1, "41_25": 1, "41_26": 1, "41_27": 1, "41_28": 1, "41_29": 1, "42_22": 1, "42_23": 1, "42_24": 1, "42_25": 1, "42_26": 1, "42_27": 1, "42_28": 1, "42_29": 1, "43_25": 1, "43_26": 1, "43_27": 1, "43_28": 1, "43_29": 1, "44_27": 1, "4_11": 1, "4_12": 1, "4_13": 1, "4_14": 1, "4_15": 1, "4_16": 1, "4_17": 1, "4_18": 1, "4_19": 1, "4_20": 1, "4_21": 1, "4_22": 1, "5_11": 1, "5_12": 1, "5_13": 1, "5_14": 1, "5_15": 1, "5_16": 1, "5_17": 1, "5_18": 1, "5_19": 1, "5_20": 1, "5_21": 1, "5_22": 1, "5_23": 1, "6_10": 1, "6_11": 1, "6_12": 1, "6_13": 1, "6_14": 1, "6_15": 1, "6_16": 1, "6_17": 1, "6_18": 1, "6_19": 1, "6_20": 1, "6_21": 1, "6_22": 1, "6_23": 1, "7_10": 1, "7_11": 1, "7_12": 1, "7_13": 1, "7_14": 1, "7_15": 1, "7_16": 1, "7_17": 1, "7_18": 1, "7_19": 1, "7_20": 1, "7_21": 1, "7_22": 1, "7_23": 1, "7_24": 1, "7_25": 1, "8_10": 1, "8_11": 1, "8_12": 1, "8_13": 1, "8_14": 1, "8_15": 1, "8_16": 1, "8_17": 1, "8_18": 1, "8_19": 1, "8_20": 1, "8_21": 1, "8_22": 1, "8_23": 1, "8_24": 1, "8_25": 1, "8_26": 1, "8_27": 1, "8_9": 1, "9_10": 1, "9_11": 1, "9_12": 1, "9_13": 1, "9_14": 1, "9_15": 1, "9_16": 1, "9_17": 1, "9_18": 1, "9_19": 1, "9_20": 1, "9_21": 1, "9_22": 1, "9_23": 1, "9_24": 1, "9_25": 1, "9_26": 1, "9_27": 1, "9_28": 1, "9_6": 1, "9_7": 1, "9_8": 1, "9_9": 1}}, LOKAL={"meta": "data/meta.json", "dem": "data/dem30.bin.gz", "sat": "data/sat15.jpg", "niqob": "data/niqob.png", "bolak": "bolak/royxat.json", "suv": "data/suv_meta.json", "suvGrid": "data/suv_grid.bin.gz", "suvNet": "data/suv_tarmoq.bin.gz", "selm": "data/sel_meta.json", "selGrid": "data/sel_grid.bin.gz", "selBin": "data/sel_bin.bin.gz", "dash": "data/dash.json", "hudud": "data/hudud.json"};
+var LAZY={"hecm":"data/hec_meta.json","hecBin":"data/hec_bin.bin.gz","hec23m":"data/hec_2023_meta.json","hec23Bin":"data/hec_2023_bin.bin.gz","yogm":"data/yogin_meta.json","yogBin":"data/yogin_bin.bin.gz"};
 var q=new URLSearchParams(location.search), dev=q.get('dev'), TOK=null, $t=document.getElementById('yukT');
 function yoz(t,xato){$t.innerHTML=t;if(xato){var s=document.querySelector('#yuk .sp');if(s)s.style.display='none'}}
 if(!dev){
@@ -3806,33 +3818,6 @@ var D = {
 "Daryolar bo'ylab balandlik (boshlanish → tugash)": ["Elevation along the rivers (source → mouth)", "Высота вдоль рек (исток → устье)", "မြစ်များတစ်လျှောက် အမြင့် (အစ → အဆုံး)"],
 "━ Mon daryosi": ["━ Mon river", "━ река Мон", "━ မုန်းမြစ်"],
 "━ Man daryosi": ["━ Man river", "━ река Ман", "━ မန်းမြစ်"],
-"Mon daryosi": ["Mon river", "река Мон", "မုန်းမြစ်"],
-"Man daryosi": ["Man river", "река Ман", "မန်းမြစ်"],
-"Berkitish": ["Hide", "Скрыть", "ဖျောက်ရန်"],
-"Ochish": ["Show", "Показать", "ပြရန်"],
-"To'planish joylari tarkibi": ["Ponding areas composition", "Состав мест скопления воды", "ရေစုရာနေရာ ဖွဲ့စည်းပုံ"],
-"maydon bo'yicha, ga": ["by area, ha", "по площади, га", "ဧရိယာအလိုက်၊ ha"],
-"Pastliklar": ["Lowlands", "Низины", "နိမ့်ရာနေရာများ"],
-"ta ko'lmak (shubhalilar bilan),": ["depressions (incl. doubtful),", "западин (вкл. сомнительные),", "ရေအိုင်ငယ် (သံသယများပါ)၊"],
-"ta hovuz; pastlik — soy/daryo suvi yoyiladigan tekis joy.": ["ponds; lowland — flat land where stream/river water spreads.", "прудов; низина — ровное место, где разливается вода ручья/реки.", "ကန်များ; နိမ့်ရာ — ချောင်း/မြစ်ရေ ပျံ့နှံ့သော မြေပြန့်။"],
-"Muallif": ["Author", "Автор", "ရေးသားသူ"],
-"Minbu Portal muallifi": ["Minbu Portal author", "Автор Minbu Portal", "Minbu Portal ရေးသားသူ"],
-"Telefon": ["Phone", "Телефон", "ဖုန်း"],
-"Nusxa olish": ["Copy", "Копировать", "ကူးယူ"],
-"Nusxa olindi": ["Copied", "Скопировано", "ကူးယူပြီး"],
-"Qo'ng'iroq qilish": ["Call", "Позвонить", "ဖုန်းခေါ်ရန်"],
-"Xat yozish": ["Write an email", "Написать письмо", "အီးမေးလ်ပို့ရန်"],
-"Yopish": ["Close", "Закрыть", "ပိတ်ရန်"],
-"Rasmni kattalashtirish": ["Enlarge photo", "Увеличить фото", "ဓာတ်ပုံချဲ့ရန်"],
-"Xarita": ["Map", "Карта", "မြေပုံ"],
-"Tozalash": ["Clear", "Очистить", "ရှင်းလင်း"],
-"To'liq ekran": ["Full screen", "Полный экран", "မျက်နှာပြင်အပြည့်"],
-"oqim yo'llari — irmoqlar (1–2-tartib); soy va chaunglar (4–7) jami": ["of flow paths are rills (order 1–2); streams and chaungs (4–7) total", "путей стока — притоки (порядок 1–2); ручьи и чаунги (4–7) всего", "စီးကြောင်းများမှာ မြစ်လက်တက်ငယ် (၁–၂)၊ ချောင်းများ (၄–၇) စုစုပေါင်း"],
-"Qo'shiladigan maydon: har daraja oldingisiga qo'shadi. Kuchli yomg'irda (120–190 mm) jami": ["Cumulative area: each level adds to the previous one. In heavy rain (120–190 mm) total", "Накопительная площадь: каждый уровень добавляется к предыдущему. При сильном дожде (120–190 мм) всего", "စုစုပေါင်းဧရိယာ- အဆင့်တိုင်း ယခင်အဆင့်ထံ ပေါင်းထည့်သည်။ မိုးသည်းချိန် (120–190 mm) စုစုပေါင်း"],
-"Kuchli yomg'irgacha (≤190 mm) jami": ["Up to heavy rain (≤190 mm) total", "До сильного дождя (≤190 мм) всего", "မိုးသည်းချိန်အထိ (≤190 mm) စုစုပေါင်း"],
-". Sel maydoni bo'yicha tumanda": [". Rank in the township by flood area:", ". Место в тауншипе по площади паводка:", "။ မြို့နယ်အတွင်း ရေလွှမ်းဧရိယာအလိုက် အဆင့်"],
-"-o'rin.": [".", "-е.", "။"],
-"Pastki grafiklarni berkitish / ochish": ["Hide / show the bottom charts", "Скрыть / показать нижние графики", "အောက်ဂရပ်များ ဖျောက်/ပြ"],
 "· uzunlik": ["· length", "· длина", "· အရှည်"],
 "· boshlanish": ["· start", "· начало", "· အစ"],
 "· tugash": ["· end", "· конец", "· အဆုံး"],
@@ -3975,7 +3960,7 @@ var D = {
 "Qishloq nomini yozing": ["Type a village name", "Введите название деревни", "ကျေးရွာအမည် ရိုက်ထည့်ပါ"],
 "Kursor:": ["Cursor:", "Курсор:", "ကာဆာ:"],
 "Kamera:": ["Camera:", "Камера:", "ကင်မရာ:"],
-"{n} km masofa · {n}° qiyalik": ["{0} km distance · {1}° tilt", "{0} км расстояние · {1}° наклон", "{0} km အကွာ · {1}° စောင်း"],
+"{n} km masofa · {n}° egilish": ["{0} km distance · {1}° tilt", "{0} км расстояние · {1}° наклон", "{0} km အကွာ · {1}° စောင်း"],
 "Detal: {n} m bo'laklar": ["Detail: {0} m tiles", "Детализация: тайлы {0} м", "အသေးစိတ်: {0} m အကွက်များ"],
 "Panellarni yashirish": ["Hide panels", "Скрыть панели", "ဘောင်များ ဖျောက်ရန်"],
 "Panellarni ko'rsatish": ["Show panels", "Показать панели", "ဘောင်များ ပြရန်"],
@@ -4252,6 +4237,7 @@ var D = {
 "Tushish": ["Descent", "Спуск", "ဆင်း"],
 "Uzunlik": ["Length", "Длина", "အလျား"],
 "Oxiri": ["End", "Конец", "အဆုံး"],
+"Yopish": ["Close", "Закрыть", "ပိတ်ရန်"],
 "m dan boshlanadi": ["m starting elevation", "м — начальная высота", "m မှ စသည်"],
 "havzadan": ["from catchment", "с водосбора", "ရေဝေရေလဲမှ"],
 "baland": ["high", "высоко", "မြင့်"],
@@ -4412,7 +4398,6 @@ function set(l) {
   lang = l; try { localStorage.setItem('minbu_lang', l); } catch (e) {}
   document.documentElement.lang = l === 'uz' ? 'uz' : l;
   paint(); apply();
-  try { if (typeof resize === 'function') resize(); } catch (e) {}   // kanvas grafiklari (daryo nomlari) yangi tilda qayta chiziladi
 }
 function start() {
   var st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
