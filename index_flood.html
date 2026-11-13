@@ -1096,9 +1096,11 @@ void main(){
 const FAT_VS = `
 attribute float aH; attribute vec3 aOth; attribute float aSide;
 uniform float uExag, uBase, uLift, uPx;
-uniform vec2 uRes;
+uniform vec2 uRes, uSize;
+varying vec2 vMUV;
 vec4 cl(vec2 xz, float h){ return projectionMatrix * viewMatrix * vec4(xz.x, (h - uBase)*uExag + uLift, xz.y, 1.); }
 void main(){
+  vMUV = (position.xz + uSize * .5) / uSize;
   vec4 a = cl(position.xz, aH), b = cl(aOth.xy, aOth.z);
   vec2 sa = a.xy / a.w * uRes, sb = b.xy / b.w * uRes;
   vec2 d = sb - sa; d = length(d) < 1e-4 ? vec2(1.,0.) : normalize(d);
@@ -1106,17 +1108,19 @@ void main(){
   a.xy += n * aSide * uPx / uRes * a.w;
   gl_Position = a;
 }`;
-const FAT_FS = `precision highp float; uniform vec3 uCol; uniform float uA; void main(){ gl_FragColor = vec4(uCol, uA); }`;
+const FAT_FS = `precision highp float; uniform vec3 uCol; uniform float uA, uMOn; uniform sampler2D uMask; varying vec2 vMUV;
+void main(){ if(uMOn > .5 && texture2D(uMask, vMUV).r < .5) discard; gl_FragColor = vec4(uCol, uA); }`;
 // oqim chiziqlari: ekran kengligidagi lenta, havza filtri, quyi oqimga yuguruvchi to'lqinlar
 const NET_VS = `
 attribute float aH, aSide, aPh, aA, aC, aHz, aT; attribute vec3 aOth;
 uniform float uExag, uBase, uLift, uMinA, uPxK, uZB, uStr, uMinT, uOnT;
-uniform vec2 uRes;
+uniform vec2 uRes, uSize;
 varying float vPh, vSide, vC, vHz, vT;
+varying vec2 vMUV;
 vec4 cl(vec2 xz, float h){ return projectionMatrix * viewMatrix * vec4(xz.x, (h - uBase)*uExag + uLift, xz.y, 1.); }
 float wpx(float c){ return c < 1.5 ? .9 : c < 2.5 ? 1.5 : c < 3.5 ? 2.4 : c < 4.5 ? 3.4 : 3.; }
 void main(){
-  vC = aC; vPh = aPh; vSide = aSide; vHz = aHz; vT = aT;
+  vC = aC; vPh = aPh; vSide = aSide; vHz = aHz; vT = aT; vMUV = (position.xz + uSize * .5) / uSize;
   if(aA < uMinA || aT < uMinT){ gl_Position = vec4(2., 2., 2., 1.); return; }
   vec4 a = cl(position.xz, aH), b = cl(aOth.xy, aOth.z);
   vec2 sa = a.xy / a.w * uRes, sb = b.xy / b.w * uRes;
@@ -1130,9 +1134,12 @@ void main(){
 }`;
 const NET_FS = `
 precision highp float;
-uniform float uTime, uLam, uAnim, uSelNet, uStr, uOnT;
+uniform float uTime, uLam, uAnim, uSelNet, uStr, uOnT, uMOn;
+uniform sampler2D uMask;
 varying float vPh, vSide, vC, vHz, vT;
+varying vec2 vMUV;
 void main(){
+  if(uMOn > .5 && texture2D(uMask, vMUV).r < .5) discard;
   vec3 c = vC < 1.5 ? vec3(.45,.78,1.) : vC < 2.5 ? vec3(.20,.62,1.) : vC < 3.5 ? vec3(.10,.45,.95) : vC < 4.5 ? vec3(.06,.32,.85) : vec3(1.,.84,.22);
   if(uStr > .5 && vC < 98.){   // Strahler tartibi 1..7 (STR_RGB bilan bir xil)
     c = vT < 1.5 ? vec3(.776,.859,.937) : vT < 2.5 ? vec3(.620,.792,.882) : vT < 3.5 ? vec3(.420,.682,.839) : vT < 4.5 ? vec3(.259,.573,.776)
@@ -1201,7 +1208,7 @@ async function initSuv() {
   hydT.magFilter = hydT.minFilter = THREE.NearestFilter; hydT.generateMipmaps = false; hydT.needsUpdate = true;
   U.uHyd.value = hydT;
   U.uHydR.value.set(SUV.x0 - CX, CY - SUV.y0, SUV.w * SUV.res, SUV.h * SUV.res);
-  NU = { uExag: U.uExag, uBase: U.uBase, uRes: U.uRes, uLift: { value: 3 }, uMinA: { value: MIN_A[2] }, uPxK: { value: 1 }, uZB: { value: 0 },
+  NU = { uExag: U.uExag, uBase: U.uBase, uRes: U.uRes, uMask: U.uMask, uSize: U.uSize, uMOn: { value: 1 }, uLift: { value: 3 }, uMinA: { value: MIN_A[2] }, uPxK: { value: 1 }, uZB: { value: 0 },
     uTime: { value: 0 }, uLam: { value: 500 }, uAnim: { value: 1 }, uSelNet: { value: 0 }, uStr: { value: 0 }, uMinT: { value: 0 }, uOnT: { value: 0 } };
   const b = await gunzipB64(SUV_NET_B64), buf = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
   const nv = SUV.nv, nl = SUV.nl; let o = 0;
@@ -2190,11 +2197,27 @@ function fatGeom(pts, hf, closed) {
 function fatMat(col, px, a) {
   return new THREE.ShaderMaterial({
     vertexShader: FAT_VS, fragmentShader: FAT_FS, transparent: a < 1, depthWrite: false, side: THREE.DoubleSide,
-    uniforms: { uExag: U.uExag, uBase: U.uBase, uLift: { value: 3 }, uPx: { value: px }, uRes: U.uRes, uCol: { value: new THREE.Color(col) }, uA: { value: a } }
+    uniforms: { uExag: U.uExag, uBase: U.uBase, uLift: { value: 3 }, uPx: { value: px }, uRes: U.uRes, uCol: { value: new THREE.Color(col) }, uA: { value: a },
+      uMask: U.uMask, uSize: U.uSize, uMOn: { value: 1 } }
   });
 }
 
 // ---------------- qurish ----------------
+let NIQ = null, hudNiqT = null;   // tuman niqobi (rasm, tekstura) va tanlangan hudud niqobi
+function hudNiq(i) {   // tanlangan hududdan tashqarisi ko'rinmaydi (relyef, oqim yo'llari, chiziqlar)
+  if (!NIQ) return;
+  if (hudNiqT) { hudNiqT.dispose(); hudNiqT = null; }
+  if (i < 0) { U.uMask.value = NIQ.t; dirty = true; return; }
+  const im = NIQ.im, iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height, cv = document.createElement("canvas");
+  cv.width = iw; cv.height = ih; const g = cv.getContext("2d");
+  g.drawImage(im, 0, 0); g.globalCompositeOperation = "destination-in"; g.fillStyle = "#fff"; g.beginPath();
+  for (const rg of HUD.t[i].r) for (let k = 0; k < rg.length; k += 2) {
+    const px = (rg[k] - CX + SX / 2) / SX * iw, py = (CY - rg[k + 1] + SZ / 2) / SZ * ih; k ? g.lineTo(px, py) : g.moveTo(px, py);
+  }
+  g.fill("evenodd");
+  hudNiqT = new THREE.CanvasTexture(cv); hudNiqT.flipY = false; hudNiqT.generateMipmaps = false; hudNiqT.minFilter = THREE.LinearFilter;
+  U.uMask.value = hudNiqT; dirty = true;
+}
 async function init() {
   const bytes = await gunzipB64(DEM_B64);
   const d16 = new Int16Array(bytes.buffer, bytes.byteOffset, W * H);
@@ -2246,7 +2269,7 @@ async function init() {
   const [satIm, mIm] = await Promise.all([loadImg(SAT_URI), loadImg(NIQOB_URI)]);
   const tex = im => { const t = new THREE.Texture(im); t.flipY = false; t.anisotropy = renderer.capabilities.getMaxAnisotropy(); t.needsUpdate = true; return t; };
   const satT = tex(satIm), mT = tex(mIm);
-  mT.generateMipmaps = false; mT.minFilter = THREE.LinearFilter;
+  mT.generateMipmaps = false; mT.minFilter = THREE.LinearFilter; NIQ = { im: mIm, t: mT };
 
   fineCv = document.createElement("canvas"); fineCv.width = fineCv.height = FINE_PX;
   fineCtx = fineCv.getContext("2d");
@@ -2599,7 +2622,7 @@ function initUI() {
   rng("sunaz", v => { S.sunAz = v; setSun(); }, v => v + "°");
   $("kont").onchange = e => { S.kont = +e.target.value; U.uKont.value = S.kont; dirty = true; };
   $("sifat").onchange = e => { buildTerrain(+e.target.value); };
-  $("devorB").onclick = () => { S.devor = !S.devor; $("devorB").classList.toggle("on", S.devor); $("devorB").textContent = S.devor ? "Ko'rsatish" : "Yashirin"; wall.visible = S.devor; dirty = true; };
+  $("devorB").onclick = () => { S.devor = !S.devor; $("devorB").classList.toggle("on", S.devor); $("devorB").textContent = S.devor ? "Ko'rsatish" : "Yashirin"; wall.visible = S.devor && hudSel < 0; dirty = true; };
   $("kompas").onclick = () => flyTo({ az: 0 });
   $("zin").onclick = () => flyTo({ dist: Math.max(120, cam.dist * .55) }, 400);
   $("zout").onclick = () => flyTo({ dist: Math.min(4e5, cam.dist * 1.8) }, 400);
@@ -2710,7 +2733,7 @@ function clickAt(x, y) {
     else { profB = p; profMode = 1; hint("Yangi profil uchun A nuqtani bosing · Esc — chiqish"); makeProfile(); }
     dirty = true; return;
   }
-  if (!p || !exactAt(p.x, p.z)) {   // xaritadan (tuman chegarasidan) tashqari -> barcha tanlovlar bekor
+  if (!p || !exactAt(p.x, p.z) || (hudSel >= 0 && hudAt(p.x, p.z) !== hudSel)) {   // xaritadan (yoki tanlangan hududdan) tashqari -> barcha tanlovlar bekor
     const bor = hudSel >= 0 || !!popAt;
     closePop(); $("qidir").value = ""; hudTanla(-1, false);
     if (bor) home();
@@ -3376,7 +3399,7 @@ function initHudud() {
     s.onclick = e => { e.stopPropagation(); hudTanla(i); }; box.appendChild(s); return s;
   });
   const chip = (id, f) => $(id).onclick = () => { $(id).classList.toggle("on"); f($(id).classList.contains("on")); dirty = true; };
-  chip("hOn", on => { hudMesh.visible = on; if (hudSelMesh) hudSelMesh.visible = on; });
+  chip("hOn", on => { hudMesh.visible = on && hudSel < 0; if (hudSelMesh) hudSelMesh.visible = on; });
   chip("hNom", () => {});
   $("hSort").onchange = hudList;
   $("hList").onclick = e => { const b = e.target.closest("button"); if (b) hudTanla(+b.dataset.i); };
@@ -3395,6 +3418,7 @@ function hudLabels() {
   const ord = HUD.t.map((t, i) => i).sort((a, b) => (b === hudSel) - (a === hudSel) || HUD.t[b].a - HUD.t[a].a);
   for (const i of ord) {
     const t = HUD.t[i], el = hudLabEls[i], [x, z] = hudXY(t.l[0], t.l[1]);
+    if (hudSel >= 0 && i !== hudSel) { el.style.display = "none"; continue; }
     _hp.set(x, sceneY(fillAt(x, z)), z).project(camera);
     if (_hp.z > 1 || Math.abs(_hp.x) > 1 || Math.abs(_hp.y) > 1) { el.style.display = "none"; continue; }
     const sx = rc.left + (_hp.x + 1) / 2 * rc.width, sy = rc.top + (1 - _hp.y) / 2 * rc.height;
@@ -3420,7 +3444,10 @@ function hudAt(X, Z) {
 function hudRow(X, Z) { const i = hudAt(X, Z); return i >= 0 ? `<tr><td>Qishloq nomi</td><td>${HUD.t[i].n}</td></tr>` : ""; }
 function hudTanla(i, fly = true, keepPop = false) {
   if (hudSelMesh) { scene.remove(hudSelMesh); hudSelMesh.geometry.dispose(); hudSelMesh = null; }
-  hudSel = i;
+  hudSel = i; hudNiq(i);
+  if (hudMesh) hudMesh.visible = $("hOn").classList.contains("on") && i < 0;
+  if (edgeLine) edgeLine.visible = i < 0;
+  if (wall) wall.visible = S.devor && i < 0;
   document.querySelectorAll("#hList button").forEach(b => b.classList.toggle("on", +b.dataset.i === i));
   if (i >= 0) {
     const t = HUD.t[i];
@@ -3433,6 +3460,7 @@ function hudTanla(i, fly = true, keepPop = false) {
       return fatGeom(p, (x, z) => fillAt(x, z), true);
     });
     hudSelMesh = new THREE.Mesh(geomMerge(gs), fatMat(0xef4444, 3.2, 1));
+    hudSelMesh.material.uniforms.uMOn.value = 0;
     hudSelMesh.renderOrder = 3; hudSelMesh.visible = $("hOn").classList.contains("on"); scene.add(hudSelMesh);
     if (fly) {
       const b = t.bb, cx = (b[0] + b[2]) / 2 - CX, cz = CY - (b[1] + b[3]) / 2, ext = Math.max(b[2] - b[0], b[3] - b[1]);
