@@ -593,9 +593,9 @@ body.nopan .bkB{display:none}
     <div class="sec" id="secSuv">
       <h2>Yomg'ir suvi oqimi</h2>
       <div class="chips">
-        <button class="chip on" id="sTarmoq" hidden>Oqim yo'llari</button>
+        <button class="chip" id="sTarmoq" hidden>Oqim yo'llari</button>
         <button class="chip" id="sShakl">Oqim shakli</button>
-        <button class="chip on" id="sKol" hidden>Ko'lmak va daryo</button>
+        <button class="chip" id="sKol" hidden>Ko'lmak va daryo</button>
         <button class="chip" id="sStr" title="Xalqaro standart: eng uchidagi irmoq 1-tartib; ikkita bir xil tartibli oqim qo'shilsa tartib bittaga oshadi, har xil bo'lsa kattasi qoladi">Strahler tartibi</button>
       </div>
       <div class="row"><label for="sMin">Ko'rsatiladigan oqimlar</label><input id="sMin" type="range" min="0" max="6" step="1" value="2"><output id="sMinO" style="flex-basis:78px">≥1 km²</output></div>
@@ -1210,6 +1210,7 @@ async function initSuv() {
     L.push({ x, z, ph: p, A: hv[l], c: sc[l], t: tt[l] });
   }
   netMesh = new THREE.Mesh(lineGeom(L), netMat(true));
+  netMesh.visible = false;   // oqim yo'llari faqat "Strahler tartibi" yoqilganda ko'rinadi
   netMesh.renderOrder = 1; scene.add(netMesh);
 }
 function hydCell(X, Z) {
@@ -2233,7 +2234,7 @@ async function init() {
     uMode: { value: S.mode }, uShade: { value: S.shade }, uKont: { value: S.kont }, uMin: { value: ST.min }, uMax: { value: ST.max },
     uSun: { value: new THREE.Vector3() }, uCamP: { value: new THREE.Vector3() }, uHaze: { value: new THREE.Color(0x8fa3b8) },
     uWall: { value: 400 }, uRes: { value: new THREE.Vector2(1, 1) },
-    uHyd: { value: null }, uHydR: { value: new THREE.Vector4(0, 0, 1, 1) }, uShaklOn: { value: 0 }, uKolOn: { value: 1 }, uHavzaOn: { value: 0 },
+    uHyd: { value: null }, uHydR: { value: new THREE.Vector4(0, 0, 1, 1) }, uShaklOn: { value: 0 }, uKolOn: { value: 0 }, uHavzaOn: { value: 0 },
     uTopOn: { value: 1 }, uTopPast: { value: 0 }, uTopCls: { value: new THREE.Vector3(1, 1, 1) }, uHydSz: { value: new THREE.Vector2(1, 1) },
     uDat: { value: null }, uDatOn: { value: 0 },
     uFlow: { value: null }, uSuvOn: { value: 0 }, uSuvT: { value: 0 }, uSuvSc: { value: 120 }
@@ -2582,7 +2583,7 @@ function initUI() {
   tog("sKol", on => { U.uKolOn.value = on ? 1 : 0; });
   const sm = $("sMin"), smh = () => { const a = MIN_A[+sm.value]; NU.uMinA.value = a; $("sMinO").textContent = "havza ≥" + (a < 1 ? a + " km²" : a + " km²"); dirty = true; };
   sm.oninput = smh; smh();
-  tog("sStr", on => { NU.uStr.value = on ? 1 : 0; if (on && !netMesh.visible) $("sTarmoq").click(); sLegend(); });
+  tog("sStr", on => { NU.uStr.value = on ? 1 : 0; if (on !== netMesh.visible) $("sTarmoq").click(); sLegend(); });
   const strI = $("sTr"), strh = () => { const t = +strI.value; NU.uMinT.value = t > 1 ? t : 0; $("sTrO").textContent = t > 1 ? "≥" + t + "-tartib" : "hammasi"; dirty = true; };
   strI.oninput = strh; strh();
   $("tomB").onclick = () => setTom(!tomMode);
@@ -2790,14 +2791,14 @@ function daryoChiz() {   // xaritada daryolar — grafikdagi rang bilan
   if (daryoMesh.length || !daryoYol) return;
   daryoYol.forEach(d => {
     const m = new THREE.Mesh(fatGeom(d.pts, (x, z) => validNear(x, z) ? fillAt(x, z) : BASE, false), fatMat(d.rang, 3, .95));
-    m.renderOrder = 3; m.material.depthTest = false; scene.add(m); daryoMesh.push(m);
+    m.renderOrder = 3; m.material.depthTest = false; m.visible = false; scene.add(m); daryoMesh.push(m);
   });
 }
 function daryoBelgi(k) {   // grafikda ushlangan daryo xaritada ham ajraladi
-  daryoMesh.forEach((m, i) => { m.material.uniforms.uPx.value = k < 0 ? 3 : i === k ? 6.5 : 2; m.material.uniforms.uA.value = k < 0 || i === k ? .95 : .35; });
+  daryoMesh.forEach((m, i) => { m.visible = i === k; m.material.uniforms.uPx.value = 5; m.material.uniforms.uA.value = .95; });   // faqat grafikda ushlangan daryo
   dirty = true;
 }
-function daryoKor(on) { daryoMesh.forEach(m => m.visible = on); if (!on) daryoBelgi(-1); dirty = true; }
+function daryoKor(on) { if (!on) daryoBelgi(-1); dirty = true; }
 const TL = t => window.FloodTil ? window.FloodTil.L(t) : t;   // grafikdagi daryo nomlari tanlangan tilda
 function drawDaryo(mx, my) {
   const cv = $("pc"), dpr = devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
@@ -3505,7 +3506,7 @@ function initStrTanlov() {
     strTan = strTan === t ? 0 : t;
     NU.uOnT.value = strTan;
     if (strTan) {
-      if (netMesh && !netMesh.visible) $("sTarmoq").click();
+      if (!$("sStr").classList.contains("on")) $("sStr").click();   // oqimlar faqat Strahler ranglarida
       if (NU.uMinT.value > strTan) { $("sTr").value = 1; $("sTr").oninput(); }
     }
     strBelgi(); dirty = true;
