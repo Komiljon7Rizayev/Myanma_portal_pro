@@ -1818,9 +1818,7 @@ function hecChiz() {
     [fmt(tash * ga, 0) + " ga", t < 0 ? "Eng katta suv (o'zandan tashqari)" : "Suv bosgan (o'zandan tashqari)"],
     [fmt(jami * ga / 100, 1) + " km²", "Jami suv (o'zanlar bilan)"],
     [fmt(m.eng_katta_tash_ga, 0) + " ga", "Hodisadagi eng katta (o'zandan tashqari)"],
-    [fmt(m.yogin_mm, 1) + " mm", `Yog'in, ${Math.round(HEC.T / 24)} kun (ERA5, Minbu o'rtacha)`],
-    [fmt(m.sar.sar_ga, 0) + " ga", `Sentinel-1 ko'rgan suv (${m.sar.vaqt})`],
-    [fmt(m.sar.mos_ga, 0) + " ga", `Model bilan mos (model ${fmt(m.sar.model_ga, 0)} ga)`]
+    [fmt(m.yogin_mm, 1) + " mm", `Yog'in, ${Math.round(HEC.T / 24)} kun (ERA5, Minbu o'rtacha)`]
   ].map(([v, s]) => `<div><b>${v}</b><span>${s}</span></div>`).join("");
   const rgb = c => `rgb(${c.join(",")})`;
   $("selLeg").innerHTML = HEC_JOY.map(([nm, c], s) => `<span><i style="height:10px;background:${rgb(c)}"></i>${nm}<b style="margin-left:auto;font-weight:500;color:var(--tx3)">${fmt(sg[s] * ga, 0)} ga</b></span>`).join("")
