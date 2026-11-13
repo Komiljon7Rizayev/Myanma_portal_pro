@@ -397,6 +397,7 @@ input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:tex
   background:rgba(8,13,22,.85);border:1px solid var(--panel-b);border-radius:var(--r);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 #tools .tfly[hidden]{display:none}
 .chip[hidden]{display:none!important}
+.nav button[hidden]{display:none!important}
 #tools .tfly .tlab{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;padding:6px 10px 2px;white-space:nowrap}
 #tools .tfly{top:auto;bottom:0;max-height:calc(100vh - 140px);overflow-y:auto}
 #tools .tfly button{width:auto;height:30px;padding:0 10px;text-align:left;font:inherit;font-size:12.5px;background:none;color:var(--tx2)}
@@ -514,7 +515,7 @@ body.nopan .bkB{display:none}
     <button data-n="dash" class="on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Boshqaruv paneli</span></button>
     <button data-n="hud"><svg viewBox="0 0 24 24"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg><span>Hududlar</span></button>
     <button data-n="suv"><svg viewBox="0 0 24 24"><path d="M4 6c3 0 3 3 6 3s3-3 6-3 3 3 4 3"/><path d="M4 13c3 0 3 3 6 3s3-3 6-3 3 3 4 3"/></svg><span>Suv oqimi</span></button>
-    <button data-n="top"><svg viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></svg><span>To'planish joylari</span></button>
+    <button data-n="top" hidden><svg viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></svg><span>To'planish joylari</span></button>
     <button data-n="yog"><svg viewBox="0 0 24 24"><path d="M7 15a4 4 0 0 1 .5-8A5.5 5.5 0 0 1 18 8.5 3.5 3.5 0 0 1 17.5 15z"/><path d="M8 18l-1 2.5M12 18l-1 2.5M16 18l-1 2.5"/></svg><span>Yog'in ma'lumotlari</span></button>
     <button data-n="sel"><svg viewBox="0 0 24 24"><path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17v.5"/></svg><span>Sel xavfi</span></button>
     <button data-n="soz"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Sozlamalar va asboblar</span></button>
@@ -608,7 +609,7 @@ body.nopan .bkB{display:none}
     <div class="sec" id="secTop">
       <h2>Suv to'planib qoladigan joylar</h2>
       <div class="chips">
-        <button class="chip on" id="tOn">Ko'rsatish</button>
+        <button class="chip" id="tOn">Ko'rsatish</button>
         <button class="chip on" id="tK" title="Berk chuqurliklar: suv chiqib ketolmaydi">Ko'lmaklar</button>
         <button class="chip on" id="tH">Hovuzlar</button>
         <button class="chip on" id="tP" title="Soy/daryodan 1 m gacha baland tekis joylar">Suv bosadigan pastliklar</button>
@@ -2235,7 +2236,7 @@ async function init() {
     uSun: { value: new THREE.Vector3() }, uCamP: { value: new THREE.Vector3() }, uHaze: { value: new THREE.Color(0x8fa3b8) },
     uWall: { value: 400 }, uRes: { value: new THREE.Vector2(1, 1) },
     uHyd: { value: null }, uHydR: { value: new THREE.Vector4(0, 0, 1, 1) }, uShaklOn: { value: 0 }, uKolOn: { value: 0 }, uHavzaOn: { value: 0 },
-    uTopOn: { value: 1 }, uTopPast: { value: 0 }, uTopCls: { value: new THREE.Vector3(1, 1, 1) }, uHydSz: { value: new THREE.Vector2(1, 1) },
+    uTopOn: { value: 0 }, uTopPast: { value: 0 }, uTopCls: { value: new THREE.Vector3(1, 1, 1) }, uHydSz: { value: new THREE.Vector2(1, 1) },
     uDat: { value: null }, uDatOn: { value: 0 },
     uFlow: { value: null }, uSuvOn: { value: 0 }, uSuvT: { value: 0 }, uSuvSc: { value: 120 }
   };
