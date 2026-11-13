@@ -721,6 +721,7 @@ body.nopan .bkB{display:none}
   <button id="tilt" class="tl" title="Tepadan / qiya ko'rinish"><svg viewBox="0 0 24 24"><path d="M3 18l6-8 4 5 3-4 5 7z"/></svg><span>3D</span></button>
   <div class="tz"><button id="zin" title="Yaqinlashish">+</button><button id="zout" title="Uzoqlashish">−</button><button id="kompas" title="Shimolga qaratish"><svg width="16" height="16" viewBox="0 0 22 22"><path d="M11 2l4 9h-8z" fill="#e8584c"/><path d="M11 20l-4-9h8z" fill="#cfd6dd"/></svg></button></div>
   <i class="tsep"></i>
+  <button id="hamB" class="tl" title="Bosilgan bo'lsa: hudud tanlanganda ham qolgan qishloq va hududlar ko'rinib turadi"><svg viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span>Hammasi ko'rinsin</span></button>
   <button id="tozB" class="tl" title="Tanlovni bekor qilish va butun tumanga qaytish"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg><span>Tozalash</span></button>
   <button id="fullB" class="tl" title="To'liq ekran"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>To'liq ekran</span></button>
 </div>
@@ -2203,6 +2204,41 @@ function fatMat(col, px, a) {
 }
 
 // ---------------- qurish ----------------
+function devorGeom(pts) {   // yopiq chiziq bo'ylab tik devor (WALL_VS uchun)
+  const n = pts.length, P = new Float32Array(n * 2 * 3), A = new Float32Array(n * 2), T = new Float32Array(n * 2), N = new Float32Array(n * 2 * 3), idx = [];
+  for (let i = 0; i < n; i++) {
+    const p = pts[i], q = pts[(i + 1) % n], o = pts[(i - 1 + n) % n];
+    const tx = q[0] - o[0], tz = q[1] - o[1], L = Math.hypot(tx, tz) || 1, h = fillAt(p[0], p[1]);
+    for (let k = 0; k < 2; k++) { const j = i * 2 + k; P.set([p[0], 0, p[1]], j * 3); A[j] = h; T[j] = k; N.set([tz / L, 0, -tx / L], j * 3); }
+    const a = i * 2, b = ((i + 1) % n) * 2; idx.push(a, b, a + 1, a + 1, b, b + 1);
+  }
+  const wg = new THREE.BufferGeometry();
+  wg.setAttribute("position", new THREE.BufferAttribute(P, 3)); wg.setAttribute("aH", new THREE.BufferAttribute(A, 1));
+  wg.setAttribute("aTop", new THREE.BufferAttribute(T, 1)); wg.setAttribute("normal", new THREE.BufferAttribute(N, 3)); wg.setIndex(idx);
+  wg.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e7);
+  return wg;
+}
+let hudAjrat = true, hudIso = false, hudDevorM = [];   // hudAjrat: tanlanganda boshqa hududlar yashiriladi ("Hammasi ko'rinsin" o'chiq)
+try { hudAjrat = localStorage.getItem("minbu_ham") !== "1"; } catch (e) {}
+function hudKor() {   // tanlangan hudud ajratilganmi — niqob, chiziqlar, devor
+  hudIso = hudSel >= 0 && hudAjrat;
+  hudNiq(hudIso ? hudSel : -1);
+  if (hudMesh) hudMesh.visible = $("hOn").classList.contains("on") && !hudIso;
+  if (edgeLine) edgeLine.visible = !hudIso;
+  if (wall) wall.visible = S.devor && !hudIso;
+  for (const m of hudDevorM) { scene.remove(m); m.geometry.dispose(); }
+  hudDevorM = [];
+  if (hudIso) for (const rg of HUD.t[hudSel].r) {
+    const p = [];
+    for (let k = 0; k < rg.length - 2; k += 2) {
+      const [x0, z0] = hudXY(rg[k], rg[k + 1]), [x1, z1] = hudXY(rg[k + 2], rg[k + 3]), n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, z1 - z0) / 30));
+      for (let q = 0; q < n; q++) p.push([x0 + (x1 - x0) * q / n, z0 + (z1 - z0) * q / n]);
+    }
+    if (p.length < 3) continue;
+    const m = new THREE.Mesh(devorGeom(p), wall.material); m.visible = S.devor; scene.add(m); hudDevorM.push(m);
+  }
+  dirty = true;
+}
 let NIQ = null, hudNiqT = null;   // tuman niqobi (rasm, tekstura) va tanlangan hudud niqobi
 function hudNiq(i) {   // tanlangan hududdan tashqarisi ko'rinmaydi (relyef, oqim yo'llari, chiziqlar)
   if (!NIQ) return;
@@ -2521,6 +2557,12 @@ function toolsUI() {
   document.addEventListener("pointerdown", e => { if (!q.contains(e.target)) { mm.hidden = true; q.classList.remove("och"); } });
   const t3 = () => $("tilt").classList.toggle("on", cam.pol > .3);
   setInterval(t3, 400); t3();
+  $("hamB").classList.toggle("on", !hudAjrat);
+  $("hamB").onclick = () => {
+    hudAjrat = !hudAjrat; $("hamB").classList.toggle("on", !hudAjrat);
+    try { localStorage.setItem("minbu_ham", hudAjrat ? "0" : "1"); } catch (e) {}
+    hudKor();
+  };
   $("tozB").onclick = () => {
     if (tomMode) setTom(false);
     if (profMode) setProf(0);
@@ -2622,7 +2664,7 @@ function initUI() {
   rng("sunaz", v => { S.sunAz = v; setSun(); }, v => v + "°");
   $("kont").onchange = e => { S.kont = +e.target.value; U.uKont.value = S.kont; dirty = true; };
   $("sifat").onchange = e => { buildTerrain(+e.target.value); };
-  $("devorB").onclick = () => { S.devor = !S.devor; $("devorB").classList.toggle("on", S.devor); $("devorB").textContent = S.devor ? "Ko'rsatish" : "Yashirin"; wall.visible = S.devor && hudSel < 0; dirty = true; };
+  $("devorB").onclick = () => { S.devor = !S.devor; $("devorB").classList.toggle("on", S.devor); $("devorB").textContent = S.devor ? "Ko'rsatish" : "Yashirin"; wall.visible = S.devor && !hudIso; for (const m of hudDevorM) m.visible = S.devor; dirty = true; };
   $("kompas").onclick = () => flyTo({ az: 0 });
   $("zin").onclick = () => flyTo({ dist: Math.max(120, cam.dist * .55) }, 400);
   $("zout").onclick = () => flyTo({ dist: Math.min(4e5, cam.dist * 1.8) }, 400);
@@ -2733,7 +2775,7 @@ function clickAt(x, y) {
     else { profB = p; profMode = 1; hint("Yangi profil uchun A nuqtani bosing · Esc — chiqish"); makeProfile(); }
     dirty = true; return;
   }
-  if (!p || !exactAt(p.x, p.z) || (hudSel >= 0 && hudAt(p.x, p.z) !== hudSel)) {   // xaritadan (yoki tanlangan hududdan) tashqari -> barcha tanlovlar bekor
+  if (!p || !exactAt(p.x, p.z) || (hudIso && hudAt(p.x, p.z) !== hudSel)) {   // xaritadan (yoki tanlangan hududdan) tashqari -> barcha tanlovlar bekor
     const bor = hudSel >= 0 || !!popAt;
     closePop(); $("qidir").value = ""; hudTanla(-1, false);
     if (bor) home();
@@ -3212,7 +3254,7 @@ function joyKarta(p) {
     }
   }
   const hi = hudAt(p.x, p.z);
-  if (hi >= 0 && hi !== hudSel) hudTanla(hi, false, true);
+  if (hi >= 0 && hi !== hudSel) hudTanla(hi, hudAjrat, true);
   joyH = d.h;
   const nom = p.nom || "Tanlangan nuqta";
   const tbl = $("pop").querySelector("table");
@@ -3399,7 +3441,7 @@ function initHudud() {
     s.onclick = e => { e.stopPropagation(); hudTanla(i); }; box.appendChild(s); return s;
   });
   const chip = (id, f) => $(id).onclick = () => { $(id).classList.toggle("on"); f($(id).classList.contains("on")); dirty = true; };
-  chip("hOn", on => { hudMesh.visible = on && hudSel < 0; if (hudSelMesh) hudSelMesh.visible = on; });
+  chip("hOn", on => { hudMesh.visible = on && !hudIso; if (hudSelMesh) hudSelMesh.visible = on; });
   chip("hNom", () => {});
   $("hSort").onchange = hudList;
   $("hList").onclick = e => { const b = e.target.closest("button"); if (b) hudTanla(+b.dataset.i); };
@@ -3418,7 +3460,7 @@ function hudLabels() {
   const ord = HUD.t.map((t, i) => i).sort((a, b) => (b === hudSel) - (a === hudSel) || HUD.t[b].a - HUD.t[a].a);
   for (const i of ord) {
     const t = HUD.t[i], el = hudLabEls[i], [x, z] = hudXY(t.l[0], t.l[1]);
-    if (hudSel >= 0 && i !== hudSel) { el.style.display = "none"; continue; }
+    if (hudIso && i !== hudSel) { el.style.display = "none"; continue; }
     _hp.set(x, sceneY(fillAt(x, z)), z).project(camera);
     if (_hp.z > 1 || Math.abs(_hp.x) > 1 || Math.abs(_hp.y) > 1) { el.style.display = "none"; continue; }
     const sx = rc.left + (_hp.x + 1) / 2 * rc.width, sy = rc.top + (1 - _hp.y) / 2 * rc.height;
@@ -3444,10 +3486,7 @@ function hudAt(X, Z) {
 function hudRow(X, Z) { const i = hudAt(X, Z); return i >= 0 ? `<tr><td>Qishloq nomi</td><td>${HUD.t[i].n}</td></tr>` : ""; }
 function hudTanla(i, fly = true, keepPop = false) {
   if (hudSelMesh) { scene.remove(hudSelMesh); hudSelMesh.geometry.dispose(); hudSelMesh = null; }
-  hudSel = i; hudNiq(i);
-  if (hudMesh) hudMesh.visible = $("hOn").classList.contains("on") && i < 0;
-  if (edgeLine) edgeLine.visible = i < 0;
-  if (wall) wall.visible = S.devor && i < 0;
+  hudSel = i; hudKor();
   document.querySelectorAll("#hList button").forEach(b => b.classList.toggle("on", +b.dataset.i === i));
   if (i >= 0) {
     const t = HUD.t[i];
@@ -3465,7 +3504,7 @@ function hudTanla(i, fly = true, keepPop = false) {
     if (fly) {
       const b = t.bb, cx = (b[0] + b[2]) / 2 - CX, cz = CY - (b[1] + b[3]) / 2, ext = Math.max(b[2] - b[0], b[3] - b[1]);
       const fj = boshJoy(), k = Math.min(3, Math.max(innerHeight / Math.max(200, fj.b - fj.t), innerWidth / Math.max(200, fj.r - fj.l)));
-      flyTo({ x: cx, y: sceneY(fillAt(cx, cz)), z: cz, dist: Math.max(1500, ext * 1.5 * k), pol: Math.min(cam.pol, .8) }, 1100);
+      flyTo({ x: cx, y: sceneY(fillAt(cx, cz)), z: cz, dist: Math.max(1200, ext * (hudIso ? 1.4 : 1.5) * k), pol: Math.min(cam.pol, .8) }, 1100);
     }
   }
   if (!keepPop) closePop();
