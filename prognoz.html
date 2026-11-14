@@ -12,179 +12,900 @@
 <style>
 :root{
   --bg:#f3efe6;--bg2:#fbf8f2;--card:#ffffff;--card2:#f4efe5;--line:rgba(60,48,30,.12);--line2:rgba(60,48,30,.24);
-  --tx:#1f1b14;--tx2:#6b6152;--tx3:#958a78;--acc:#c8553d;--acc2:#3f5f2f;--fc:#1b4fbf;--warm:#d98a2b;--bad:#b83a2b;--good:#3f7d3a;
+  --tx:#1f1b14;--tx2:#5f5648;--tx3:#8d8271;--acc:#c8553d;--acc2:#3f5f2f;--fc:#1b4fbf;--bad:#b83a2b;--good:#2f7d3a;
+  --c0:#c44e3a;--c1:#eda65a;--c2:#d6d9c6;--c3:#86c57a;--c4:#2a8540;
   --display:'Sora',system-ui,sans-serif;--body:'Manrope',system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);font:14px/1.45 var(--body)}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);font:14.5px/1.5 var(--body)}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 a{color:inherit}
-.app{height:100vh;display:grid;grid-template-rows:64px 1fr;background:radial-gradient(1100px 520px at 75% -12%,rgba(217,138,43,.16),transparent 60%),radial-gradient(900px 500px at -10% 110%,rgba(63,95,47,.12),transparent 60%),var(--bg)}
-.top{display:flex;align-items:center;gap:16px;padding:0 20px;border-bottom:1px solid var(--line);background:rgba(251,248,242,.9);backdrop-filter:blur(10px)}
-.back{display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--line2);text-decoration:none;font-weight:600;font-size:13px;color:var(--tx2);transition:.15s}
-.back:hover{color:var(--tx);border-color:var(--acc)}
-.brand{display:flex;align-items:center;gap:12px;min-width:0}
-.brand img{width:34px;height:34px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5))}
-.brand h1{margin:0;font:500 19px var(--display);letter-spacing:.01em;white-space:nowrap}
-.brand h1 b{font-weight:600;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
-.brand p{margin:0;font-size:12px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:focus-visible{outline:2px solid var(--fc);outline-offset:2px}
+.app{height:100vh;display:grid;grid-template-rows:64px 1fr;background:radial-gradient(1100px 520px at 75% -12%,rgba(217,138,43,.14),transparent 60%),radial-gradient(900px 500px at -10% 110%,rgba(63,95,47,.1),transparent 60%),var(--bg)}
+/* header */
+.top{display:flex;align-items:center;gap:12px;padding:0 18px;border-bottom:1px solid var(--line);background:rgba(251,248,242,.92);backdrop-filter:blur(10px);min-width:0}
 .top .sp{flex:1}
-.pill{display:flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:12px;color:var(--tx2);white-space:nowrap}
-.pill i{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 8px var(--good)}
-.mbtn{height:34px;padding:0 14px;border-radius:10px;background:var(--tx);color:var(--bg2);border:1px solid var(--tx);font-weight:600;font-size:13px}
-.mbtn:hover{border-color:var(--acc)}
-.grid{display:grid;grid-template-columns:290px 1fr 410px;min-height:0}
+.pnav{display:flex;align-items:center;gap:8px;flex:none}
+.pb{display:flex;align-items:center;gap:7px;height:40px;padding:0 14px;border-radius:11px;text-decoration:none;font:500 14.5px var(--display);white-space:nowrap;transition:filter .15s,transform .15s}
+.pb:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.pb svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.pmain{padding-left:5px;color:#eaf6e4;background:linear-gradient(180deg,#2c4a31,#1b3420);border:1px solid rgba(127,208,108,.5);box-shadow:0 4px 14px rgba(27,52,32,.28),inset 0 1px 0 rgba(255,255,255,.08)}
+.pmain img{width:30px;height:30px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.pfc{color:#fff7ef;background:linear-gradient(180deg,#d4673f,#a9452a);border:1px solid #f0a07c;box-shadow:0 4px 14px rgba(169,69,42,.38),inset 0 1px 0 rgba(255,255,255,.2)}
+.pfc[aria-current="page"]{cursor:default;transform:none;filter:none;outline:2px solid rgba(212,103,63,.35);outline-offset:2px}
+.pfl{color:#e6f3ff;background:linear-gradient(180deg,#2f7fd0,#1d5ea8);border:1px solid #5aa2ea;box-shadow:0 4px 14px rgba(29,94,168,.35),inset 0 1px 0 rgba(255,255,255,.18)}
+.pill{display:flex;align-items:center;gap:7px;height:32px;padding:0 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:12.5px;color:var(--tx2);white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 8px var(--good);flex:none}
+.hb{display:flex;align-items:center;gap:7px;height:38px;padding:0 13px;border-radius:10px;border:1px solid var(--line2);background:var(--card);font-weight:600;font-size:13.5px;white-space:nowrap}
+.hb:hover{border-color:var(--acc)}
+.hb svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.hb.dark{background:var(--tx);color:var(--bg2);border-color:var(--tx)}
+/* layout */
+.grid{display:grid;grid-template-columns:316px 1fr clamp(400px,27vw,500px);min-height:0}
 .rail,.insight{overflow:auto;padding:16px;display:flex;flex-direction:column;gap:14px;min-height:0}
 .rail{border-right:1px solid var(--line)}
 .insight{border-left:1px solid var(--line)}
-.sec h3,.skill h3{margin:0 0 8px;font:600 11px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--tx3)}
+.step{display:flex;align-items:center;gap:9px;margin:0 0 9px;font:600 13.5px var(--display)}
+.step i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--tx);color:var(--bg2);font:600 12px var(--body);font-style:normal}
+.hz{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.hz button{padding:9px 4px 8px;border-radius:12px;background:var(--card);border:1px solid var(--line);text-align:center;line-height:1.25;transition:.15s}
+.hz button:hover{border-color:var(--line2)}
+.hz button b{display:block;font:600 16px var(--display)}
+.hz button span{display:block;font-size:12px;color:var(--tx2)}
+.hz button em{display:block;margin-top:5px;font-style:normal;font-size:11px;font-weight:600;color:var(--tx3)}
+.hz button em u{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--line2);margin:0 1px;text-decoration:none}
+.hz button em u.on{background:var(--good)}
+.hz button[aria-pressed="true"]{background:#fbe9e3;border-color:var(--acc);box-shadow:0 6px 16px rgba(200,85,61,.16)}
 .modes{display:flex;flex-direction:column;gap:6px}
-.modes button{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:11px;background:var(--card);border:1px solid var(--line);text-align:left;transition:.15s}
+.modes button{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:var(--card);border:1px solid var(--line);text-align:left;transition:.15s}
 .modes button:hover{border-color:var(--line2)}
 .modes button[aria-pressed="true"]{border-color:var(--acc2);background:#eef3e6;box-shadow:inset 3px 0 0 var(--acc2)}
-.modes .sw{width:30px;height:30px;border-radius:9px;flex:none}
-.modes b{display:block;font-size:13px;font-weight:600}
-.modes small{display:block;font-size:11.5px;color:var(--tx2);line-height:1.3}
-.legend .bar{height:10px;border-radius:5px}
-.legend .ax{display:flex;justify-content:space-between;font-size:11px;color:var(--tx2);margin-top:4px}
-select{width:100%;height:36px;border-radius:10px;background:var(--card);border:1px solid var(--line);color:var(--tx);padding:0 10px;font:inherit}
-.skill{padding:12px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
-.skill .row{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:3px 0;color:var(--tx2)}
-.skill .row b{color:var(--tx);font-weight:600;white-space:nowrap}
-.skill .note{font-size:11.5px;color:var(--tx3);margin-top:6px}
+.modes .sw{width:32px;height:32px;border-radius:9px;flex:none;border:1px solid rgba(0,0,0,.06)}
+.modes b{display:block;font-size:13.5px;font-weight:600}
+.modes small{display:block;font-size:12px;color:var(--tx2);line-height:1.3}
+select{width:100%;height:40px;border-radius:11px;background:var(--card);border:1px solid var(--line);color:var(--tx);padding:0 10px;font:inherit}
+.tog{display:flex;flex-direction:column;gap:2px;padding:6px 10px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.tog label{display:flex;align-items:center;gap:9px;padding:5px 0;font-size:13px;cursor:pointer}
+.tog input{width:16px;height:16px;accent-color:var(--acc2)}
+.box{padding:12px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
+.box h3{margin:0 0 8px;font:600 11px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--tx3)}
+.box .row{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:3px 0;color:var(--tx2)}
+.box .row b{color:var(--tx);font-weight:600;white-space:nowrap}
+.stg{display:flex;height:10px;border-radius:5px;overflow:hidden;margin:6px 0 4px}
+.stgl{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11.5px;color:var(--tx2)}
+.stgl i,.lgd i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* map */
 .mapwrap{position:relative;min-height:0}
 #map{position:absolute;inset:0}
-.tip{position:absolute;z-index:5;pointer-events:none;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.97);border:1px solid var(--line2);font-size:12px;box-shadow:0 10px 26px rgba(60,48,30,.18);white-space:nowrap}
-.timeline{position:absolute;left:16px;right:16px;bottom:16px;z-index:4;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:rgba(255,255,255,.93);border:1px solid var(--line2);backdrop-filter:blur(10px);box-shadow:0 12px 30px rgba(60,48,30,.16)}
-.play{width:38px;height:38px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--acc);color:#fff;box-shadow:0 6px 16px rgba(200,85,61,.35)}
-.play svg{width:16px;height:16px;fill:currentColor}
-.tl{flex:1;display:grid;grid-template-columns:repeat(3,1fr) 1.3fr;gap:6px;min-width:0}
-.tl button{height:46px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--tx2);border:1px solid var(--line);background:var(--card);line-height:1.15}
-.tl button small{font-size:10.5px;color:var(--tx3);font-weight:500}
-.tl button:hover{border-color:var(--line2)}
-.tl button[aria-pressed="true"]{background:#fbe9e3;border-color:var(--acc);color:var(--tx)}
-.tl .far{display:flex;flex-direction:column;justify-content:center;padding:0 10px;font-size:11px;color:var(--tx3);line-height:1.3;border-left:1px dashed var(--line2)}
+.tip{position:absolute;z-index:5;pointer-events:none;padding:9px 11px;border-radius:11px;background:rgba(255,255,255,.97);border:1px solid var(--line2);font-size:12.5px;box-shadow:0 10px 26px rgba(60,48,30,.18);white-space:nowrap;line-height:1.45}
+.badge{position:absolute;top:14px;left:14px;z-index:4;padding:9px 13px;border-radius:13px;background:rgba(255,255,255,.94);border:1px solid var(--line2);font-size:13px;color:var(--tx2);max-width:calc(100% - 80px);box-shadow:0 8px 22px rgba(60,48,30,.12)}
+.badge b{color:var(--tx);font:600 15px var(--display)}
+.lgd{position:absolute;left:14px;bottom:14px;z-index:4;width:292px;max-width:calc(100% - 28px);padding:11px 12px;border-radius:14px;background:rgba(255,255,255,.95);border:1px solid var(--line2);box-shadow:0 12px 30px rgba(60,48,30,.16);font-size:12.5px}
+.lgd h4{margin:0 0 7px;font:600 13px var(--display)}
+.lgd .bar{height:11px;border-radius:6px}
+.lgd .ax{display:flex;justify-content:space-between;font-size:11.5px;color:var(--tx2);margin-top:4px}
+.lgd button{display:grid;grid-template-columns:16px 1fr auto;align-items:center;gap:6px;width:100%;padding:4px 5px;border-radius:8px;text-align:left;font-size:12.5px}
+.lgd button:hover{background:var(--card2)}
+.lgd button[aria-pressed="true"]{background:#fbe9e3;box-shadow:inset 0 0 0 1px var(--acc)}
+.lgd button i{margin:0;width:14px;height:14px;border-radius:4px}
+.lgd button small{color:var(--tx3);font-size:11.5px}
+.lgd button b{font-weight:600}
+.lgd .hint{margin-top:6px;font-size:11.5px;color:var(--tx3)}
 .loading{position:absolute;inset:0;z-index:6;display:grid;place-items:center;background:var(--bg);font-size:14px;color:var(--tx2)}
 .loading div{display:flex;align-items:center;gap:12px}
 .spin{width:22px;height:22px;border-radius:50%;border:2px solid rgba(63,95,47,.25);border-top-color:var(--acc);animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-.badge{position:absolute;top:14px;left:14px;z-index:4;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.93);border:1px solid var(--line2);font-size:12px;color:var(--tx2);max-width:calc(100% - 80px)}
-.badge b{color:var(--tx);font:600 14px var(--display)}
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.kpi{padding:12px;border-radius:14px;background:var(--card);border:1px solid var(--line);min-width:0;box-shadow:0 1px 2px rgba(60,48,30,.06)}
-.kpi .l{font-size:11px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.kpi .v{font:500 22px var(--display);margin-top:2px;letter-spacing:-.01em}
-.kpi .v small{font-size:12px;color:var(--tx2);font-weight:400}
-.kpi .d{font-size:11.5px;margin-top:2px;color:var(--tx2)}
+.vlab{padding:2px 7px;border-radius:7px;background:rgba(255,255,255,.88);border:1px solid var(--line2);font:600 11px var(--body);color:var(--tx);white-space:nowrap;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.vlab:hover{background:#fff;border-color:var(--acc)}
+.nolab .vlab,.farz .vlab{display:none}
+/* right panel */
+.hero{padding:16px;border-radius:18px;background:var(--card);border:1px solid var(--line);box-shadow:0 1px 2px rgba(60,48,30,.06),0 10px 28px rgba(60,48,30,.07);border-left:6px solid var(--c2)}
+.hero .k{display:flex;align-items:center;justify-content:space-between;gap:8px;font:600 11px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--tx3)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font:600 12px var(--body);letter-spacing:0;text-transform:none;white-space:nowrap}
+.chip i{width:8px;height:8px;border-radius:50%}
+.hero h2{margin:8px 0 6px;font:500 19px/1.35 var(--display);letter-spacing:-.005em}
+.hero p{margin:0;color:var(--tx2);font-size:13.5px}
+.hero .big{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.hero .big div{padding:9px 10px;border-radius:12px;background:var(--card2);min-width:0}
+.hero .big span{display:block;font-size:11.5px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero .big b{display:block;font:500 20px var(--display);margin-top:1px}
+.hero .big small{display:block;font-size:11.5px;color:var(--tx2)}
+.dist{margin-top:12px}
+.dist .bar{display:flex;height:16px;border-radius:8px;overflow:hidden;background:var(--card2)}
+.dist .bar span{min-width:2px}
+.dist .lb{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:7px;font-size:12px;color:var(--tx2)}
+.dist .lb b{display:block;font:600 15px var(--display);color:var(--tx)}
 .up{color:var(--good)!important}.dn{color:var(--bad)!important}
-.card{padding:12px 12px 10px;border-radius:16px;background:var(--card);border:1px solid var(--line);box-shadow:0 1px 2px rgba(60,48,30,.06),0 8px 24px rgba(60,48,30,.05)}
-.ch{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:6px}
-.ch h4{margin:0;font:500 14px var(--display)}
-.ch span{font-size:11px;color:var(--tx3);white-space:nowrap}
+.card{padding:13px 13px 11px;border-radius:16px;background:var(--card);border:1px solid var(--line);box-shadow:0 1px 2px rgba(60,48,30,.06),0 8px 24px rgba(60,48,30,.05)}
+.ch{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:7px}
+.ch h4{margin:0;font:500 15px var(--display)}
+.ch span{font-size:11.5px;color:var(--tx3);white-space:nowrap}
 .chart{position:relative}
 .chart svg{display:block;width:100%;height:auto}
 .ctip{position:absolute;pointer-events:none;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,.97);border:1px solid var(--line2);font-size:11.5px;white-space:nowrap;transform:translate(-50%,-100%)}
-.lg{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--tx2);margin-top:4px}
+.lg{display:flex;flex-wrap:wrap;gap:10px;font-size:11.5px;color:var(--tx2);margin-top:5px}
 .lg span{display:flex;align-items:center;gap:5px}.lg i{width:14px;height:3px;border-radius:2px}
-.tb{width:100%;border-collapse:collapse;font-size:12px}
-.tb th,.tb td{padding:5px 4px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tabs{display:flex;gap:4px;padding:3px;border-radius:12px;background:var(--card2);margin-bottom:10px}
+.tabs button{flex:1;height:34px;border-radius:9px;font-size:13px;font-weight:600;color:var(--tx2)}
+.tabs button[aria-selected="true"]{background:var(--card);color:var(--tx);box-shadow:0 1px 3px rgba(60,48,30,.14)}
+.tb{width:100%;border-collapse:collapse;font-size:12.5px}
+.tb th,.tb td{padding:6px 5px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
 .tb th:first-child,.tb td:first-child{text-align:left}
-.tb th{color:var(--tx3);font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em}
+.tb th{color:var(--tx3);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.tb th[data-s]{cursor:pointer}.tb th[data-s]:hover{color:var(--tx)}
 .tb tr.on td{background:#fbe9e3}
+.tb tr.clk{cursor:pointer}.tb tr.clk:hover td{background:var(--card2)}
 .tb .clim td{color:var(--tx3)}
-.cap{font-size:11.5px;color:var(--tx3);margin-top:6px}
-.rank{display:flex;flex-direction:column;gap:4px;max-height:260px;overflow:auto}
-.rank button{display:grid;grid-template-columns:18px 1fr 90px 58px;align-items:center;gap:8px;padding:5px 6px;border-radius:8px;font-size:12.5px;text-align:left}
-.rank button:hover,.rank button[aria-current="true"]{background:var(--card2)}
-.rank .n{color:var(--tx3);font-size:11px}
-.rank .bw{height:6px;border-radius:3px;background:rgba(60,48,30,.08);position:relative}
-.rank .bw b{position:absolute;top:0;bottom:0;border-radius:3px}
-.rank .p{text-align:right;font-weight:600;font-size:12px}
+.tb .mb{display:inline-block;width:54px;height:7px;border-radius:4px;background:var(--card2);vertical-align:middle;margin-right:6px;overflow:hidden}
+.tb .mb i{display:block;height:100%;background:var(--c1)}
+.vscroll{max-height:330px;overflow:auto}
+.cap{font-size:12px;color:var(--tx3);margin:7px 0 0}
+.lnk{font-size:12.5px;font-weight:600;color:var(--fc);text-decoration:underline;text-underline-offset:2px}
+.acc{display:grid;grid-template-columns:62px 1fr;gap:7px 10px;align-items:center;font-size:12.5px;margin:4px 0 2px}
+.acc .bars div{height:9px;border-radius:5px;margin:2px 0}
+.acc .bars small{font-size:11.5px;color:var(--tx2)}
+.hot{display:flex;flex-direction:column;gap:3px}
+.hot button{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:6px 7px;border-radius:9px;text-align:left;font-size:12.5px}
+.hot button:hover{background:var(--card2)}
+.hot small{color:var(--tx3)}
 .pc{border-color:var(--acc);box-shadow:0 0 0 1px rgba(200,85,61,.12),0 14px 30px rgba(60,48,30,.15)}
-.pc .x{float:right;width:26px;height:26px;border-radius:8px;color:var(--tx2)}
+.pc .x{float:right;width:28px;height:28px;border-radius:8px;color:var(--tx2);font-size:18px}
 .pc .x:hover{background:var(--card2);color:var(--tx)}
-.pc dl{display:grid;grid-template-columns:1fr auto;gap:3px 10px;margin:8px 0 0;font-size:12.5px}
+.pc dl{display:grid;grid-template-columns:1fr auto;gap:4px 10px;margin:9px 0 0;font-size:13px}
 .pc dt{color:var(--tx2)}.pc dd{margin:0;font-weight:600;text-align:right}
-.tag{display:inline-block;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600;background:var(--card2);color:var(--tx2)}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:600;background:var(--card2);color:var(--tx2)}
 .tag.w{background:#e3eefc;color:#1b4fbf}.tag.l{background:#fdf3e3;color:#7a4b12}
+/* drawers */
 .drawer{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:rgba(31,27,20,.45);backdrop-filter:blur(6px)}
-.dbox{width:min(880px,100%);max-height:88vh;overflow:auto;padding:26px 28px;border-radius:20px;background:var(--bg2);border:1px solid var(--line2);box-shadow:0 30px 80px rgba(31,27,20,.3)}
-.dbox h2{margin:0 0 4px;font:500 22px var(--display)}
-.dbox h3{margin:20px 0 6px;font:600 14px var(--display);color:var(--acc)}
-.dbox p,.dbox li{color:var(--tx2);font-size:13.5px}
-.dbox code{font-size:12.5px;background:var(--card);padding:2px 6px;border-radius:6px;color:var(--tx)}
+.dbox{width:min(900px,100%);max-height:90vh;overflow:auto;padding:26px 30px;border-radius:20px;background:var(--bg2);border:1px solid var(--line2);box-shadow:0 30px 80px rgba(31,27,20,.3)}
+.dbox h2{margin:0 0 4px;font:500 23px var(--display)}
+.dbox h3{margin:20px 0 6px;font:600 15px var(--display);color:var(--acc)}
+.dbox p,.dbox li{color:var(--tx2);font-size:14px}
 .dbox table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
 .dbox th,.dbox td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right}
 .dbox th:first-child,.dbox td:first-child{text-align:left}
 .dbox th{color:var(--tx3);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em}
-.dclose{float:right;height:34px;padding:0 14px;border-radius:10px;border:1px solid var(--line2);font-weight:600}
-.warn{padding:10px 12px;border-radius:12px;background:#fdf3e3;border:1px solid #e8c58f;color:#7a4b12;font-size:13px}
-.ok{padding:10px 12px;border-radius:12px;background:#eef3e6;border:1px solid #c5d6b0;color:#2d4a1f;font-size:13px}
-@media (max-width:1250px){.grid{grid-template-columns:250px 1fr 350px}}
+.dact{float:right;display:flex;gap:8px}
+.dact button{height:36px;padding:0 14px;border-radius:10px;border:1px solid var(--line2);font-weight:600;background:var(--card)}
+.dact .pr{background:var(--tx);color:var(--bg2);border-color:var(--tx)}
+.warn{padding:10px 12px;border-radius:12px;background:#fdf3e3;border:1px solid #e8c58f;color:#7a4b12;font-size:13.5px}
+.ok{padding:10px 12px;border-radius:12px;background:#eef3e6;border:1px solid #c5d6b0;color:#2d4a1f;font-size:13.5px}
+.guide{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+.guide div{padding:14px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
+.guide b{display:block;font:600 14.5px var(--display);margin-bottom:3px}
+.guide i{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--acc);color:#fff;font:600 12.5px var(--body);font-style:normal;margin-right:7px}
+.guide p{margin:0;font-size:13.5px}
+.gl{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;font-size:13.5px;margin-top:6px}
+.gl dt{font-weight:700;color:var(--tx)}.gl dd{margin:0;color:var(--tx2)}
+.rep img{width:100%;border-radius:12px;border:1px solid var(--line);margin:10px 0}
+.rep .rdist{display:flex;height:18px;border-radius:9px;overflow:hidden;margin:8px 0}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:80;padding:10px 16px;border-radius:12px;background:var(--tx);color:var(--bg2);font-size:13.5px;box-shadow:0 12px 30px rgba(0,0,0,.3)}
+@media (max-width:1500px){.pill{display:none}}
+@media (max-width:1250px){.grid{grid-template-columns:280px 1fr 380px}.hb span{display:none}.hb{padding:0 11px}}
 @media (max-width:1000px){
-  .app{height:auto;min-height:100vh}
+  .app{height:auto;min-height:100vh;grid-template-rows:auto 1fr}
+  .top{flex-wrap:wrap;padding:10px;gap:8px}
   .grid{grid-template-columns:1fr}
   .rail,.insight{border:0;overflow:visible}
-  .mapwrap{height:68vh}
-  .tl{grid-template-columns:repeat(3,1fr)}.tl .far{display:none}
-  .brand p,.pill{display:none}
+  .mapwrap{height:70vh;order:-1}
+  .insight{order:-2}
+  .guide{grid-template-columns:1fr}.gl{grid-template-columns:1fr}
+}
+@media (max-width:640px){.pb .t{display:none}.pb{padding:0 10px}.pmain{padding:0 4px}.hero .big{grid-template-columns:1fr 1fr}.lgd{width:230px}}
+@media print{
+  .app{display:none!important}
+  html,body{height:auto;background:#fff}
+  .drawer{position:static;display:block;padding:0;background:none;backdrop-filter:none}
+  .dbox{width:100%;max-height:none;overflow:visible;border:0;box-shadow:none;padding:0;background:#fff}
+  .dact{display:none}
 }
 </style>
 </head>
 <body>
 <div class="app">
 <header class="top">
-  <a class="back" href="index.html" title="Minbu Portalga qaytish"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg>Minbu Portal</a>
-  <div class="brand"><img src="data:image/png;base64,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" alt="">
-    <div><h1>Index <b>Forecast</b></h1><p>NDVI prognozi · har bir kontur · 10, 20, 30 kun oldinga · tuman bo'yicha 3 oygacha</p></div></div>
+  <nav class="pnav" aria-label="Portallar">
+    <a class="pb pmain" href="index.html" title="Minbu Portalga o'tish"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAYXUlEQVR42u2beZSdVZnuf3vvbzhjnapTQ6rICCTMAWIYJECTOKCigCCJ3hZsp4vcFmntZnmlGzpBbO+ybXupywlnwAY7ARVouMxJmKKQQCAkQMZKUpWqpIZTZ/zGvff9Iwk3rXjbYKR7rZvnr2+daX/v873Tfvdz4DAO478crLUCi/j/0vildql6vdeW2+WOtVZYa6W1Vi61S9XrffZg4fxXMXo96y1LYJFYpL86dGu+8cqWaMn8JXoFK9QCsSA90EEO5dr/qQQstovlEpZYIYTe/9qddtVH2yl+udI77S4hxGeA9C771IcylIoe8hcRZmqWbhszen6d3fNg9M8XiUWBtVYIIQ6aHPGmxPO/W1CAwC61Vi3aZ/gv7VPfSYLWcWEcCIWZv+6Oezn18ktpKxy30BLMaqXDX27s2I7qmlTVrUYpGp+wOYnIzjp6cFwFx1zJRQFY3ggBzp/C4GUgYRmLxCLzejd1s73ZXSRE8jP76PQyHd9upCPvffLr36VWGaM6XrUdlYbtBzH1ne9cVq2Nse62X9hSvaHTrq6SjeqMDw2ZM//iA8jpM176VO6iVodd+hqZ/ykE7Dd6Iew3+LWbqVjbPrHvuh1YC40FQiTL7BMfL1K84Tcr7pmx+se3p1O8nEjTkFSnaijnC/X0b6g+/ZwdS5WZ1dupks4upx4EtqU1HZ0dtmf+2c6DX9+bBJctW68A80ZyxCEPgVes7drEyxdYgve36qOT6xOjs/R4BasUmVyO/JS+oYzX8WqQjF/yyDduZvOvV6dHFNsdKVzaXNDSsKFao+i4zC6WcKxk0CiOKbexbawKKqHH883kS98nim+Zs7X/N+vO++XS2/ewBtasWZO+qQTsj++fhw9M785MnxMSXjUxuPXMtDpWGn1qNaMbtrB1eDdOZMgWXWIHir19FKcewa4tW+ymrdvspFJJZo1ACCh4kqLjs7lVo5omzCuVwUgqqcBTgmLOI/AlffkuxoZG9JxrP6niaX0PXqHe/r65c+d6a9asifZ5gn1TCFhulzsLxIL0X+2jv3KrycW/ufMuRpevIq23tOsosioLWDkYxfS2ZxixklarZa0KrednVOwo2qWiniR0uC5ZxyE1FsdRxKnFaoiMZU65nVorYCCJSDOCI0p9dBhQXe3m+Ks/aVc9vfa9X37b5x5euHChs2zZsuRgCHjDOWDx4sVyPvP13JvnullK6FJTb7t/uTbCuk5bVgkhMa6HNYacUniOoGChlpFCeAUUgiwCgcLDUm0pnKxPmCY4kUPOA6Mg0CHVqEU541FJNVpb0tRiHEE8OIRNWsprz5cBuSe3Rx7SJGitFStYoQBWsMKcyBIBsH7FCrFk/ny9aNmJ7k1X3v6tsf5XL1q37E7TVi56JjUESUJqNIlIsUA9DEk9n4wrSK2mDYGUik5ZIDUa13FxHY92XzMhHYROsamgmPGY0lZgdxQzHISUXUHGy3Dq9F4eX/uCLV24QA6P1xs/vuJLOyiViv0r+oN9Xv3He8Bia6UQwgAHdGE3vna1YTHeFUue+1F15+bLH/3i/zJ6oqoKnSUCa8g6Lr6QOEqyc6JJKe8hPEEtScj7ChxJj1skigxNHdPuKxLbYkcjxHcVRc/BMQ4Ciy9dJmcVtVaETVKaJmSw3qDeXmbW3Dk8/Pnvih3rd/j09Hjbt2+PDzasnd/35IUQZql9ZHInkz+mScsxwckO3k6P3CNN6r5P4RNDO5+fd/91NxrfGNlW7iBJYpQSaGNxpCAIYvKOT5KBKIkwCjpyOYRxiRNNJWrRSjWxNigXWlaDNmSVj+9kiHXE5kbK0cUCZc9DxSmpo9g0PIHb28OkIyZT/tQC+JeVWaJqFggBeTCJ0Hm9vlwIoe+0y9/vmcz3X3j+0e7q0Ah7NmxGeS7T33rqR4sd7ZiRCi/ef5+RSSoT3yOMUwSC1GhSRxIYg9Ya6xtiq0E6lLI+7SqH0AkjOsF1JVNyktharDD4SiCNoOi00e561HVE4ihSK/Bcl211i8ClPwx4y9E5occrpnjM1MyCmz501PIbfv5Kb2+vNzw8fFBh4LxOWTNL7dNZif3ar7727e5Vt98bZ/NZ6Xu+UNbaZ37xsHA9JXsyjsnlfZXP56mGIZUkot3PghCUpEczCNGuJHE00ig6c0VajYSQFn0FyaSCR6BcJudcUuESmZTN4zVqaYqjHMoZj7HAp+A4ZKQg50pmdGQJrWK4pumb1IcXGGQSq2xPsQ2QJmvkHxUCQgi7l4Q2HUeD1Vx7wXq5rFPsKkujNa6SFKTEldDUWrnKJ58K8o5D0xoCHeNJhUkMHV6Wmk1IrKaUb8dPEnJC40iXnHLpykoCK4mMQz6XxSQJvXno8mOU0aBjip5H3vfwRYIrBcpxCWOLMDEDQ8Nm2uT3SDMysf2pL//qZTfv+q2RljnYKvA7ZWMZyEXipHh47eY9k084SrgCq6zFExJpAGMQVjO5mCOJU0aaCcq6+MohBbS1CCxNmRC7cEznDAoWdJLgZT2UgKzjsDuAwAiUgD3VOlknpSuvkEgcmZKakKwn8BxFamB7rcWmekTLGKYIbU0ailGS9EfvuP571e0jFc8r2Eajsb8TtG+IAGutXCSEua15/+nHnHnWW7esesEIx5G4Co1BAlIIjBWMN0KyyiGIQiotjSOy5ByXvOciFKQCjmyfzMj4GJXKOBhLalIm4pjxKKHgSKLE4FhLLQppJYZGpPGEIadAK4NVliBssH68xlAcM6s9T1kKEoOIh/fg1Zvi2h8sWQCEzUqlPvuc2cydO/eNE7BkyRIQ2N8sfaI+Xhn0p550vCDVhJUm2YyHmxEkWiOEwkpBNYrIeh5BHDDRbOIoj1y2RNYrMKOzl7hZR4kY13NxXEFiLK6EVqLxlaDNgUCndGU9dCsijVOOKGYouJIkTkjikKIvcX1F3lHUmiFh0ARXUB0aFQ9ce5M4Yc5R59889m+fP+9TF8t1T66rrFmzJtk/PXojrbBECNN1zrF9n7zl6vXHu1M7ms2KfeLHd4mhdRuYNqmTRAtqzRoSB21SpDEoJbBW01PIMr13KmEc0QxqtKIAXynqiaYj55KmBoykLZuhzXcpF3xeHQk5ql1RMDHKcYiBsN6kaQRGusQZn/WVBqeUCqSpJgxDfAFRro3GSBV/Spc599pPyTBXHBLZwv3QWvIBsWDggHJuDyoHYIzIYTKRMerRX97FSz+6n4tuuIbjzp9HoxKglIdBEpmEINUICUpKpHKRjqLVqrOnOkE9CIisQCqHctanlUKqLcZoLOC5kj21iKQVUo0ttRTQKVEUIpRASAfpeowFLXLWgIHR0BBIh0QbTByQ62oj2TMu13/zJ2bk5/f2tQ8MfiKK7ZqH7Ytf/cHE0vL/TeoH0QcsBnHjExvNyKpXTX5aDw9d808EScR511/BspXPUZ8YQ0iHUi6DsJpqK2RKZwf1VpMwhV3VCZLYks0Isq5DM4ooOD6lrEcUpRhjibTBAC6WrCeJUwuuYjDUJEbQl1FoBENJTE2ndHkeidE4ArpLBYJWQKsZ4uJiHIGujsjVa+tWVCKt8l6PfNdZ1/bMmHHebaP3v2MJSxrW/v5pkfztDc6NQpgPP/h3xx572TvbBx9fr/M9BbHxsTWMvbqLS769GCEt1bFxhmtN/EyOnJ+h2gwpZHxcqYg1CKWpN0OSMEE6Dondu1A245H3fVwlsUCCwHUUItXsqmtGW5qcEMQJ1BNDkBrKboZJWY+cI8k5ijgxhBq0tjhRi3oMtUgz3TbE7tFNztb+7faOf/xOtHVg8+kdnZ1fuFHcaFasWKH+0BAwCxcuVGka9NuM2NJ92rGqFUXpxFDF3v6BLzCxaZCLFn+eKbOPAR2zbc9urBTEiWasHpHLe2QdiZQOnudSCxKssTTShCi1uAIc5WARRElKPUgwOiGIE6y1ZF2XQLjsiAQNFKViBh2muEZjjEFiSJKEcs5laptCRzE5pbDSQzo+uaBO1BwUGULH27DexOhTAFasWPF7t/7/jpmVK1fCiTgr/u6e8SRuPjb3s5ecO/3803rrg6OiNTDO4OqXaO/u5IzLLuKoc05m6/Jf04wS8pks0zuKjNbqpMbiYnAchQWaUUp3zkO7BTpcS5xa8tkMYRKjrcDu6x2UtEhlqUUp1hiU69GWzRI3QxIhcKUkMRAkFs93yTuGIEppWfDzPs1QUxc+LilttQn8jCfbznhLa2etdcvAqvVm+/btrzsu+x3XGNkwYvvm9vkblq6prbvj8QdO+PCC6uy/vPD4+uDuzODDL4idz7wo1t35IGdeuZD2Se3sWrWWxFEoCR1ZjyBJCLXFRaIcQdHz8F0X3yaEqQUERliSOEJIcByJjiMEFk8JUm2JjSF1ocvzsRiUcgjTvQ+xkPORgCs0tUAjEk3WcQhjg6NjvKhF7AoxsH2XmXHu6X2zzp777Peu+crLCxcvdDes3GD+4yoAdmjNUNzd3W3Cwdr4t066+qsvPfD0P5xwzXuVyXhWZLO0gph7rvlHZl/yLqa95Th8oxlvxeyqBmDBUwqkICsVUjmESYoxgkYCWmviKKYexcQmIQgDQqFoIJFC4lgoeh59pSKVekiYWBSCnOsgpKSc9/Fcl0j4pCgcYXEsHHtED3klKHou3e3tdPl5E77wCm3dbR+z1qqJLRPu64XB700OrVZLl8tl0zenL7PpgReG5nzmgpOPXnTujJd/8kiqw5TxrbtE2+RuJs8+ko0PrcJtK2C0RWuDpzyk52KsJUpStNnb5fmug0NMog2xNVghaSQJMRaJJUwTtBVkc1l812Oi2qIt55JoS4qg4HuEqSExECaGQsbdu57r4OUyJFJipEPJaPKeJ0a3DNG54K3Tu4/uXb70pp9tWbhwobthwwb9hxBgAdtsNvX4jnGDyCWPXXfrsvO+/OE50844eeboxgHRGBqzIk7E2X9zOY1N/UwMDGMdB0cJWmGM5ylyGReEA0aTmpQ41VhpqcYJnqPAahraYlONQaDQ2ETT1lli60iFdlcR6b33K5WD7ynCMMJ3JOW2PEZIXGVROsFREk86VGohjXpITidC1AOrervd0y7+wLlzFp722PMjT4+e8ekzxIZlG+x/6AEHVobStKwod5dFY/fo8zMufKue9YH5nT3nHdux7pv32EzWE2df/XEyk0pseeYFHCUpeGBNjEVgLOQcMNaSJoZsxiNIU1ra0Eg1sZUUMw6elFih6O0uo1yoVOp4SiEEuFKiXEkYRdTiFN9RFH2HWhRTCTWe7+C1FbCOR2oNmXIHpdNm4/V2i/yZc3j14V+3P3jLff+ycrBzV/eKPWL79u3mYKbCYh9RPuACmUmnTJl21dpv/XTjN391/NrP/dTMevcc+c4lnybTl+Pea76ITmJKxQwl3yewijhOKHuKKE1pJZZ8ThAkKQ1tyCpQUpFzHfLZPJ0Fj227xsg4au8w1cvhSajGKZ4CoRRHdhbprwc4zRbetKnMuOoKdq1+mWxXiZ4TZlIfHmV02y4mn3WyHd2wRdzy3r+urh8O5sXQD8T7Dm7sH+oB+6H7+vpEz+yj3IHVm6puQfXP/dwlF1Se3+zufm4TL95+nzjpsndw5Lw5bHnsaVzXIUwtrqOwaUqCxbGGKNWgHLCGnAOuVBgLqYFyIcPgeAsdRhil0FqjhMJVgsBYykWPJNLEQUS1WqM0dQqzrr2KNXc8zN1/+VW2Pb6W7U+8wDM/uJtnv7GMet5QLwrRf8fTqe7tXNqsNsf3jcvMwRJgARqNhqkM7E56T53pvXjbyo1zP/vuScqauVv/9WmTm9wtN977BGd9+r8hlGZ03ctk8jmETfFdRTOxhGFKW0YRhBFGeXi+i6ccHN9F+ZJJ7VnqjZDQCpSUxFoTm4RQG3rai1RH6rRNnkThxJnIcgfHXHsla259iJVfuQWnrUASJ4z37yJNNLKYp9G/m+O+cKkYeGJ9+Ora7T+nUJggjtN9g96D9oDXyDjp3GO0zmpTmt6nj75g7p8PP71RVrfu1sFEXTZ3j3D6/7iMV+5+BMdRNGKDsQKdajwJOc+lFScoC/mMR5DsnfUn+3qHvCdoBDGJtRghiCy0uTBej2ifexLHfvovaPhFJp15Bqt/cg+PLPk+2vWIWpFJEo1wlIij1IaNyNY27xGFo3vs3Os/kqmPTTw8vH5wa+eRRROMBenBJMHfwcCGAZM3ebf/sbUjx13+Z3L2Jy480e/JZ0dWb7GVTQPi1A+dT7ZcZPfajbhZDweD77i4am+VkGJvTy+1RijI5X0yQtEIUlCCVAiU1QgsqRHksi5eXzfnXncDT/5wKb/6+Jd49b4n2LLyefAz2LyP110SqpARWoDbURCTzjtJ5KZ3i5mX/5lIjHP3q/evfqA5MFT1Qz9qtVqvecAbPRoTgFsulzPj4+N6wRcXnXfu33zw+vrAzrMeOPs6M/vdZ8oL/vkzPHj19ejKBNrLMqm7E4MmSizKxiSpJdYG31E4OZe43iBSLlIneBj8YhuOqxgZrTPvb6/GiV1atRoPffGH1HZXcDIujeGqLcyeZs/9+bWmNjC2VWXdXMfUnilhrTluPWdzvqNtZlCrb/tq58evAqrkqdGkdkAi/KPOBiXgHnH6cYVdz77iAtm/je9YVlm+Ye7yi28yVz35HTm+aSt+3kMP72Hw8dW0WhFO1tm7qrak2kCa0moGzFp4ATPPmYdJQjaveJqR1c9DvUbvgnkcfekl3PauvyKsN4k0RK3YCKzIHd1n3nP/EtX/0tb7bltw44/zR3R4Z/73d3e9cOeT28fW7xzrOLq7GOyp10xkKkqpRhAEtX1nB+n+4/Q/VmRk67tGk+mnTBdepp0dj7/01DnXXzE/qIx31p7rN6d95FIx+PwWjr74fI56z9sIBgao7RyFoIUxhkypSGFqL0e96+3M/uAlPHDddxhe38+8v/okHSfOYPj5l5hz5Ud49cHVvHT34wjpoCa1M2n+SSI3uUu8/d7r5K4Ng3f/9NwbbvHzfjUYb+zatvKll4KR2qjXVWw1ByvDaZxWtNbNNE0bv10CD4U+QOzvE6bNnlbYsW5HuvDfPr9oxskzbn7kjP8p2vva5cTAHtp6Ozn1wxdw1pULGV2/nrBepTRjCloqwomQ5s5x1t3zMK88+AxKSTqmT+LSn9yAbkVElRaP/fPP2PbMy2b6+8/klC9dLlMhNuULhXL/qpcevPUdN33XyWaTNAgqQKPQ1xc3Wq2UatXQ2Wlxxgy70fsMN799anSoBBISUKVp0wrVHTty1zVuW7H12/fP3PSN+43XWZQ2TogrVaaedjynXPYugmaDgWc3UNmyk8bucaJmgPB9rO8hhEAkKdmcD8YS7ssNmaN6ueyRb/Dcg8vvuf3d//DT0uSyrA6O78h35MNmpVkDGvvcO3kdtYj9res/iUJETpkyxR8YGPA/9L//7j1HnTXz+/ed+te5xq6K8dtyKtdRENJodKMFQiAcB+l7yH27vMZ43UZxKjDGOo4kX8oL5Tok9YDTb70Gt6unXygzdvenvvedwRe2bUwbYdUv+Y2oGjWBYJ/hycFKZQ4lAQJQ5Zkzc+ObN/OFiZ8+1v/D5XNFzqW6cRf9y540yliRLxf3iogSTRonNg0SG1Yb9oTPXqSmXXg2Ogrpv/MpBu971sbjDXPkh89hztc+Nv61viv/PqoFW4EJoLIvowcHxLU+2EORQ5EEfwcnzDtSHjH/iGjS7GPbZ1w4b5aaXr5rxoVnTjvmg/PzIy9sFXue35oG1ZaNo0Q4pbwoHjtZHPuR8+XJN34oeubWR7/eakbPzlt8xaz2k6fkdjz0ojzrnz4qx3ZXH3j2Ww880DG9p2nDdERrXSGhBUQHZvQ3IqI81CKp/RsnFyiUT+jtHt8w3Jp04uQjL77lc++fcsJRH9165/K2qN6i49QjcTsLDZnJDhDIbWuXPbRq+d8vexJIprzt+K4r7r7uK/FoS7rZ7K5V37r3tpVfufsZPyfrUTWaOMDlDX+kcvRPIZQU+8btDuCUZ01pG9804AB63rXvO/Ocz1x2Qb1Vi7Ytf3Hj+qWrhnauWD8GVIHIbc+TUTKqj9XjfE++GDdjkmYS7HPvFKgfSuP/lErRvZ4wc6Zi82ZJGben1JPds23P/vcz+7bXyvM8m5lUSpKmjoLx8b1NSqkkqFYB3K5pXSqMw7Qx3Ij2xfshM/5PLZUVB/y+BFT3Cd2um+/0TZLKeq0uxJ6maTQa+5/ugbUaZiLZ/Nr37QE1/JAZ/6ZohX+LDLGPDHGAisMeYOCBiUy83pb8UKvF3+w/JYj/17zhMA7jMA7jMA7jMA7jMA7jMA7jzcL/AZgegRnBFPUqAAAAAElFTkSuQmCC" alt="" width="30" height="30"><span class="t">Minbu Portal</span></a>
+    <a class="pb pfc" href="prognoz.html" aria-current="page" title="Index Forecast: NDVI prognozi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 13.5h12"/><path d="M3 11l3-3.2 2.4 1.8L13 4.5"/><path d="M10.2 4.5H13v2.8"/></svg><span class="t">Index Forecast</span></a>
+    <a class="pb pfl" href="index_flood.html" title="Flood Mapping: suv toshqini xaritasi va prognozi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.6a3 3 0 0 0-3 3c0 2.1 3 4.7 3 4.7s3-2.6 3-4.7a3 3 0 0 0-3-3z"/><circle cx="8" cy="4.6" r=".9"/><path d="M1.4 11.4c1.1 0 1.5-.9 2.6-.9s1.5.9 2.6.9 1.5-.9 2.6-.9 1.5.9 2.6.9 1.5-.9 2.8-.9"/><path d="M1.4 14.2c1.1 0 1.5-.9 2.6-.9s1.5.9 2.6.9 1.5-.9 2.6-.9 1.5.9 2.6.9 1.5-.9 2.8-.9"/></svg><span class="t">Flood Mapping</span></a>
+  </nav>
   <div class="sp"></div>
   <span class="pill" id="asof"><i></i>…</span>
-  <button class="mbtn" id="mbtn">Model haqida</button>
+  <button class="hb" id="gbtn" title="Sahifadan qanday foydalaniladi"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.3"/><path d="M6.3 6.2a1.8 1.8 0 1 1 2.6 1.6c-.6.3-.9.7-.9 1.4"/><path d="M8 11.4v.2"/></svg><span>Qo'llanma</span></button>
+  <button class="hb" id="rbtn" title="Rahbariyat uchun bir sahifali hisobot"><svg viewBox="0 0 16 16"><path d="M4 1.8h5.5L12.5 5v9.2H4z"/><path d="M9.3 1.8V5h3.2M6 8h4.5M6 10.5h4.5"/></svg><span>Hisobot</span></button>
+  <button class="hb dark" id="mbtn"><span style="display:inline">Model haqida</span></button>
 </header>
 <main class="grid">
   <aside class="rail">
-    <section class="sec"><h3>Xarita nimani ko'rsatsin</h3><div class="modes" id="mode"></div></section>
-    <section class="sec legend" id="legend"></section>
-    <section class="sec"><h3>Hudud</h3><select id="vsel" aria-label="Qishloq"></select></section>
-    <section class="skill" id="skill"></section>
-    <section class="skill" id="state"></section>
+    <section><h3 class="step"><i>1</i>Qaysi sanaga prognoz?</h3><div class="hz" id="hz"></div></section>
+    <section><h3 class="step"><i>2</i>Xaritada nimani ko'ray?</h3><div class="modes" id="mode"></div></section>
+    <section><h3 class="step"><i>3</i>Qaysi hudud?</h3><select id="vsel" aria-label="Qishloq"></select></section>
+    <section class="tog" aria-label="Qo'shimcha qatlamlar">
+      <label><input type="checkbox" id="t_sat">Sun'iy yo'ldosh surati (fon)</label>
+      <label><input type="checkbox" id="t_lab" checked>Qishloq nomlari (yaqinlashtirganda)</label>
+      <label><input type="checkbox" id="t_wat">Yaqinda suv kelgan dalalar</label>
+    </section>
+    <section class="box" id="state"></section>
   </aside>
   <section class="mapwrap">
     <div id="map"></div>
     <div class="badge" id="badge"></div>
+    <div class="lgd" id="legend"></div>
     <div class="tip" id="tip" hidden></div>
-    <div class="timeline"><button class="play" id="play" aria-label="Muddatlar bo'yicha o'ynatish"><svg viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z"/></svg></button><div class="tl" id="tl"></div></div>
     <div class="loading" id="load"><div><span class="spin"></span><span id="loadt">Prognoz ma'lumotlari yuklanmoqda…</span></div></div>
   </section>
   <aside class="insight">
-    <div class="kpis" id="kpis"></div>
+    <div class="hero" id="hero"></div>
     <div class="card pc" id="pc" hidden></div>
     <div class="card"><div class="ch"><h4 id="c1t">NDVI dinamikasi</h4><span id="c1s"></span></div><div class="chart" id="c1"></div><div class="lg" id="c1l"></div></div>
-    <div class="card"><div class="ch"><h4>Tuman: 10 kundan 3 oygacha</h4><span>maydon bo'yicha o'rtacha</span></div><div id="town"></div></div>
-    <div class="card"><div class="ch"><h4>O'tmishdan sinov</h4><span>2026, model ko'rmagan yil</span></div><div id="bt"></div></div>
-    <div class="card"><div class="ch"><h4>Qishloqlar: normadan farq</h4><span id="rks"></span></div><div class="rank" id="rank"></div></div>
+    <div class="card">
+      <div class="tabs" id="tabs" role="tablist">
+        <button data-t="v" role="tab">Qishloqlar</button><button data-t="f" role="tab">E'tibor talab dalalar</button><button data-t="t" role="tab">3 oygacha</button><button data-t="a" role="tab">Aniqlik</button>
+      </div>
+      <div id="tab"></div>
+    </div>
   </aside>
 </main>
 </div>
 <div class="drawer" id="drawer" hidden><div class="dbox" id="dbox"></div></div>
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
+/* Minbu Portal i18n: Uzbek (source keys), English, Russian, Burmese (Myanmar's official language).
+   L(key, a0, a1...) translates; static HTML text and placeholder/aria-label/title attributes are swapped by I18N.apply(). */
+(function(){
+var D={
+/* ---------- login gate ---------- */
+"ArcGIS Online akkauntingiz bilan kiring.":["Sign in with your ArcGIS Online account.","Войдите с учётной записью ArcGIS Online.","သင့် ArcGIS Online အကောင့်ဖြင့် ဝင်ရောက်ပါ။"],
+"Login":["Username","Логин","အသုံးပြုသူအမည်"],
+"Parol":["Password","Пароль","စကားဝှက်"],
+"Kirish":["Sign in","Войти","ဝင်ရောက်ရန်"],
+"ArcGIS sahifasi orqali kirish (MFA/SSO uchun)":["Sign in on the ArcGIS page (for MFA/SSO)","Войти через страницу ArcGIS (для MFA/SSO)","ArcGIS စာမျက်နှာမှ ဝင်ရောက်ရန် (MFA/SSO အတွက်)"],
+"Login va parol to'g'ridan-to'g'ri ArcGIS Online'ga yuboriladi va saqlanmaydi.":["Your username and password go straight to ArcGIS Online and are not stored.","Логин и пароль отправляются напрямую в ArcGIS Online и не сохраняются.","အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ArcGIS Online သို့ တိုက်ရိုက်ပို့ပြီး သိမ်းဆည်းမထားပါ။"],
+"Parolni ko'rsatish":["Show password","Показать пароль","စကားဝှက်ပြရန်"],
+"Parolni yashirish":["Hide password","Скрыть пароль","စကားဝှက်ဖျောက်ရန်"],
+"Tekshirilmoqda…":["Checking…","Проверка…","စစ်ဆေးနေသည်…"],
+"ArcGIS Online bilan tekshirilmoqda…":["Checking with ArcGIS Online…","Проверка в ArcGIS Online…","ArcGIS Online ဖြင့် စစ်ဆေးနေသည်…"],
+"Login sifatida email emas, ArcGIS foydalanuvchi nomini yozing (…_land_tiiame).":["Enter your ArcGIS username (…_land_tiiame), not your e-mail.","Введите имя пользователя ArcGIS (…_land_tiiame), а не e-mail.","အီးမေးလ် မဟုတ်ဘဲ ArcGIS အသုံးပြုသူအမည် (…_land_tiiame) ကို ထည့်ပါ။"],
+"Login yoki parol noto'g'ri.":["Wrong username or password.","Неверный логин или пароль.","အသုံးပြုသူအမည် သို့မဟုတ် စကားဝှက် မှားနေသည်။"],
+"ArcGIS kirishni rad etdi.":["ArcGIS refused the sign-in.","ArcGIS отклонил вход.","ArcGIS က ဝင်ရောက်မှုကို ငြင်းပယ်သည်။"],
+"ArcGIS Online bilan bog'lanib bo'lmadi. Internetni tekshiring.":["Could not reach ArcGIS Online. Check your internet connection.","Не удалось связаться с ArcGIS Online. Проверьте интернет.","ArcGIS Online နှင့် ချိတ်ဆက်၍မရပါ။ အင်တာနက်ကို စစ်ဆေးပါ။"],
+"Kirish tasdiqlanmoqda…":["Confirming sign-in…","Подтверждение входа…","ဝင်ရောက်မှုကို အတည်ပြုနေသည်…"],
+"Ma'lumotlar ArcGIS Online'dan yuklanmoqda…":["Loading data from ArcGIS Online…","Загрузка данных из ArcGIS Online…","ArcGIS Online မှ ဒေတာ ရယူနေသည်…"],
+"Bu akkauntda Minbu Portal ma'lumotlarini ko'rish ruxsati yo'q.":["This account has no access to the Minbu Portal data.","У этой учётной записи нет доступа к данным Minbu Portal.","ဤအကောင့်တွင် Minbu Portal ဒေတာကို ကြည့်ခွင့်မရှိပါ။"],
+"Ma'lumot yuklanmadi ({0}). Qayta urinib ko'ring.":["Data did not load ({0}). Please try again.","Данные не загрузились ({0}). Попробуйте ещё раз.","ဒေတာ မရယူနိုင်ပါ ({0})။ ထပ်ကြိုးစားပါ။"],
+"Chiqish":["Sign out","Выйти","ထွက်ရန်"],
+"Portaldan chiqasizmi?":["Sign out of the portal?","Выйти из портала?","ပေါ်တယ်မှ ထွက်မလား။"],
+"Qayta kirish uchun login va parol kerak bo'ladi.":["You will need your username and password to sign in again.","Для повторного входа понадобятся логин и пароль.","ပြန်ဝင်ရန် အသုံးပြုသူအမည်နှင့် စကားဝှက် လိုအပ်မည်။"],
+"Kirish muddati tugadi. Login va parolni qayta kiriting.":["Your session has expired. Enter your username and password again.","Сеанс истёк. Введите логин и пароль снова.","ဝင်ရောက်ချိန် ကုန်ဆုံးပြီ။ အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ပြန်ထည့်ပါ။"],
+"Yil tanlang: oylar kesimida ko'rinadi":["Pick a year to see it month by month","Выберите год — данные по месяцам","နှစ်ရွေးပါ — လအလိုက် ပြမည်"],
+"Portal yangilanmoqda…":["Refreshing the portal…","Портал обновляется…","ပေါ်တယ် ပြန်လည်ဖွင့်နေသည်…"],
+"Qayta urinish":["Try again","Повторить","ထပ်ကြိုးစားရန်"],
+"Bekor qilish":["Cancel","Отмена","မလုပ်တော့ပါ"],
+"Yuklanmoqda…":["Loading…","Загрузка…","ရယူနေသည်…"],
+"Ma'lumotlar yuklanmoqda…":["Loading data…","Загрузка данных…","ဒေတာ ရယူနေသည်…"],
+"Portalga kirish uchun tugmani bosing.":["Press the button to enter the portal.","Нажмите кнопку, чтобы войти в портал.","ပေါ်တယ်သို့ ဝင်ရန် ခလုတ်ကို နှိပ်ပါ။"],
+"Til":["Language","Язык","ဘာသာစကား"],
+/* ---------- rasters, map controls ---------- */
+"Rasterlar":["Rasters","Растры","ရာစတာများ"],
+"Shaffoflik":["Opacity","Прозрачность","ပွင့်လင်းမှု"],
+"5 yillik o'rtacha":["5-year mean","Среднее за 5 лет","၅ နှစ်ပျမ်းမျှ"],
+"5 yillik o'rtacha · 2022–2026":["5-year mean · 2022–2026","Среднее за 5 лет · 2022–2026","၅ နှစ်ပျမ်းမျှ · ၂၀၂၂–၂၀၂၆"],
+"xaritaga qo'shish":["add to map","добавить на карту","မြေပုံသို့ ထည့်ရန်"],
+"Bu davr uchun raster yo'q":["No raster for this period","Нет растра за этот период","ဤကာလအတွက် ရာစတာ မရှိပါ"],
+"Bu oy uchun raster yo'q (bulut yoki tasvir yo'q).":["No rasters for this month (cloud or no image).","Нет растров за этот месяц (облачность или нет снимка).","ဤလအတွက် ရာစတာ မရှိပါ (တိမ် သို့မဟုတ် ပုံမရှိ)။"],
+"Raster yuklanmoqda…":["Loading raster…","Загрузка растра…","ရာစတာ ရယူနေသည်…"],
+"Xarita ustida sichqonchani yurgizing: piksel qiymati chiqadi.":["Move the pointer over the map to see pixel values.","Наведите курсор на карту, чтобы увидеть значение пикселя.","ပစ်ဇယ်တန်ဖိုး ကြည့်ရန် မြေပုံပေါ်တွင် မောက်စ်ကို ရွှေ့ပါ။"],
+"Kvadratni bosing: raster xaritaga qo'shiladi.":["Click a square to add the raster to the map.","Нажмите на квадрат, чтобы добавить растр на карту.","ရာစတာကို မြေပုံသို့ထည့်ရန် စတုရန်းကို နှိပ်ပါ။"],
+"Rasterlar yuklanmadi. Sahifani yangilab ko'ring.":["Rasters did not load. Try reloading the page.","Растры не загрузились. Обновите страницу.","ရာစတာများ မရယူနိုင်ပါ။ စာမျက်နှာကို ပြန်ဖွင့်ပါ။"],
+"Raster shaffofligi":["Raster opacity","Прозрачность растра","ရာစတာ ပွင့်လင်းမှု"],
+"3D relyef":["3D terrain","3D рельеф","3D မြေမျက်နှာသွင်ပြင်"],
+"Juda quruq (<0)":["Very dry (<0)","Очень сухо (<0)","အလွန်ခြောက် (<0)"],
+"Quruq (0–0,1)":["Dry (0–0.1)","Сухо (0–0,1)","ခြောက် (0–0.1)"],
+"O'rtacha (0,1–0,2)":["Medium (0.1–0.2)","Средне (0,1–0,2)","အလယ်အလတ် (0.1–0.2)"],
+"Nam (0,2–0,3)":["Wet (0.2–0.3)","Влажно (0,2–0,3)","စိုစွတ် (0.2–0.3)"],
+"Juda nam (≥0,3)":["Very wet (≥0.3)","Очень влажно (≥0,3)","အလွန်စိုစွတ် (≥0.3)"],
+"Yonmagan":["Not burned","Не горело","မမီးလောင်"],
+"1 yil yongan":["Burned 1 year","Горело 1 год","၁ နှစ် မီးလောင်"],
+"2 yil yongan":["Burned 2 years","Горело 2 года","၂ နှစ် မီးလောင်"],
+"3 yil yongan":["Burned 3 years","Горело 3 года","၃ နှစ် မီးလောင်"],
+"4 yil yongan":["Burned 4 years","Горело 4 года","၄ နှစ် မီးလောင်"],
+"5 yil yongan":["Burned 5 years","Горело 5 лет","၅ နှစ် မီးလောင်"],
+"Kosmik tasvir mavjud emas":["No satellite image","Космический снимок отсутствует","ဂြိုဟ်တုပုံ မရှိပါ"],
+"Bu oy uchun kosmik tasvir mavjud emas (bulut yoki surat olinmagan).":["No satellite image for this month (cloud or no acquisition).","За этот месяц космического снимка нет (облачность или съёмки не было).","ဤလအတွက် ဂြိုဟ်တုပုံ မရှိပါ (တိမ် သို့မဟုတ် ပုံမရိုက်ရ)။"],
+"Oraliq":["Range","Диапазон","အပိုင်းအခြား"],
+"Talqin":["Reading","Толкование","အဓိပ္ပာယ်"],
+"Manba":["Source","Источник","ရင်းမြစ်"],
+"Qiymat":["Value","Значение","တန်ဖိုး"],
+"Tozalash":["Reset","Сброс","ပြန်စရန်"],
+"Hammasini tozalash va boshlang'ich holatga qaytish":["Clear everything and return to the default view","Сбросить всё и вернуться к исходному виду","အားလုံးရှင်းပြီး မူလအခြေအနေသို့ ပြန်ရန်"],
+"Qatlamlar":["Layers","Слои","အလွှာများ"],
+"Konturlar":["Contours","Контуры","ကွက်များ"],
+"Qishloq chegaralari":["Village boundaries","Границы деревень","ကျေးရွာနယ်နိမိတ်များ"],
+"Kontur shaffofligi":["Contour opacity","Прозрачность контуров","ကွက်များ၏ ပွင့်လင်းမှု"],
+"Kontur":["Contour","Контур","ကွက်"],
+"Qishloqni tanlash":["Select village","Выбрать деревню","ကျေးရွာကို ရွေးရန်"],
+"Sun'iy yo'ldosh surati relyef ustida":["Satellite imagery on 3D terrain","Спутниковый снимок на рельефе","မြေမျက်နှာသွင်ပြင်ပေါ်ရှိ ဂြိုဟ်တုဓာတ်ပုံ"],
+"Butun dunyo xaritasi":["World map","Карта мира","ကမ္ဘာ့မြေပုံ"],
+/* ---------- top bar, rail ---------- */
+"Qishloq nomini yozing":["Type a village name","Введите название деревни","ရွာအမည် ရိုက်ထည့်ပါ"],
+"Qishloq qidirish":["Search village","Поиск деревни","ရွာ ရှာဖွေရန်"],
+"Filtrlar":["Filters","Фильтры","စစ်ထုတ်မှုများ"],
+"Bo'limlar":["Sections","Разделы","ကဏ္ဍများ"],
+"Boshqaruv paneli":["Dashboard","Панель управления","ဒက်ရှ်ဘုတ်"],
+"Qishloqlar":["Villages","Деревни","ရွာများ"],
+"Kontur holati":["Parcel status","Состояние контуров","မြေကွက် အခြေအနေ"],
+"Ekin ulushi":["Crop share","Доля посевов","သီးနှံ ဝေစု"],
+"Ma'lumotlar":["Data","Данные","ဒေတာ"],
+"2022–2026, oylik va yillik":["2022–2026, monthly and yearly","2022–2026, помесячно и по годам","၂၀၂၂–၂၀၂၆၊ လစဉ်နှင့် နှစ်စဉ်"],
+"76 709 kontur, uniqueid bo'yicha bog'langan":["76,709 parcels linked by uniqueid","76 709 контуров, связаны по uniqueid","uniqueid ဖြင့် ချိတ်ဆက်ထားသော မြေကွက် 76 709"],
+"Xulosa":["Summary","Вывод","အနှစ်ချုပ်"],
+"Qishloqlarni ko'rish":["View villages","Посмотреть деревни","ရွာများ ကြည့်ရန်"],
+"Manba: D:\\MYANMA_NEW, Myanma.gdb va ikki CSV. Indeks qiymatlari kontur maydoni bo'yicha o'rtacha.":["Source: D:\\MYANMA_NEW, Myanma.gdb and two CSV files. Index values are parcel-area weighted means.","Источник: D:\\MYANMA_NEW, Myanma.gdb и два CSV. Значения индексов — средние, взвешенные по площади контуров.","ရင်းမြစ်: D:\\MYANMA_NEW၊ Myanma.gdb နှင့် CSV ဖိုင်နှစ်ခု။ ညွှန်းကိန်းတန်ဖိုးများသည် မြေကွက်ဧရိယာအလိုက် ပျမ်းမျှ ဖြစ်သည်။"],
+"Minbu tumani ekin konturlari xaritasi":["Map of Minbu cropland parcels","Карта контуров посевов района Минбу","မင်းဘူးမြို့နယ် စိုက်ပျိုးမြေကွက် မြေပုံ"],
+"Tuman ko'rinishiga qaytish":["Back to township view","Вернуться к району","မြို့နယ်မြင်ကွင်းသို့ ပြန်သွားရန်"],
+/* ---------- cards ---------- */
+"Minbu tumani":["Minbu Township","Район Минбу","မင်းဘူးမြို့နယ်"],
+"Magway viloyati, Myanma · ekin konturlari tahlili":["Magway Region, Myanmar · cropland parcel analysis","Регион Магуэ, Мьянма · анализ контуров посевов","မကွေးတိုင်း၊ မြန်မာ · စိုက်ပျိုးမြေကွက် ခွဲခြမ်းစိတ်ဖြာမှု"],
+"Konturlar":["Parcels","Контуры","မြေကွက်များ"],
+"Ekin maydoni":["Cropland area","Площадь посевов","စိုက်ပျိုးမြေ ဧရိယာ"],
+"Ekin bandligi":["Crop occupancy","Занятость посевами","စိုက်ပျိုးမှု သိပ်သည်းဆ"],
+"Ekin yeri ulushi":["Cropland share","Доля пашни","စိုက်ပျိုးမြေ အချိုး"],
+"ekin yeri ulushi":["cropland share","доля пашни","စိုက်ပျိုးမြေ အချိုး"],
+"ekin yeri":["cropland","пашня","စိုက်ပျိုးမြေ"],
+"% ekin yeri":["% cropland","% пашни","% စိုက်ပျိုးမြေ"],
+"Umumiy maydon":["Total area","Общая площадь","စုစုပေါင်း ဧရိယာ"],
+"Kontur medianasi":["Median contour","Медиана контура","ကွက် အလယ်ကိန်း"],
+"Eng katta kontur":["Largest contour","Крупнейший контур","အကြီးဆုံး ကွက်"],
+"Yirik konturlar (2 ga+) ulushi":["Share of large contours (2 ha+)","Доля крупных контуров (2 га+)","ကွက်ကြီးများ (၂ ဟက်တာ+) အချိုး"],
+"Qishloq · yer fondi ko'rsatkichlari":["Village · land indicators","Деревня · показатели земельного фонда","ရွာ · မြေ ညွှန်ကိန်းများ"],
+"Tuman · yer fondi ko'rsatkichlari":["Township · land indicators","Район · показатели земельного фонда","မြို့နယ် · မြေ ညွှန်ကိန်းများ"],
+"76 709 ekin konturi":["76,709 crop contours","76 709 контуров посевов","သီးနှံကွက် ၇၆,၇၀၉"],
+"Water Management havolasi hali qo'shilmagan.":["The Water Management link has not been added yet.","Ссылка на Water Management ещё не добавлена.","Water Management လင့်ခ်ကို မထည့်ရသေးပါ။"],
+"Flood Mapping havolasi hali qo'shilmagan.":["The Flood Mapping link has not been added yet.","Ссылка на Flood Mapping ещё не добавлена.","Flood Mapping လင့်ခ်ကို မထည့်ရသေးပါ။"],
+"Flood Mapping: suv toshqini xaritasi va prognozi":["Flood Mapping: flood map and forecast","Flood Mapping: карта и прогноз паводков","Flood Mapping: ရေကြီးမှု မြေပုံနှင့် ခန့်မှန်းချက်"],
+"Index Forecast: tayyorlanmoqda":["Index Forecast: in preparation","Index Forecast: в подготовке","Index Forecast: ပြင်ဆင်နေဆဲ"],
+"Index Forecast hozircha tayyorlanmoqda.":["Index Forecast is still being prepared.","Index Forecast пока готовится.","Index Forecast ကို ပြင်ဆင်နေဆဲ ဖြစ်သည်။"],
+"Rasmni kattalashtirish":["Enlarge photo","Увеличить фото","ဓာတ်ပုံ ချဲ့ရန်"],
+"Minbu Portal muallifi":["Author of Minbu Portal","Автор Minbu Portal","Minbu Portal ရေးသားသူ"],
+"Telefon":["Phone","Телефон","ဖုန်း"],
+"Nusxa olish":["Copy","Копировать","ကူးယူရန်"],
+"Nusxa olindi":["Copied","Скопировано","ကူးယူပြီး"],
+"Qo'ng'iroq qilish":["Call","Позвонить","ဖုန်းခေါ်ရန်"],
+"Xat yozish":["Send email","Написать письмо","အီးမေးလ်ပို့ရန်"],
+"Asosiy xarita yuklanmadi. Internetni tekshiring.":["Basemap failed to load. Check the internet connection.","Базовая карта не загрузилась. Проверьте интернет.","အခြေခံမြေပုံ မရယူနိုင်ပါ။ အင်တာနက်ကို စစ်ဆေးပါ။"],
+"Joriy xarita":["Current basemap","Текущая карта","လက်ရှိ မြေပုံ"],
+"Qabul stansiyasi":["Ground station","Наземная станция","မြေပြင်စခန်း"],
+"Signal kutilmoqda":["Awaiting signal","Ожидание сигнала","အချက်ပြ စောင့်ဆိုင်းနေ"],
+"Signal qabul qilinmoqda":["Receiving signal","Приём сигнала","အချက်ပြ လက်ခံနေ"],
+"Ma'lumot uzatilmoqda":["Transmitting data","Передача данных","ဒေတာ ပို့နေ"],
+"Ma'lumot qabul qilinmoqda":["Receiving data","Приём данных","ဒေတာ လက်ခံနေ"],
+"Ma'lumot markazi":["Data centre","Центр данных","ဒေတာစင်တာ"],
+"Skaner":["Scan","Скан","စကန်"],
+"Orbitada":["In orbit","На орбите","ပတ်လမ်းပေါ်တွင်"],
+"Asosiy xaritalar":["Basemaps","Базовые карты","အခြေခံမြေပုံများ"],
+"Xaritalar":["Basemaps","Карты","မြေပုံများ"],
+"ArcGIS Online asosiy xaritalari":["ArcGIS Online basemaps","Базовые карты ArcGIS Online","ArcGIS Online အခြေခံမြေပုံများ"],
+"Bulutsiz surat (2022)":["Cloud-free imagery (2022)","Снимок без облаков (2022)","တိမ်ကင်းပုံ (၂၀၂၂)"],
+"Sun'iy yo'ldosh (yangi)":["Imagery (latest)","Спутник (новый)","ဂြိုဟ်တုပုံ (နောက်ဆုံး)"],
+"Gibrid":["Hybrid","Гибрид","ပေါင်းစပ်"],
+"Ko'chalar":["Streets","Улицы","လမ်းများ"],
+"Topografik":["Topographic","Топографическая","မြေမျက်နှာသွင်ပြင်"],
+"Och kulrang":["Light gray","Светло-серая","မီးခိုးနု"],
+"To'q kulrang":["Dark gray","Тёмно-серая","မီးခိုးရင့်"],
+"Relyef":["Terrain","Рельеф","မြေမျက်နှာ"],
+"Soya relyefi":["Shaded relief","Отмывка рельефа","အရိပ်မြေမျက်နှာ"],
+"Fizik xarita":["Physical","Физическая","ရုပ်ပိုင်းမြေပုံ"],
+"3D boshqaruvi":["3D controls","Управление 3D","3D ထိန်းချုပ်မှု"],
+"Shimolga burish":["Reset north","На север","မြောက်ဘက်သို့"],
+"Chapga aylantirish":["Rotate left","Повернуть влево","ဘယ်ဘက်လှည့်"],
+"O'ngga aylantirish":["Rotate right","Повернуть вправо","ညာဘက်လှည့်"],
+"Ko'proq qiyalatish":["Tilt more","Наклонить сильнее","ပိုစောင်း"],
+"Kamroq qiyalatish (tepadan)":["Tilt less (top view)","Меньше наклон (сверху)","လျော့စောင်း (အပေါ်မှ)"],
+"Aylanib ko'rish":["Orbit view","Облёт по кругу","လှည့်ပတ်ကြည့်"],
+"Uchib ko'rish":["Fly-through tour","Пролёт","ပျံသန်းကြည့်"],
+"Mualliflar":["Authors","Авторы","ရေးသားသူများ"],
+"Ekin yeri bandligi":["Cropland occupancy","Занятость земли посевами","စိုက်ပျိုးမြေ အသုံးပြုမှု"],
+"O'ngda: shu ulushdagi qishloqlar soni":["Right: number of villages in that share","Справа: число деревень с такой долей","ညာဘက် — ထိုအချိုးရှိ ကျေးရွာ အရေအတွက်"],
+"{0} ta qishloq":["{0} villages","{0} деревень","ကျေးရွာ {0} ရွာ"],
+"Hududning ekin bilan band ulushi":["Share of the area under crops","Доля территории под посевами","စိုက်ပျိုးထားသော ဧရိယာ ဝေစု"],
+"Xarita":["Map","Карта","မြေပုံ"],
+"Asosiy xarita":["Basemap","Базовая карта","အခြေခံမြေပုံ"],
+"Qorong'i":["Dark","Тёмная","အမှောင်"],
+"Sun'iy yo'ldosh":["Satellite","Спутник","ဂြိုဟ်တု"],
+"Topo":["Topo","Топо","Topo"],
+"Tuman":["Township","Район","မြို့နယ်"],
+"ekin ulushi":["crop share","доля посевов","သီးနှံ ဝေစု"],
+"Hudud":["Area","Территория","ဧရိယာ"],
+"Median":["Median","Медиана","အလယ်ကိန်း"],
+"Eng katta":["Largest","Наибольший","အကြီးဆုံး"],
+"Tumanga nisbatan":["Compared with the township","По сравнению с районом","မြို့နယ်နှင့် နှိုင်းယှဉ်ချက်"],
+"Yirik konturlar (2 ga+) maydoni":["Area in large parcels (2 ha+)","Площадь крупных контуров (2 га+)","မြေကွက်ကြီးများ (၂ ဟက်တာ+) ဧရိယာ"],
+"Index qiymati yillik":["Index values through the year","Значения индексов за год","တစ်နှစ်တာ ညွှန်းကိန်းတန်ဖိုးများ"],
+"Barcha indekslar, oylar kesimida":["All indices, by month","Все индексы по месяцам","ညွှန်းကိန်းအားလုံး၊ လအလိုက်"],
+"Index yillar kesimida":["Index across the years","Индекс по годам","နှစ်အလိုက် ညွှန်းကိန်း"],
+"Har bir yil alohida chiziq":["One line per year","Отдельная линия на каждый год","နှစ်တစ်နှစ်လျှင် မျဉ်းတစ်ကြောင်း"],
+"Maydon taqsimoti":["Area distribution","Распределение площади","ဧရိယာ ဖြန့်ဝေမှု"],
+"Maydonning status bo'yicha taqsimoti":["Area by status","Распределение площади по статусу","အခြေအနေအလိုက် ဧရိယာ"],
+"70 ta qishloq":["70 villages","70 деревень","ရွာ ၇၀"],
+"Ekin, ga":["Crop, ha","Посевы, га","သီးနှံ၊ ဟက်တာ"],
+"Ulush":["Share","Доля","ဝေစု"],
+"Indeks":["Index","Индекс","ညွှန်းကိန်း"],
+"Yopish":["Close","Закрыть","ပိတ်ရန်"],
+/* ---------- filters ---------- */
+"Qishloq":["Village","Деревня","ရွာ"],
+"Yil":["Year","Год","နှစ်"],
+"Oy":["Month","Месяц","လ"],
+"Index":["Index","Индекс","ညွှန်းကိန်း"],
+"Butun tuman":["Whole township","Весь район","မြို့နယ်တစ်ခုလုံး"],
+"Barcha qishloqlar":["All villages","Все деревни","ရွာအားလုံး"],
+"Yillik":["Yearly","За год","နှစ်စဉ်"],
+"yillik":["yearly","за год","နှစ်စဉ်"],
+"butun yil":["whole year","весь год","တစ်နှစ်လုံး"],
+"Bunday qishloq topilmadi.":["No such village found.","Деревня не найдена.","ထိုရွာကို မတွေ့ပါ။"],
+"Bunday qishloq topilmadi. Boshqa nom bilan urinib ko'ring.":["No such village found. Try another name.","Деревня не найдена. Попробуйте другое название.","ထိုရွာကို မတွေ့ပါ။ အခြားအမည်ဖြင့် ထပ်ကြိုးစားပါ။"],
+/* ---------- dynamic card text ---------- */
+"ga":["ha","га","ဟက်တာ"],
+"{0} kontur / 100 ga ekin":["{0} parcels / 100 ha of crops","{0} контуров / 100 га посевов","စိုက်ပျိုးမြေ ၁၀၀ ဟက်တာလျှင် မြေကွက် {0}"],
+"hududning {0}i":["{0} of the area","{0} территории","ဧရိယာ၏ {0}"],
+"Maydon reytingi":["Area rank","Рейтинг по площади","ဧရိယာ အဆင့်"],
+
+"ulush bo'yicha {0}-o'rin":["#{0} by share","{0}-е место по доле","ဝေစုအလိုက် အဆင့် {0}"],
+"barchasi xaritada":["all shown on the map","все на карте","အားလုံး မြေပုံပေါ်တွင်"],
+"tuman bilan solishtirib bo'lmaydi":["cannot be compared with the township","нельзя сравнить с районом","မြို့နယ်နှင့် နှိုင်းယှဉ်၍ မရပါ"],
+"tuman: {0} ({1})":["township: {0} ({1})","район: {0} ({1})","မြို့နယ်: {0} ({1})"],
+"oylik o'rtacha":["monthly mean","среднее за месяц","လစဉ် ပျမ်းမျှ"],
+"yillik qiymat":["yearly value","годовое значение","နှစ်စဉ် တန်ဖိုး"],
+"Index qiymatlari":["Index values","Значения индексов","အညွှန်းကိန်း တန်ဖိုးများ"],
+"Oylar kesimida, 2022–2026 · bir nechta indeksni tanlash mumkin":["By month, 2022–2026 · several indices can be ticked","По месяцам, 2022–2026 · можно выбрать несколько индексов","လအလိုက်၊ ၂၀၂၂–၂၀၂၆ · အညွှန်းကိန်း အများအပြား ရွေးနိုင်သည်"],
+"Indekslar":["Indices","Индексы","အညွှန်းကိန်းများ"],
+"Olib tashlash":["Remove","Убрать","ဖယ်ရှားရန်"],
+"Qo'shish":["Add","Добавить","ထည့်ရန်"],
+"{0} bilan solishtirganda":["compared with {0}","по сравнению с {0}","{0} နှင့် နှိုင်းယှဉ်လျှင်"],
+"Yillik o'rtacha":["Yearly mean","Среднее за год","နှစ်စဉ် ပျမ်းမျှ"],
+"yillik o'rtacha":["yearly mean","среднее за год","နှစ်စဉ် ပျမ်းမျှ"],
+"Yil tanlang: yillik o'rtacha ko'rinadi, oylar — Oy filtrida":["Pick a year to see its yearly mean; months are in the Month filter","Выберите год — среднее за год; месяцы — в фильтре «Месяц»","နှစ်ရွေးပါ — နှစ်စဉ် ပျမ်းမျှ ပြမည်၊ လများ — လ စစ်ထုတ်မှုတွင်"],
+"Yongan":["Burned","Горело","မီးလောင်"],
+"Xarita qatlamlari":["Map layers","Слои карты","မြေပုံအလွှာများ"],
+"Indeks qiymatlari":["Index values","Значения индексов","အညွှန်းကိန်း တန်ဖိုးများ"],
+"Kontur qiymatlari":["Contour values","Значения контура","ကွက် တန်ဖိုးများ"],
+"Rasterlar va indeks qiymatlari":["Rasters and index values","Растры и значения индексов","ရာစတာနှင့် အညွှန်းကိန်း တန်ဖိုးများ"],
+"Xaritada shu indeksni ko'rsatish":["Show this index on the map","Показать этот индекс на карте","ဤအညွှန်းကိန်းကို မြေပုံတွင် ပြရန်"],
+"Vegetatsiya holati":["Vegetation condition","Состояние растительности","အပင် အခြေအနေ"],
+"Azot yetishmovchiligi":["Nitrogen deficiency","Дефицит азота","နိုက်ထရိုဂျင် ချို့တဲ့မှု"],
+"Ekin zichligi":["Crop density","Густота посевов","သီးနှံ သိပ်သည်းမှု"],
+"Xlorofill miqdori":["Chlorophyll content","Содержание хлорофилла","ကလိုရိုဖီးလ် ပမာဏ"],
+"Namlik / suv":["Moisture / water","Влажность / вода","စိုထိုင်းဆ / ရေ"],
+"Yong'in izi":["Burn trace","След пожара","မီးလောင်ရာ"],
+"Yong'in holati":["Fire condition","Состояние после пожара","မီးလောင်မှု အခြေအနေ"],
+"Kun":["Day","День","နေ့"],
+"Ekran":["Screen","Экран","မျက်နှာပြင်"],
+"Berkitish":["Hide","Скрыть","ဖျောက်ရန်"],
+"Ochish":["Show","Открыть","ဖွင့်ရန်"],
+"Rasterlarni yashirish":["Hide rasters","Скрыть растры","ရာစတာများ ဖျောက်ရန်"],
+"Rasterlarni ko'rsatish":["Show rasters","Показать растры","ရာစတာများ ပြရန်"],
+"Rasterlar va indeks qiymatlari ustunini yashirish: xarita kengroq ko'rinadi":["Hide the rasters and index values column: the map gets wider","Скрыть столбец растров и значений индексов: карта станет шире","ရာစတာနှင့် အညွှန်းတန်ဖိုး ကော်လံ ဖျောက်ရန်"],
+"Rasterlar va indeks qiymatlari ustunini qayta ochish":["Open the rasters and index values column again","Снова открыть столбец растров и значений индексов","ရာစတာနှင့် အညွှန်းတန်ဖိုး ကော်လံ ပြန်ဖွင့်ရန်"],
+"Grafiklarni yashirish":["Hide charts","Скрыть графики","ဇယားများ ဖျောက်ရန်"],
+"Grafiklarni ko'rsatish":["Show charts","Показать графики","ဇယားများ ပြရန်"],
+"Grafiklar qatorini yashirish: xarita kattaroq ko'rinadi":["Hide the chart row: the map gets bigger","Скрыть ряд графиков: карта станет больше","ဇယားတန်း ဖျောက်ရန် - မြေပုံ ပိုကြီးလာမည်"],
+"Grafiklar qatorini qayta ochish":["Open the chart row again","Снова открыть ряд графиков","ဇယားတန်း ပြန်ဖွင့်ရန်"],
+"To'liq ekran":["Full screen","Во весь экран","မျက်နှာပြင်အပြည့်"],
+"To'liq ekrandan chiqish":["Exit full screen","Выйти из полноэкранного режима","မျက်နှာပြင်အပြည့်မှ ထွက်ရန်"],
+"Bu brauzerda to'liq ekran ishlamaydi.":["Full screen does not work in this browser.","В этом браузере полноэкранный режим не работает.","ဤဘရောက်ဇာတွင် မျက်နှာပြင်အပြည့် မရပါ။"],
+"RGB · tuman":["RGB · township","RGB · район","RGB · မြို့နယ်"],
+"Sun'iy yo'ldosh surati faqat tuman ichida":["Satellite image only inside the township","Спутниковый снимок только внутри района","မြို့နယ်အတွင်းသာ ဂြိုဟ်တုဓာတ်ပုံ"],
+"Rasterlarni yashirish":["Hide rasters","Скрыть растры","ရာစတာများ ဖျောက်ရန်"],
+"Rasterlarni qayta ochish":["Show rasters again","Снова показать растры","ရာစတာများ ပြန်ပြရန်"],
+"Tun":["Night","Ночь","ည"],
+"Kun rejimi: yorug' ko'rinish":["Day mode: light look","Дневной режим: светлый вид","နေ့ပုံစံ - အလင်း"],
+"Tun rejimi: qorong'i ko'rinish":["Night mode: dark look","Ночной режим: тёмный вид","ညပုံစံ - အမှောင်"],
+"Kontur ostida sun'iy yo'ldosh surati":["Satellite image under the contours","Спутниковый снимок под контурами","ကွက်များအောက် ဂြိုဟ်တုဓာတ်ပုံ"],
+"Umumiy barg maydoni":["Total leaf area","Общая площадь листьев","စုစုပေါင်း အရွက်ဧရိယာ"],
+"Barg yuzasi":["Leaf area","Площадь листьев","အရွက် ဧရိယာ"],
+"Qisman yongan":["Partially burned","Частично горело","တစ်စိတ်တစ်ပိုင်း မီးလောင်"],
+"<b>{0}</b> maydon yonmagan":["<b>{0}</b> of the area not burned","<b>{0}</b> площади не горело","ဧရိယာ <b>{0}</b> မမီးလောင်ပါ"],
+"Holat taqsimoti":["Status distribution","Распределение по состоянию","အခြေအနေ ဖြန့်ဝေမှု"],
+"Oylar kesimida, 2022–2026 · chapdan bir nechta indeksni tanlash mumkin":["Monthly, 2022–2026 · tick several indices on the left","По месяцам, 2022–2026 · слева можно отметить несколько индексов","လအလိုက်၊ ၂၀၂၂–၂၀၂၆ · ဘယ်ဘက်တွင် အညွှန်းကိန်း အများအပြား ရွေးနိုင်သည်"],
+"Qishloq chegaralarini ko'rsatish / yashirish":["Show / hide village boundaries","Показать / скрыть границы сёл","ကျေးရွာနယ်နိမိတ် ပြရန် / ဖျောက်ရန်"],
+"Konturlarni ko'rsatish / yashirish":["Show / hide parcels","Показать / скрыть контуры","မြေကွက်များ ပြရန် / ဖျောက်ရန်"],
+"Qishloqlar ro'yxati":["Village list","Список сёл","ကျေးရွာစာရင်း"],
+"Kontur maskasi (clip)":["Parcel mask (clip)","Маска по контурам (clip)","မြေကွက် mask (clip)"],
+"o'chirilsa — to'liq raster qoplamasi":["off — full raster coverage","выкл. — полное покрытие растра","ပိတ်ထားလျှင် — ရာစတာ အပြည့်"],
+"Grafiklar":["Charts","Графики","ဇယားများ"],
+"Grafiklarni yashirish: xarita kattaroq ko'rinadi":["Hide the charts: the map gets more space","Скрыть графики: карта станет больше","ဇယားများကို ဖျောက်ရန်"],
+"Grafiklarni qayta ochish":["Show the charts again","Снова показать графики","ဇယားများကို ပြန်ပြရန်"],
+"Konturlar bo'yicha kesish":["Clip to parcels","Обрезать по контурам","မြေကွက်များအတိုင်း ဖြတ်ရန်"],
+"faqat kontur ichidagi piksellar":["only pixels inside parcels","только пиксели внутри контуров","မြေကွက်အတွင်းရှိ pixel များသာ"],
+"Rasterni kontur chegaralari bilan kesish: faqat ekin konturlari ichidagi piksellar ko'rinadi va qiymat beradi":["Clip the raster with the parcel boundaries: only pixels inside crop parcels are shown and give a value","Обрезать растр границами контуров: видны и дают значение только пиксели внутри контуров","ရာစတာကို မြေကွက်နယ်နိမိတ်ဖြင့် ဖြတ်ရန် — မြေကွက်အတွင်းရှိ pixel များသာ ပြပြီး တန်ဖိုးပေးသည်"],
+"Maps":["Maps","Карты","မြေပုံများ"],
+"Asosiy xaritani tanlash":["Choose a basemap","Выбрать базовую карту","အခြေခံမြေပုံ ရွေးရန်"],
+"Qorong'i fon":["Dark background","Тёмный фон","အမှောင်နောက်ခံ"],
+"Sun'iy yo'ldosh: asosiy xaritani tanlash":["Satellite: choose a basemap","Спутник: выбрать базовую карту","ဂြိုဟ်တု: အခြေခံမြေပုံ ရွေးရန်"],
+"Ob-havo":["Weather","Погода","ရာသီဥတု"],
+"Ob-havo · Minbu":["Weather · Minbu","Погода · Минбу","ရာသီဥတု · မင်းဘူး"],
+"bugun":["today","сегодня","ယနေ့"],
+"Bugun":["Today","Сегодня","ယနေ့"],
+"his qilinadi {0}°":["feels like {0}°","ощущается как {0}°","ခံစားရသည် {0}°"],
+"Yog'in":["Rain","Осадки","မိုးရေ"],
+"Namlik":["Humidity","Влажность","စိုထိုင်းဆ"],
+"Shamol":["Wind","Ветер","လေ"],
+"Bug'lanish":["ET0","Испарение","အငွေ့ပျံမှု"],
+"mm":["mm","мм","မမ"],
+"m/s":["m/s","м/с","မ/စ"],
+"Bugungi yog'in yig'indisi":["Today's rainfall total","Сумма осадков за сегодня","ယနေ့ မိုးရေစုစုပေါင်း"],
+"Bug'lanish (ET0, FAO-56): ekin suv sarfining asosiy o'lchovi":["Reference evapotranspiration (ET0, FAO-56): the basic measure of crop water use","Эталонное испарение (ET0, FAO-56): основная мера водопотребления культур","ကိုးကားအငွေ့ပျံမှု (ET0, FAO-56): သီးနှံရေသုံးစွဲမှု အခြေခံတိုင်းတာချက်"],
+"Manba: Open-Meteo prognoz modeli · yangilangan {0}":["Source: Open-Meteo forecast model · updated {0}","Источник: прогнозная модель Open-Meteo · обновлено {0}","ရင်းမြစ်: Open-Meteo ခန့်မှန်းမော်ဒယ် · {0} တွင် အသစ်ပြင်"],
+"Ob-havo ma'lumoti yuklanmadi. Internetni tekshiring.":["Weather data did not load. Check the internet connection.","Данные о погоде не загрузились. Проверьте интернет.","ရာသီဥတုဒေတာ မတင်နိုင်ပါ။ အင်တာနက်ကို စစ်ဆေးပါ။"],
+"Ko'proq ko'rsatish":["Show more","Показать больше","ပိုပြရန်"],
+"Yig'ish":["Collapse","Свернуть","ခေါက်ရန်"],
+"Ochiq osmon":["Clear sky","Ясно","ကောင်းကင်ကြည်"],
+"Asosan ochiq":["Mainly clear","Преимущественно ясно","အများအားဖြင့် ကြည်လင်"],
+"Qisman bulutli":["Partly cloudy","Переменная облачность","တိမ်အနည်းငယ်"],
+"Bulutli":["Overcast","Пасмурно","တိမ်ထူ"],
+"Tumanli":["Fog","Туман","မြူ"],
+"Mayda yomg'ir":["Drizzle","Морось","မိုးဖွဲ"],
+"Yomg'ir":["Rain","Дождь","မိုး"],
+"Jala":["Showers","Ливень","မိုးသည်း"],
+"Qor":["Snow","Снег","နှင်း"],
+"Momaqaldiroq":["Thunderstorm","Гроза","မိုးကြိုး"],
+"Tanlangan qishloq":["Selected village","Выбранная деревня","ရွေးချယ်ထားသော ရွာ"],
+"Tanlash uchun qishloqni bosing":["Click a village to select it","Нажмите на деревню, чтобы выбрать","ရွေးရန် ရွာကို နှိပ်ပါ"],
+"Tuman = ×1,00":["Township = ×1.00","Район = ×1,00","မြို့နယ် = ×1,00"],
+"Qishloq tanlang":["Select a village","Выберите деревню","ရွာတစ်ရွာ ရွေးပါ"],
+"Zichlik":["Density","Плотность","သိပ်သည်းဆ"],
+"tuman":["township","район","မြို့နယ်"],
+"yuqori":["higher","выше","မြင့်"],
+"past":["lower","ниже","နိမ့်"],
+"o'rtacha":["average","средне","ပျမ်းမျှ"],
+"Konturlarning <b>{0}</b>i 0,25 ga dan kichik, ammo maydonning {1}ini beradi. Maydonning <b>{2}</b>i 2 ga dan yirik konturlarda.":["<b>{0}</b> of parcels are smaller than 0.25 ha but cover only {1} of the area. <b>{2}</b> of the area lies in parcels larger than 2 ha.","<b>{0}</b> контуров меньше 0,25 га, но дают лишь {1} площади. <b>{2}</b> площади приходится на контуры крупнее 2 га.","မြေကွက်များ၏ <b>{0}</b> သည် ၀.၂၅ ဟက်တာထက် ငယ်သော်လည်း ဧရိယာ၏ {1} သာ ရှိသည်။ ဧရိယာ၏ <b>{2}</b> သည် ၂ ဟက်တာထက် ကြီးသော မြေကွက်များတွင် ရှိသည်။"],
+"20% gacha":["up to 20%","до 20%","၂၀% အထိ"],
+"% ekin":["% crop","% посевов","% သီးနှံ"],
+"Juda yaxshi":["Very good","Отлично","အလွန်ကောင်း"],
+"Yaxshi":["Good","Хорошо","ကောင်း"],
+"O'rtacha":["Medium","Средне","အလယ်အလတ်"],
+"Yomon":["Poor","Плохо","ညံ့"],
+"Ma'lumot yo'q":["No data","Нет данных","ဒေတာ မရှိ"],
+"Juda nam":["Very moist","Очень влажно","အလွန် စိုစွတ်"],
+"Nam":["Moist","Влажно","စိုစွတ်"],
+"Quruq":["Dry","Сухо","ခြောက်သွေ့"],
+"Konturlar: {0} statusi, {1}":["Parcels: {0} status, {1}","Контуры: статус {0}, {1}","မြေကွက်များ: {0} အခြေအနေ၊ {1}"],
+"Faqat shu konturlarni ko'rsatish":["Show only these parcels","Показать только эти контуры","ဤမြေကွက်များကိုသာ ပြရန်"],
+"Xaritada faqat shu konturlarni ko'rsatish":["Show only these parcels on the map","Показать на карте только эти контуры","မြေပုံပေါ်တွင် ဤမြေကွက်များကိုသာ ပြရန်"],
+"Bu yil uchun ma'lumot yo'q.":["No data for this year.","Нет данных за этот год.","ဤနှစ်အတွက် ဒေတာ မရှိပါ။"],
+"{0}: {1} ma'lumoti yo'q":["{0}: no {1} data","{0}: нет данных {1}","{0}: {1} ဒေတာ မရှိ"],
+"{0}: ma'lumot yo'q":["{0}: no data","{0}: нет данных","{0}: ဒေတာ မရှိ"],
+"{0} statusi · kontur soni":["{0} status · number of contours","Статус {0} · число контуров","{0} အခြေအနေ · ကွက်အရေအတွက်"],
+"{0} ga":["{0} ha","{0} га","{0} ဟက်တာ"],
+"{0} statusi, gektar":["{0} status, hectares","Статус {0}, гектары","{0} အခြေအနေ၊ ဟက်တာ"],
+"Bu davr uchun ma'lumot yo'q.":["No data for this period.","Нет данных за этот период.","ဤကာလအတွက် ဒေတာ မရှိပါ။"],
+"ga, jami":["ha, total","га, всего","ဟက်တာ၊ စုစုပေါင်း"],
+"O'tgan yilga nisbatan":["Compared with last year","По сравнению с прошлым годом","ယမန်နှစ်နှင့် နှိုင်းယှဉ်ချက်"],
+"Xaritada faqat <b>{0}</b> konturlar ko'rsatilmoqda.":["Only <b>{0}</b> parcels are shown on the map.","На карте показаны только контуры «<b>{0}</b>».","မြေပုံပေါ်တွင် <b>{0}</b> မြေကွက်များကိုသာ ပြထားသည်။"],
+"Hammasini ko'rsatish":["Show all","Показать все","အားလုံး ပြရန်"],
+"nam":["moist","влажно","စိုစွတ်"],
+"yaxshi":["good","хорошо","ကောင်း"],
+"<b>{0}</b> maydon {1} yoki undan yuqori holatda":["<b>{0}</b> of the area is {1} or better","<b>{0}</b> площади в состоянии «{1}» или лучше","ဧရိယာ၏ <b>{0}</b> သည် {1} သို့မဟုတ် ပိုကောင်းသော အခြေအနေတွင် ရှိသည်"],
+"; o'tgan yil {0} edi (pp, o'tgan yilga nisbatan).":["; last year it was {0} (pp = change vs last year).","; в прошлом году было {0} (п.п. — изменение к прошлому году).","; ယမန်နှစ်က {0} ဖြစ်သည် (pp = ယမန်နှစ်နှင့် ပြောင်းလဲမှု)။"],
+"ulush":["share","доля","ဝေစု"]
+};
+var LANGS=[
+  {k:'uz',name:"O'zbekcha",short:'UZ'},
+  {k:'en',name:'English',short:'EN'},
+  {k:'ru',name:'Русский',short:'RU'},
+  {k:'my',name:'မြန်မာ',short:'MY'}
+];
+var IDX={uz:-1,en:0,ru:1,my:2};
+var MS={uz:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+  ru:['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'],my:['ဇန်','ဖေ','မတ်','ဧ','မေ','ဇွန်','ဇူ','ဩ','စက်','အောက်','နို','ဒီ']};
+var MF={uz:['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr'],en:['January','February','March','April','May','June','July','August','September','October','November','December'],
+  ru:['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+  my:['ဇန်နဝါရီ','ဖေဖော်ဝါရီ','မတ်','ဧပြီ','မေ','ဇွန်','ဇူလိုင်','ဩဂုတ်','စက်တင်ဘာ','အောက်တိုဘာ','နိုဝင်ဘာ','ဒီဇင်ဘာ']};
+var FLAG={
+  uz:'<svg viewBox="0 0 30 20" width="22" height="15" aria-hidden="true"><rect width="30" height="20" fill="#1eb53a"/><rect width="30" height="13.2" fill="#fff"/><rect width="30" height="6.4" fill="#0099b5"/><rect y="6.4" width="30" height=".6" fill="#ce1126"/><rect y="12.6" width="30" height=".6" fill="#ce1126"/><circle cx="5.2" cy="3.2" r="2.2" fill="#fff"/><circle cx="6" cy="3.2" r="2" fill="#0099b5"/><g fill="#fff"><circle cx="9" cy="1.6" r=".45"/><circle cx="10.6" cy="1.6" r=".45"/><circle cx="12.2" cy="1.6" r=".45"/><circle cx="9" cy="3.2" r=".45"/><circle cx="10.6" cy="3.2" r=".45"/><circle cx="12.2" cy="3.2" r=".45"/><circle cx="10.6" cy="4.8" r=".45"/><circle cx="12.2" cy="4.8" r=".45"/></g></svg>',
+  en:'<svg viewBox="0 0 60 40" width="22" height="15" aria-hidden="true"><rect width="60" height="40" fill="#012169"/><path d="M0 0l60 40M60 0L0 40" stroke="#fff" stroke-width="8"/><path d="M0 0l60 40M60 0L0 40" stroke="#c8102e" stroke-width="3"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="12"/><path d="M30 0v40M0 20h60" stroke="#c8102e" stroke-width="7"/></svg>',
+  ru:'<svg viewBox="0 0 30 20" width="22" height="15" aria-hidden="true"><rect width="30" height="20" fill="#d52b1e"/><rect width="30" height="13.33" fill="#0039a6"/><rect width="30" height="6.67" fill="#fff"/></svg>',
+  my:'<svg viewBox="0 0 30 20" width="22" height="15" aria-hidden="true"><rect width="30" height="20" fill="#ea2839"/><rect width="30" height="13.33" fill="#34b233"/><rect width="30" height="6.67" fill="#fecb00"/><path fill="#fff" d="M15 3.2l1.85 5.7h6l-4.85 3.5 1.85 5.7L15 14.6l-4.85 3.5 1.85-5.7-4.85-3.5h6z"/></svg>'
+};
+var lang='uz';try{lang=localStorage.getItem('minbu_lang')||'uz'}catch(e){}
+if(!(lang in IDX))lang='uz';
+function L(k){var r=D[k],i=IDX[lang],s=(i<0||!r)?k:(r[i]||k);for(var a=1;a<arguments.length;a++)s=s.split('{'+(a-1)+'}').join(arguments[a]);return s}
+var ATTRS=['placeholder','aria-label','title'];
+function apply(root){
+  root=root||document.body;
+  var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:function(n){var p=n.parentNode&&n.parentNode.nodeName;return p==='SCRIPT'||p==='STYLE'?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT}});
+  var n;while((n=w.nextNode())){
+    if(n.__o===undefined){var k0=n.nodeValue.trim();if(!k0||!D[k0])continue;n.__o=n.nodeValue}
+    var k=n.__o.trim();n.nodeValue=n.__o.replace(k,L(k));
+  }
+  [].forEach.call(root.querySelectorAll('[placeholder],[aria-label],[title]'),function(el){
+    ATTRS.forEach(function(a){if(!el.hasAttribute(a))return;var key='__o_'+a;if(el[key]===undefined){var v=el.getAttribute(a);if(!D[v])return;el[key]=v}el.setAttribute(a,L(el[key]))});
+  });
+}
+var CSS='.lang{position:relative;flex:none;z-index:40}.lang>button{display:flex;align-items:center;gap:7px;height:30px;padding:0 10px;border-radius:8px;background:var(--glass-2,rgba(120,180,120,.1));border:1px solid var(--line,rgba(170,215,160,.17));font-size:12px;color:var(--tx,#ecf4e6)}'+
+ '.lang>button svg:last-child{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:1.8}.lang svg[viewBox]{border-radius:2px}'+
+ '.lang .lmenu{position:absolute;right:0;top:calc(100% + 8px);min-width:170px;background:#1b3626;border:1px solid rgba(170,215,160,.17);border-radius:12px;padding:5px;box-shadow:0 16px 34px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:1px;animation:drop .17s ease-out}'+
+ '.lang .lmenu button{display:flex;align-items:center;gap:10px;min-height:34px;padding:5px 10px;border-radius:8px;text-align:left;font-size:13px;color:#ecf4e6}'+
+ '.lang .lmenu button:hover,.lang .lmenu button:focus-visible{background:rgba(120,180,120,.1);outline:none}.lang .lmenu button[aria-selected="true"]{background:#3f8f49;font-weight:600}'+
+ '.gate .lang{position:absolute;top:16px;right:16px}'+
+ 'html[lang="my"] .dtab{font-size:10.5px;gap:2px}html[lang="my"] .dtab .d{font-size:9px}html[lang="my"] .dnote{font-size:10px;line-height:1.3}html[lang="my"] .stat .sub,html[lang="my"] .card header small{font-size:10.5px}html[lang="my"] .ileg{font-size:10.5px}'+
+ 'html[lang="my"] body{font-family:"Noto Sans Myanmar",var(--body,"Manrope"),sans-serif}html[lang="my"] .num,html[lang="my"] h1,html[lang="my"] h2{font-family:"Noto Sans Myanmar",var(--display,"Sora"),sans-serif}';
+function switcher(){
+  var d=document.createElement('div');d.className='lang';
+  d.innerHTML='<button type="button" aria-haspopup="listbox" aria-expanded="false"></button>';
+  var b=d.firstChild;
+  function paint(){var c=LANGS.filter(function(x){return x.k===lang})[0];b.innerHTML=FLAG[lang]+'<span>'+c.short+'</span><svg viewBox="0 0 10 10" aria-hidden="true"><path d="m2 3.5 3 3 3-3"/></svg>';b.setAttribute('aria-label',L('Til')+': '+c.name)}
+  paint();d.__paint=paint;
+  b.onclick=function(e){e.stopPropagation();var m=d.querySelector('.lmenu');if(m){m.remove();b.setAttribute('aria-expanded','false');return}
+    m=document.createElement('div');m.className='lmenu';m.setAttribute('role','listbox');
+    m.innerHTML=LANGS.map(function(x){return '<button type="button" role="option" data-l="'+x.k+'" aria-selected="'+(x.k===lang)+'">'+FLAG[x.k]+'<span>'+x.name+'</span></button>'}).join('');
+    d.appendChild(m);b.setAttribute('aria-expanded','true');(m.querySelector('[aria-selected="true"]')||m.firstChild).focus();
+    m.onclick=function(ev){var o=ev.target.closest('[data-l]');if(!o)return;m.remove();b.setAttribute('aria-expanded','false');set(o.dataset.l)};
+    m.onkeydown=function(ev){var bs=[].slice.call(m.querySelectorAll('button')),i=bs.indexOf(document.activeElement);
+      if(ev.key==='ArrowDown'){ev.preventDefault();(bs[i+1]||bs[0]).focus()}else if(ev.key==='ArrowUp'){ev.preventDefault();(bs[i-1]||bs[bs.length-1]).focus()}else if(ev.key==='Escape'){m.remove();b.setAttribute('aria-expanded','false');b.focus()}};
+  };
+  document.addEventListener('pointerdown',function(ev){if(!d.contains(ev.target)){var m=d.querySelector('.lmenu');if(m){m.remove();b.setAttribute('aria-expanded','false')}}});
+  return d;
+}
+var switchers=[];
+function mount(where,before){var s=switcher();switchers.push(s);if(before)where.insertBefore(s,before);else where.appendChild(s);return s}
+function set(l){
+  if(!(l in IDX))return;lang=l;try{localStorage.setItem('minbu_lang',l)}catch(e){}
+  document.documentElement.lang=l;switchers.forEach(function(s){s.__paint()});
+  apply();if(window.__relang)window.__relang();if(window.__relangGate)window.__relangGate();
+}
+var st=document.createElement('style');st.textContent=CSS;document.head.appendChild(st);
+var fl=document.createElement('link');fl.rel='stylesheet';fl.href='https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@300;400;600&display=swap';document.head.appendChild(fl);
+document.documentElement.lang=lang;
+window.L=L;
+window.I18N={get lang(){return lang},set:set,apply:apply,mount:mount,add:function(o){for(var k in o)D[k]=o[k]},ms:function(){return MS[lang].slice()},mf:function(){return MF[lang].slice()}};
+})();
+
+/* Index Forecast page texts: Uzbek key -> [English, Russian, Burmese]. Strict JSON inside (checked by .build/fc_i18n_tool.py check). */
+window.__FC_I18N={
+"Minbu Portal":["Minbu Portal","Minbu Portal","Minbu Portal"],
+"Index Forecast":["Index Forecast","Index Forecast","Index Forecast"],
+"Flood Mapping":["Flood Mapping","Flood Mapping","Flood Mapping"],
+"Portallar":["Portals","Порталы","ပေါ်တယ်များ"],
+"Minbu Portalga o'tish":["Go to Minbu Portal","Перейти в Minbu Portal","Minbu Portal သို့ သွားရန်"],
+"Index Forecast: NDVI prognozi":["Index Forecast: NDVI forecast","Index Forecast: прогноз NDVI","Index Forecast: NDVI ခန့်မှန်းချက်"],
+"Flood Mapping: suv toshqini xaritasi va prognozi":["Flood Mapping: flood map and forecast","Flood Mapping: карта и прогноз наводнений","Flood Mapping: ရေကြီးမှု မြေပုံနှင့် ခန့်မှန်းချက်"],
+"Qo'llanma":["Guide","Справка","လမ်းညွှန်"],
+"Hisobot":["Report","Отчёт","အစီရင်ခံစာ"],
+"Model haqida":["About the model","О модели","မော်ဒယ်အကြောင်း"],
+"Sahifadan qanday foydalaniladi":["How to use this page","Как пользоваться страницей","ဤစာမျက်နှာကို အသုံးပြုပုံ"],
+"Rahbariyat uchun bir sahifali hisobot":["One-page report for management","Одностраничный отчёт для руководства","စီမံခန့်ခွဲသူများအတွက် တစ်မျက်နှာ အစီရင်ခံစာ"],
+"Qaysi sanaga prognoz?":["Forecast for which date?","Прогноз на какую дату?","မည်သည့်ရက်အတွက် ခန့်မှန်းမလဲ။"],
+"Xaritada nimani ko'ray?":["What should the map show?","Что показать на карте?","မြေပုံတွင် ဘာကို ပြမလဲ။"],
+"Qaysi hudud?":["Which area?","Какая территория?","မည်သည့်ဒေသလဲ။"],
+"Qishloq":["Village tract","Сельский округ","ကျေးရွာအုပ်စု"],
+"Qo'shimcha qatlamlar":["Extra layers","Дополнительные слои","အပိုအလွှာများ"],
+"Sun'iy yo'ldosh surati (fon)":["Satellite image (background)","Спутниковый снимок (фон)","ဂြိုဟ်တုပုံ (နောက်ခံ)"],
+"Qishloq nomlari (yaqinlashtirganda)":["Village names (when zoomed in)","Названия сёл (при приближении)","ကျေးရွာအမည်များ (ချဲ့ကြည့်သောအခါ)"],
+"Yaqinda suv kelgan dalalar":["Fields that recently received water","Поля, недавно получившие воду","မကြာသေးမီက ရေရောက်သော လယ်ကွက်များ"],
+"Prognoz ma'lumotlari yuklanmoqda…":["Loading forecast data…","Загрузка данных прогноза…","ခန့်မှန်းချက်ဒေတာ ရယူနေသည်…"],
+"Konturlar chizilmoqda…":["Drawing the fields…","Отрисовка полей…","လယ်ကွက်များ ဆွဲနေသည်…"],
+"Ma'lumot yuklanmadi ({0}). Sahifani yangilang.":["Data did not load ({0}). Refresh the page.","Данные не загрузились ({0}). Обновите страницу.","ဒေတာ မရယူနိုင်ပါ ({0})။ စာမျက်နှာကို ပြန်ဖွင့်ပါ။"],
+"NDVI dinamikasi":["NDVI over time","Динамика NDVI","NDVI အချိန်အလိုက် ပြောင်းလဲမှု"],
+"Qishloqlar":["Villages","Сёла","ကျေးရွာများ"],
+"E'tibor talab dalalar":["Fields needing attention","Поля, требующие внимания","အာရုံစိုက်ရန်လိုသော လယ်ကွက်များ"],
+"3 oygacha":["Up to 3 months","До 3 месяцев","၃ လအထိ"],
+"Aniqlik":["Accuracy","Точность","တိကျမှု"],
+"ga":["ha","га","ဟက်တာ"],
+"Ancha past":["Much lower","Намного ниже","အလွန်နိမ့်"],
+"Pastroq":["Lower","Ниже","နိမ့်"],
+"Me'yorda":["Normal","В норме","ပုံမှန်"],
+"Yaxshiroq":["Better","Лучше","ပိုကောင်း"],
+"Ancha yaxshi":["Much better","Намного лучше","အလွန်ကောင်း"],
+"{0} dan ko'p past":["more than {0} below","ниже более чем на {0}","{0} ထက်ပို၍ နိမ့်"],
+"{0}–{1} past":["{0}–{1} below","ниже на {0}–{1}","{0}–{1} နိမ့်"],
+"±{0} ichida":["within ±{0}","в пределах ±{0}","±{0} အတွင်း"],
+"{0}–{1} yuqori":["{0}–{1} above","выше на {0}–{1}","{0}–{1} မြင့်"],
+"{0} dan ko'p yuqori":["more than {0} above","выше более чем на {0}","{0} ထက်ပို၍ မြင့်"],
+"Holat: me'yorga nisbatan":["Condition vs normal","Состояние относительно нормы","အခြေအနေ (ပုံမှန်နှင့် နှိုင်းယှဉ်)"],
+"Xavf ehtimoli":["Risk probability","Вероятность риска","အန္တရာယ် ဖြစ်နိုင်ခြေ"],
+"Yashillik darajasi (NDVI)":["Greenness level (NDVI)","Уровень зелени (NDVI)","စိမ်းလန်းမှုအဆင့် (NDVI)"],
+"Hozirgidan o'zgarish":["Change from today","Изменение от текущего","ယနေ့မှ ပြောင်းလဲမှု"],
+"Bugungi holat":["Today's condition","Состояние сегодня","ယနေ့ အခြေအနေ"],
+"Dala odatdagidan yaxshimi yoki yomonmi":["Is the field better or worse than usual","Поле лучше или хуже обычного","လယ်ကွက်သည် ပုံမှန်ထက် ကောင်းသလား၊ ဆိုးသလား"],
+"Me'yordan past bo'lish ehtimoli, %":["Chance of being below normal, %","Вероятность оказаться ниже нормы, %","ပုံမှန်အောက် ရောက်နိုင်ခြေ၊ %"],
+"Prognoz qilingan qiymatning o'zi":["The forecast value itself","Само прогнозное значение","ခန့်မှန်းတန်ဖိုး ကိုယ်တိုင်"],
+"Bugungi holatdan ortadimi yoki kamayadimi":["Will it rise or fall from today","Вырастет или снизится от текущего","ယနေ့ထက် တိုးမလား၊ လျော့မလား"],
+"Oxirgi bulutsiz sun'iy yo'ldosh surati":["Latest cloud-free satellite image","Последний безоблачный спутниковый снимок","နောက်ဆုံး တိမ်ကင်းသော ဂြိုဟ်တုပုံ"],
+"yuqori":["high","высокая","မြင့်"],
+"o'rta":["medium","средняя","အလယ်အလတ်"],
+"pastroq":["lower","пониже","နိမ့်"],
+"{0} holatidan · yangilangan {1}":["Based on {0} · updated {1}","По состоянию на {0} · обновлено {1}","{0} အခြေအနေအရ · {1} တွင် အပ်ဒိတ်လုပ်သည်"],
+"Butun Minbu tumani":["All of Minbu township","Весь район Минбу","မင်းဘူးမြို့နယ် တစ်ခုလုံး"],
+"{0} kun":["{0} days","{0} дней","{0} ရက်"],
+"{0} prognozi":["Forecast for {0}","Прогноз на {0}","{0} အတွက် ခန့်မှန်းချက်"],
+"me'yor":["normal","норма","ပုံမှန်"],
+"Me'yordan past bo'lish ehtimoli":["Chance of being below normal","Вероятность оказаться ниже нормы","ပုံမှန်အောက် ရောက်နိုင်ခြေ"],
+"Batafsil uchun bosing":["Click for details","Нажмите для подробностей","အသေးစိတ်အတွက် နှိပ်ပါ"],
+"{0}: me'yorga nisbatan holat":["{0}: condition vs normal","{0}: состояние относительно нормы","{0}: ပုံမှန်နှင့် နှိုင်းယှဉ်သော အခြေအနေ"],
+"Faqat tanlangan toifa ko'rsatilmoqda. Qayta bosing — hammasi.":["Only the chosen class is shown. Click again to show all.","Показан только выбранный класс. Нажмите ещё раз — все.","ရွေးထားသော အမျိုးအစားကိုသာ ပြထားသည်။ အားလုံးပြရန် ထပ်နှိပ်ပါ။"],
+"Toifani bosing — xaritada faqat o'sha dalalar qoladi. Foiz — maydon ulushi.":["Click a class to keep only those fields on the map. Percent = share of area.","Нажмите класс — на карте останутся только эти поля. Процент — доля площади.","အမျိုးအစားကို နှိပ်လျှင် ထိုလယ်ကွက်များသာ မြေပုံတွင် ကျန်မည်။ ရာခိုင်နှုန်း = ဧရိယာ အချိုး။"],
+"Qizil — dala odatdagidan yomon bo'lishi deyarli aniq. Yashil — xavf kam.":["Red: the field is almost certain to be worse than usual. Green: low risk.","Красный — поле почти наверняка будет хуже обычного. Зелёный — риск низкий.","အနီ — လယ်ကွက်သည် ပုံမှန်ထက် ဆိုးရန် သေချာလုနီးပါး။ အစိမ်း — အန္တရာယ်နည်း။"],
+"Bugundan {0}gacha o'zgarish":["Change from today to {0}","Изменение от сегодня до {0}","ယနေ့မှ {0} အထိ ပြောင်းလဲမှု"],
+"kamayadi":["falls","снизится","လျော့မည်"],
+"ortadi":["rises","вырастет","တိုးမည်"],
+"Kuzda kamayish tabiiy: ekin pishib, sarg'ayadi.":["A fall is natural in this season: crops ripen and turn yellow.","Снижение в этот сезон естественно: посевы созревают и желтеют.","ဤရာသီတွင် လျော့ကျခြင်းသည် သဘာဝဖြစ်သည် — သီးနှံများ ရင့်မှည့်၍ ဝါလာသည်။"],
+"Bugungi yashillik (NDVI), {0}":["Greenness today (NDVI), {0}","Зелень сегодня (NDVI), {0}","ယနေ့ စိမ်းလန်းမှု (NDVI)၊ {0}"],
+"{0} uchun yashillik (NDVI)":["Greenness (NDVI) for {0}","Зелень (NDVI) на {0}","{0} အတွက် စိမ်းလန်းမှု (NDVI)"],
+"yalang'och":["bare","голая земля","မြေလွတ်"],
+"qalin yashil":["dense green","густая зелень","စိမ်းအုပ်"],
+"Dala":["Field","Поле","လယ်ကွက်"],
+"Minbu tumani":["Minbu township","Район Минбу","မင်းဘူးမြို့နယ်"],
+"ma'lumot yo'q":["no data","нет данных","ဒေတာမရှိ"],
+"me'yordan sezilarli past":["well below normal","заметно ниже нормы","ပုံမှန်ထက် သိသိသာသာ နိမ့်"],
+"me'yordan biroz past":["slightly below normal","немного ниже нормы","ပုံမှန်ထက် အနည်းငယ် နိမ့်"],
+"me'yorga yaqin":["close to normal","близко к норме","ပုံမှန်နီးပါး"],
+"me'yordan biroz yuqori":["slightly above normal","немного выше нормы","ပုံမှန်ထက် အနည်းငယ် မြင့်"],
+"me'yordan sezilarli yuqori":["well above normal","заметно выше нормы","ပုံမှန်ထက် သိသိသာသာ မြင့်"],
+"Bugungi holatdan deyarli o'zgarmaydi.":["Almost no change from today.","Почти не изменится по сравнению с сегодняшним днём.","ယနေ့ အခြေအနေမှ ပြောင်းလဲမှု မရှိသလောက်ဖြစ်သည်။"],
+"Bugungi {0} dan {1} ga kamayadi.":["It falls from {0} today to {1}.","Снизится с сегодняшних {0} до {1}.","ယနေ့ {0} မှ {1} သို့ လျော့ကျမည်။"],
+"Bugungi {0} dan {1} ga ortadi.":["It rises from {0} today to {1}.","Вырастет с сегодняшних {0} до {1}.","ယနေ့ {0} မှ {1} သို့ တိုးလာမည်။"],
+"Bu yilning shu davriga xos mavsumiy o'zgarish.":["This is the usual seasonal change for this time of year.","Это обычное сезонное изменение для этого времени года.","၎င်းသည် နှစ်၏ ဤအချိန်အတွက် ပုံမှန် ရာသီအလိုက် ပြောင်းလဲမှုဖြစ်သည်။"],
+"Minbu tumani ekinlarining":["crops in Minbu township","посевов района Минбу","မင်းဘူးမြို့နယ်ရှိ သီးနှံများ၏"],
+"{0} qishlog'i ekinlarining":["crops in {0} village tract","посевов сельского округа {0}","{0} ကျေးရွာအုပ်စုရှိ သီးနှံများ၏"],
+"bu dalaning":["this field","этого поля","ဤလယ်ကွက်၏"],
+"{0}ga borib {1} yashilligi {2} bo'lishi kutilmoqda.":["By {0}, the greenness of {1} is expected to be {2}.","К {0} зелень {1} ожидается {2}.","{0} တွင် {1} စိမ်းလန်းမှုသည် {2} ဖြစ်မည်ဟု ခန့်မှန်းသည်။"],
+"Qisqa xulosa":["Summary","Краткий вывод","အကျဉ်းချုပ်"],
+"Prognoz":["Forecast","Прогноз","ခန့်မှန်းချက်"],
+"yashillik ko'rsatkichi":["greenness index","показатель зелени","စိမ်းလန်းမှု ညွှန်းကိန်း"],
+"Me'yor (odatda)":["Normal (usual)","Норма (обычно)","ပုံမှန် (အများအားဖြင့်)"],
+"farq":["difference","разница","ကွာခြားချက်"],
+"Bugun":["Today","Сегодня","ယနေ့"],
+"me'yordan past":["below normal","ниже нормы","ပုံမှန်အောက်"],
+"me'yorda":["normal","в норме","ပုံမှန်"],
+"me'yordan yuqori":["above normal","выше нормы","ပုံမှန်အထက်"],
+"Ishonchlilik: {0}. {1} kunlik prognoz xatosi oddiy «har yilgidek bo'ladi» taxminidan {2} % kam.":["Reliability: {0}. The error of the {1}-day forecast is {2} % smaller than simply assuming “same as every year”.","Надёжность: {0}. Ошибка прогноза на {1} дней на {2} % меньше, чем у простого предположения «будет как каждый год».","ယုံကြည်စိတ်ချရမှု: {0}။ {1} ရက် ခန့်မှန်းချက်၏ အမှားသည် “နှစ်စဉ်အတိုင်း ဖြစ်မည်” ဟု ရိုးရိုးယူဆခြင်းထက် {2} % နည်းသည်။"],
+"Bu nimani anglatadi?":["What does this mean?","Что это значит?","ဤသည် ဘာကိုဆိုလိုသနည်း။"],
+"faqat: {0}":["only: {0}","только: {0}","သာလျှင်: {0}"],
+"bugungi holat":["today's condition","состояние сегодня","ယနေ့ အခြေအနေ"],
+"{0} kun oldinga prognoz":["forecast {0} days ahead","прогноз на {0} дней вперёд","{0} ရက် ကြိုတင်ခန့်မှန်းချက်"],
+"Ma'lumot holati":["Data status","Состояние данных","ဒေတာ အခြေအနေ"],
+"Oxirgi sun'iy yo'ldosh surati":["Latest satellite image","Последний спутниковый снимок","နောက်ဆုံး ဂြိုဟ်တုပုံ"],
+"Ob-havo ma'lumoti (shu sanagacha)":["Weather data (up to)","Данные о погоде (по)","ရာသီဥတုဒေတာ (အထိ)"],
+"Dalalar soni":["Number of fields","Количество полей","လယ်ကွက် အရေအတွက်"],
+"30 kun surati yo'q (ishonch past)":["No image for 30 days (low confidence)","Нет снимка 30 дней (низкая надёжность)","ရက် ၃၀ ပုံမရှိ (ယုံကြည်မှုနည်း)"],
+"Ekinlar hozir qaysi bosqichda":["Current crop stage","Текущая стадия посевов","သီးနှံများ၏ လက်ရှိအဆင့်"],
+"yalang'och yer":["bare soil","голая земля","မြေလွတ်"],
+"ko'karish":["green-up","рост зелени","စိမ်းလာချိန်"],
+"eng yashil payt":["peak green","пик зелени","အစိမ်းဆုံးချိန်"],
+"sarg'ayish":["yellowing","пожелтение","ဝါလာချိန်"],
+"Yopish":["Close","Закрыть","ပိတ်ရန်"],
+"Sana":["Date","Дата","ရက်စွဲ"],
+"Oraliq (80 %)":["Range (80 %)","Интервал (80 %)","အပိုင်းအခြား (80 %)"],
+"Me'yor":["Normal","Норма","ပုံမှန်"],
+"Holat":["Condition","Состояние","အခြေအနေ"],
+"Oxirgi bulutsiz surat":["Latest cloud-free image","Последний безоблачный снимок","နောက်ဆုံး တိမ်ကင်းပုံ"],
+"shu o'nkunlik":["this 10-day period","эта декада","ဤ ၁၀ ရက်ပတ်"],
+"{0} kun oldin":["{0} days ago","{0} дней назад","လွန်ခဲ့သော {0} ရက်"],
+"Ekin bosqichi":["Crop stage","Стадия посева","သီးနှံအဆင့်"],
+"Belgilar":["Flags","Отметки","အမှတ်အသားများ"],
+"suv kelgan (namlik oshgan)":["received water (moisture rose)","получило воду (влажность выросла)","ရေရောက်ပြီး (အစိုဓာတ်တက်)"],
+"surat kam — ishonch past":["few images — low confidence","мало снимков — низкая надёжность","ပုံနည်း — ယုံကြည်မှုနည်း"],
+"odatiy":["ordinary","обычное","ပုံမှန်"],
+"Manba":["Source","Источник","ရင်းမြစ်"],
+"model":["model","модель","မော်ဒယ်"],
+"Me'yordan farq":["Difference from normal","Отклонение от нормы","ပုံမှန်မှ ကွာခြားချက်"],
+"Past maydon ulushi":["Share of low area","Доля площади ниже нормы","ပုံမှန်အောက် ဧရိယာ အချိုး"],
+"{0} prognozi. «Past maydon ulushi» — qishloq ekin maydonining qancha qismi me'yordan past kutilmoqda. Ustun nomini bosib saralang, qatorni bosib qishloqqa o'ting.":["Forecast for {0}. “Share of low area” is the part of the village's cropland expected to be below normal. Click a column name to sort, click a row to open the village.","Прогноз на {0}. «Доля площади ниже нормы» — какая часть посевной площади села ожидается ниже нормы. Нажмите название столбца для сортировки, строку — чтобы перейти к селу.","{0} အတွက် ခန့်မှန်းချက်။ “ပုံမှန်အောက် ဧရိယာ အချိုး” သည် ကျေးရွာ၏ စိုက်ပျိုးမြေ၏ မည်မျှသည် ပုံမှန်အောက် ရောက်မည်ဟု ခန့်မှန်းထားသည်ကို ပြသည်။ စီရန် ကော်လံအမည်ကို နှိပ်ပါ၊ ကျေးရွာသို့သွားရန် အတန်းကို နှိပ်ပါ။"],
+"Jadvalni yuklab olish (CSV)":["Download the table (CSV)","Скачать таблицу (CSV)","ဇယားကို ဒေါင်းလုဒ်လုပ်ရန် (CSV)"],
+"Bu hududda me'yordan sezilarli past kutilayotgan dala yo'q.":["No field in this area is expected to be well below normal.","В этой территории нет полей, ожидаемых заметно ниже нормы.","ဤဒေသတွင် ပုံမှန်ထက် သိသိသာသာ နိမ့်မည့် လယ်ကွက် မရှိပါ။"],
+"{0}: {1} uchun eng ko'p yo'qotish kutilayotgan dalalar (maydon × me'yordan pastlik). Bosing — xarita o'sha dalaga boradi.":["{0}: fields with the largest expected loss for {1} (area × shortfall below normal). Click one and the map goes to that field.","{0}: поля с наибольшими ожидаемыми потерями на {1} (площадь × отставание от нормы). Нажмите — карта перейдёт к полю.","{0}: {1} အတွက် ဆုံးရှုံးမှု အများဆုံး ဖြစ်နိုင်သော လယ်ကွက်များ (ဧရိယာ × ပုံမှန်အောက် ကွာဟချက်)။ နှိပ်လျှင် မြေပုံသည် ထိုလယ်ကွက်သို့ သွားမည်။"],
+"Butun tuman":["Whole township","Весь район","မြို့နယ်တစ်ခုလုံး"],
+"Butun tuman o'rtachasi. 30 kungacha — model prognozi (foiz: xato me'yorga qaraganda qancha kam). 60 va 90 kun uchun ob-havoni oldindan bilib bo'lmaydi, shuning uchun ko'p yillik me'yor ko'rsatiladi.":["Township average. Up to 30 days: model forecast (percent = how much smaller the error is than with the normal). For 60 and 90 days the weather cannot be known in advance, so the multi-year normal is shown.","Среднее по району. До 30 дней — прогноз модели (процент: насколько ошибка меньше, чем у нормы). На 60 и 90 дней погоду заранее узнать нельзя, поэтому показана многолетняя норма.","မြို့နယ် ပျမ်းမျှ။ ရက် ၃၀ အထိ — မော်ဒယ် ခန့်မှန်းချက် (ရာခိုင်နှုန်း = ပုံမှန်တန်ဖိုးထက် အမှား မည်မျှနည်းသည်)။ ရက် ၆၀ နှင့် ၉၀ အတွက် ရာသီဥတုကို ကြိုမသိနိုင်သဖြင့် နှစ်ရှည် ပုံမှန်တန်ဖိုးကို ပြထားသည်။"],
+"Bitta dala uchun o'rtacha xato (NDVI birligida). Yashil — bizning model, kulrang — oddiy «har yilgidek» taxmini.":["Average error for one field (in NDVI units). Green: our model; grey: the simple “same as every year” guess.","Средняя ошибка для одного поля (в единицах NDVI). Зелёный — наша модель, серый — простое предположение «как каждый год».","လယ်ကွက်တစ်ကွက်အတွက် ပျမ်းမျှအမှား (NDVI ယူနစ်ဖြင့်)။ အစိမ်း — ကျွန်ုပ်တို့၏ မော်ဒယ်၊ မီးခိုး — “နှစ်စဉ်အတိုင်း” ဟူသော ရိုးရိုးခန့်မှန်းချက်။"],
+"{0} % aniqroq":["{0} % more accurate","на {0} % точнее","{0} % ပိုတိကျ"],
+"<b>O'tmishdan sinov.</b> {0} ma'lumoti bilan prognoz qilinib, keyin haqiqiy sun'iy yo'ldosh surati bilan solishtirildi:":["<b>Test on the past.</b> A forecast was made with the data of {0} and then compared with the real satellite image:","<b>Проверка на прошлом.</b> Прогноз был сделан по данным на {0}, затем его сравнили с реальным спутниковым снимком:","<b>အတိတ်ဖြင့် စမ်းသပ်ခြင်း။</b> {0} ဒေတာဖြင့် ခန့်မှန်းပြီးနောက် တကယ့်ဂြိုဟ်တုပုံနှင့် နှိုင်းယှဉ်ခဲ့သည်:"],
+"Haqiqat":["Actual","Факт","အမှန်တကယ်"],
+"Xato ≤ {0}":["Error ≤ {0}","Ошибка ≤ {0}","အမှား ≤ {0}"],
+"Me'yordan":["Vs normal","К норме","ပုံမှန်နှင့်"],
+"{0} % dala":["{0} % of fields","{0} % полей","လယ်ကွက် {0} %"],
+"Model ko'rmagan 2026-yilning har bir o'nkunligida: 10 kunlik prognoz {0} sanadan {1} tasida, 20 kunlik {2} tasida, 30 kunlik {3} tasida me'yordan aniqroq chiqdi. Eng yomon sana ({4}) ham yashirilmagan.":["For every 10-day period of 2026, a year the model never saw: the 10-day forecast beat the normal on {1} of {0} dates, the 20-day on {2}, the 30-day on {3}. The worst date ({4}) is not hidden either.","По каждой декаде 2026 года, который модель не видела: прогноз на 10 дней оказался точнее нормы в {1} из {0} дат, на 20 дней — в {2}, на 30 дней — в {3}. Худшая дата ({4}) тоже не скрыта.","မော်ဒယ် မမြင်ဖူးသော ၂၀၂၆ ခုနှစ်၏ ၁၀ ရက်ပတ်တိုင်းအတွက်: ၁၀ ရက် ခန့်မှန်းချက်သည် ရက် {0} အနက် {1} ရက်တွင်၊ ရက် ၂၀ သည် {2} ရက်တွင်၊ ရက် ၃၀ သည် {3} ရက်တွင် ပုံမှန်တန်ဖိုးထက် ပိုတိကျခဲ့သည်။ အဆိုးဆုံးရက် ({4}) ကိုလည်း မဖုံးကွယ်ထားပါ။"],
+"Jadval yuklab olindi":["Table downloaded","Таблица скачана","ဇယားကို ဒေါင်းလုဒ်လုပ်ပြီး"],
+"Yashillik (NDVI)":["Greenness (NDVI)","Зелень (NDVI)","စိမ်းလန်းမှု (NDVI)"],
+"har 10 kunda · 2 yil + prognoz":["every 10 days · 2 years + forecast","каждые 10 дней · 2 года + прогноз","၁၀ ရက်တစ်ကြိမ် · ၂ နှစ် + ခန့်မှန်းချက်"],
+"Dala tarixi yuklanmoqda…":["Loading field history…","Загрузка истории поля…","လယ်ကွက်မှတ်တမ်း ရယူနေသည်…"],
+"prognoz":["forecast","прогноз","ခန့်မှန်းချက်"],
+"haqiqatda kuzatilgan":["actually observed","фактически наблюдалось","အမှန်တကယ် တွေ့ရှိချက်"],
+"ehtimoliy oraliq (80 %)":["likely range (80 %)","вероятный интервал (80 %)","ဖြစ်နိုင်သော အပိုင်းအခြား (80 %)"],
+"me'yor (odatda)":["normal (usual)","норма (обычно)","ပုံမှန် (အများအားဖြင့်)"],
+"Chop etish / PDF":["Print / PDF","Печать / PDF","ပုံနှိပ်ရန် / PDF"],
+"Sanani tanlang":["Choose the date","Выберите дату","ရက်စွဲကို ရွေးပါ"],
+"Chapda 10, 20 yoki 30 kun. Yaqin sana — aniqroq; uzoq sana — taxminiyroq (nuqtalar ishonch darajasini ko'rsatadi).":["On the left: 10, 20 or 30 days. A nearer date is more accurate; a farther one is rougher (the dots show the confidence level).","Слева: 10, 20 или 30 дней. Ближняя дата точнее, дальняя — приблизительнее (точки показывают уровень надёжности).","ဘယ်ဘက်တွင် ၁၀၊ ၂၀ သို့မဟုတ် ၃၀ ရက်။ နီးသောရက်သည် ပိုတိကျပြီး ဝေးသောရက်သည် ပိုခန့်မှန်းခြေဖြစ်သည် (အစက်များက ယုံကြည်မှုအဆင့်ကို ပြသည်)။"],
+"Xaritaga qarang":["Look at the map","Посмотрите на карту","မြေပုံကို ကြည့်ပါ"],
+"Qizil va to'q sariq — dala odatdagidan yomonroq bo'lishi kutilmoqda. Yashil — odatdagidan yaxshi. Kulrang — me'yorda.":["Red and orange: the field is expected to be worse than usual. Green: better than usual. Grey: normal.","Красный и оранжевый — поле ожидается хуже обычного. Зелёный — лучше обычного. Серый — в норме.","အနီနှင့် လိမ္မော် — လယ်ကွက်သည် ပုံမှန်ထက် ဆိုးမည်ဟု ခန့်မှန်းသည်။ အစိမ်း — ပုံမှန်ထက် ကောင်းသည်။ မီးခိုး — ပုံမှန်။"],
+"Hududni tanlang":["Choose the area","Выберите территорию","ဒေသကို ရွေးပါ"],
+"Qishloq nomini xaritada yoki ro'yxatda bosing. O'ngdagi «Qisqa xulosa» shu hudud uchun oddiy tilda yoziladi.":["Click a village name on the map or in the list. The “Summary” on the right is then written in plain language for that area.","Нажмите название села на карте или в списке. «Краткий вывод» справа будет написан простым языком для этой территории.","မြေပုံ သို့မဟုတ် စာရင်းရှိ ကျေးရွာအမည်ကို နှိပ်ပါ။ ညာဘက်ရှိ “အကျဉ်းချုပ်” ကို ထိုဒေသအတွက် ရိုးရှင်းသော စကားဖြင့် ရေးပေးမည်။"],
+"Dalani bosing":["Click a field","Нажмите на поле","လယ်ကွက်ကို နှိပ်ပါ"],
+"Har bir dala uchun prognoz, ehtimoliy oraliq, me'yordan past bo'lish ehtimoli va 2 yillik tarix chiqadi.":["For every field you get the forecast, the likely range, the chance of being below normal and a 2-year history.","Для каждого поля показываются прогноз, вероятный интервал, вероятность оказаться ниже нормы и история за 2 года.","လယ်ကွက်တိုင်းအတွက် ခန့်မှန်းချက်၊ ဖြစ်နိုင်သော အပိုင်းအခြား၊ ပုံမှန်အောက် ရောက်နိုင်ခြေနှင့် ၂ နှစ် မှတ်တမ်းကို ပြမည်။"],
+"O'ng paneldagi shu nomli bo'lim eng ko'p yo'qotish kutilayotgan dalalarni ro'yxat qilib beradi — bosilsa xarita o'sha yerga boradi.":["The section with this name in the right panel lists the fields with the largest expected loss; click one and the map goes there.","Раздел с таким названием в правой панели показывает поля с наибольшими ожидаемыми потерями — при нажатии карта переходит туда.","ညာဘက်ရှိ ဤအမည်ပါ အပိုင်းတွင် ဆုံးရှုံးမှု အများဆုံး ဖြစ်နိုင်သော လယ်ကွက်များကို စာရင်းပြထားသည် — နှိပ်လျှင် မြေပုံသည် ထိုနေရာသို့ သွားမည်။"],
+"Hisobot oling":["Get the report","Получите отчёт","အစီရင်ခံစာ ရယူပါ"],
+"Yuqoridagi «Hisobot» tugmasi rahbariyat uchun bir sahifali xulosani tayyorlaydi: chop etish yoki PDF qilib saqlash mumkin.":["The “Report” button at the top prepares a one-page summary for management: you can print it or save it as a PDF.","Кнопка «Отчёт» вверху готовит одностраничную сводку для руководства: её можно распечатать или сохранить в PDF.","အပေါ်ရှိ “အစီရင်ခံစာ” ခလုတ်သည် စီမံခန့်ခွဲသူများအတွက် တစ်မျက်နှာ အကျဉ်းချုပ်ကို ပြင်ဆင်ပေးသည် — ပုံနှိပ်နိုင်သည် သို့မဟုတ် PDF အဖြစ် သိမ်းနိုင်သည်။"],
+"Normalized Difference Vegetation Index — normallashtirilgan vegetatsiya farqi indeksi. Oddiy qilib aytganda, yashillik ko'rsatkichi: 0 ga yaqin — yalang'och yer, 0,8 atrofida — qalin, sog'lom ekin.":["Normalized Difference Vegetation Index. Put simply, a greenness index: near 0 is bare soil, around 0.8 is a dense, healthy crop.","Normalized Difference Vegetation Index — нормализованный разностный вегетационный индекс. Проще говоря, показатель зелени: около 0 — голая земля, около 0,8 — густые, здоровые посевы.","Normalized Difference Vegetation Index (ပုံမှန်ပြုထားသော အပင်ကွာခြားမှု ညွှန်းကိန်း)။ ရိုးရိုးပြောရလျှင် စိမ်းလန်းမှု ညွှန်းကိန်းဖြစ်သည် — 0 နီးပါးသည် မြေလွတ်၊ 0.8 ဝန်းကျင်သည် စိမ်းအုပ်၍ ကျန်းမာသော သီးနှံ။"],
+"Shu dalaning yilning aynan shu kunlaridagi ko'p yillik o'rtacha yashilligi (2019–2025). «Odatda qanday bo'ladi» degan savolga javob.":["The field's own multi-year average greenness for exactly these days of the year (2019–2025). It answers “what is it usually like”.","Многолетняя средняя зелень этого поля именно в эти дни года (2019–2025). Ответ на вопрос «как бывает обычно».","နှစ်၏ ဤရက်များအတွက် ထိုလယ်ကွက်၏ နှစ်ရှည် ပျမ်းမျှ စိမ်းလန်းမှု (2019–2025)။ “အများအားဖြင့် မည်သို့ရှိသနည်း” ဟူသော မေးခွန်း၏ အဖြေ။"],
+"Prognoz me'yordan qancha farq qilishi. Farq ±0,04 ichida bo'lsa — «me'yorda»; 0,10 dan ko'p past bo'lsa — «ancha past».":["How far the forecast is from the normal. Within ±0.04 it is “normal”; more than 0.10 below it is “much lower”.","Насколько прогноз отличается от нормы. Если разница в пределах ±0,04 — «в норме»; ниже более чем на 0,10 — «намного ниже».","ခန့်မှန်းချက်သည် ပုံမှန်တန်ဖိုးမှ မည်မျှ ကွာသနည်း။ ±0.04 အတွင်းဆိုလျှင် “ပုံမှန်”၊ 0.10 ထက်ပို၍ နိမ့်လျှင် “အလွန်နိမ့်”။"],
+"Ehtimoliy oraliq (80 %)":["Likely range (80 %)","Вероятный интервал (80 %)","ဖြစ်နိုင်သော အပိုင်းအခြား (80 %)"],
+"Haqiqiy qiymat 10 holatdan taxminan 8 tasida shu oraliq ichida chiqadi. Oraliq qancha tor bo'lsa, prognoz shuncha ishonchli.":["In about 8 cases out of 10 the real value falls inside this range. The narrower the range, the more reliable the forecast.","Примерно в 8 случаях из 10 реальное значение попадает в этот интервал. Чем уже интервал, тем надёжнее прогноз.","၁၀ ကြိမ်တွင် ၈ ကြိမ်ခန့် တကယ့်တန်ဖိုးသည် ဤအပိုင်းအခြားအတွင်း ကျရောက်သည်။ အပိုင်းအခြား ကျဉ်းလေ ခန့်မှန်းချက် ယုံကြည်ရလေ။"],
+"Dala me'yordan past bo'lib chiqish ehtimoli, foizda. 80 % dan yuqori bo'lsa — signal jiddiy.":["The chance, in percent, that the field ends up below normal. Above 80 % the signal is serious.","Вероятность (в процентах), что поле окажется ниже нормы. Выше 80 % — сигнал серьёзный.","လယ်ကွက်သည် ပုံမှန်အောက် ရောက်နိုင်ခြေ (ရာခိုင်နှုန်း)။ 80 % ထက်ကျော်လျှင် အချက်ပြမှုသည် အလေးအနက်ထားရမည်။"],
+"Suv kelgan dala":["Field that received water","Поле, получившее воду","ရေရောက်သော လယ်ကွက်"],
+"Oxirgi suratda namligi keskin oshgan dala (yomg'ir yoki sug'orish belgisi). Bunday dalalarda yashillik odatda 10–30 kunda ortadi.":["A field whose moisture rose sharply in the latest image (a sign of rain or irrigation). Greenness in such fields usually rises within 10–30 days.","Поле, влажность которого резко выросла на последнем снимке (признак дождя или полива). На таких полях зелень обычно растёт через 10–30 дней.","နောက်ဆုံးပုံတွင် အစိုဓာတ် သိသိသာသာ တက်လာသော လယ်ကွက် (မိုးရွာခြင်း သို့မဟုတ် ရေသွင်းခြင်း လက္ခဏာ)။ ထိုလယ်ကွက်များတွင် စိမ်းလန်းမှုသည် အများအားဖြင့် ၁၀–၃၀ ရက်အတွင်း တိုးလာသည်။"],
+"Bu sahifa nima va qanday o'qiladi":["What this page is and how to read it","Что это за страница и как её читать","ဤစာမျက်နှာသည် ဘာလဲ၊ မည်သို့ ဖတ်ရမလဲ"],
+"Sun'iy yo'ldosh suratlari, radar va ob-havo ma'lumotlari asosida Minbu tumanidagi har bir dala 10, 20 va 30 kundan keyin qanchalik yashil bo'lishi oldindan taxmin qilinadi. Maqsad — muammo ko'zga ko'rinmasidan oldin qaysi hududga e'tibor kerakligini bilish.":["Using satellite images, radar and weather data, we estimate in advance how green every field in Minbu township will be in 10, 20 and 30 days. The aim is to know which area needs attention before a problem becomes visible.","По спутниковым снимкам, радару и данным о погоде заранее оценивается, насколько зелёным будет каждое поле района Минбу через 10, 20 и 30 дней. Цель — узнать, какой территории нужно внимание, до того как проблема станет заметной.","ဂြိုဟ်တုပုံများ၊ ရေဒါနှင့် ရာသီဥတုဒေတာကို အသုံးပြု၍ မင်းဘူးမြို့နယ်ရှိ လယ်ကွက်တိုင်းသည် ၁၀၊ ၂၀ နှင့် ၃၀ ရက်အကြာတွင် မည်မျှ စိမ်းလန်းမည်ကို ကြိုတင်ခန့်မှန်းသည်။ ရည်ရွယ်ချက်မှာ ပြဿနာ မမြင်ရမီ မည်သည့်ဒေသကို အာရုံစိုက်ရမည်ကို သိရန်ဖြစ်သည်။"],
+"Asosiy tushunchalar":["Key terms","Основные понятия","အဓိက ဝေါဟာရများ"],
+"Nimani yodda tutish kerak":["What to keep in mind","Что важно помнить","သတိပြုရန်"],
+"Bu — taxmin, kafolat emas. Bitta dala uchun xato o'rtacha ±0,05–0,07; butun tuman o'rtachasi uchun ancha kichik (±0,03). Shuning uchun qarorlarni yakka dala emas, hudud va qishloq darajasida, dala ko'rigi bilan birga qabul qilish tavsiya etiladi.":["This is an estimate, not a guarantee. For a single field the error is ±0.05–0.07 on average; for the township average it is much smaller (±0.03). Decisions are therefore best made at area and village level rather than for single fields, together with a field visit.","Это оценка, а не гарантия. Для одного поля ошибка в среднем ±0,05–0,07; для среднего по району намного меньше (±0,03). Поэтому решения рекомендуется принимать на уровне территории и села, а не отдельного поля, и вместе с выездом на поле.","၎င်းသည် ခန့်မှန်းချက်သာဖြစ်ပြီး အာမခံချက် မဟုတ်ပါ။ လယ်ကွက်တစ်ကွက်အတွက် အမှားသည် ပျမ်းမျှ ±0.05–0.07 ဖြစ်ပြီး မြို့နယ်ပျမ်းမျှအတွက် များစွာ သေးငယ်သည် (±0.03)။ ထို့ကြောင့် ဆုံးဖြတ်ချက်များကို လယ်ကွက်တစ်ကွက်ချင်းအစား ဒေသနှင့် ကျေးရွာအဆင့်တွင် ကွင်းဆင်းစစ်ဆေးမှုနှင့်အတူ ချမှတ်ရန် အကြံပြုသည်။"],
+"Minbu: ekinlar yashilligi prognozi":["Minbu: crop greenness forecast","Минбу: прогноз зелени посевов","မင်းဘူး: သီးနှံ စိမ်းလန်းမှု ခန့်မှန်းချက်"],
+"prognoz sanasi {0} ({1} kun oldinga) · {2} holatidan · tayyorlangan {3}":["forecast date {0} ({1} days ahead) · based on {2} · prepared {3}","дата прогноза {0} (на {1} дней вперёд) · по состоянию на {2} · подготовлено {3}","ခန့်မှန်းရက် {0} ({1} ရက် ကြိုတင်) · {2} အခြေအနေအရ · {3} တွင် ပြင်ဆင်သည်"],
+"Maydon, ga":["Area, ha","Площадь, га","ဧရိယာ၊ ဟက်တာ"],
+"Ulush":["Share","Доля","အချိုး"],
+"Eng ko'p e'tibor talab qishloqlar":["Villages needing the most attention","Сёла, требующие наибольшего внимания","အာရုံစိုက်ရန် အလိုအပ်ဆုံး ကျေးရွာများ"],
+"Past maydon":["Low area","Площадь ниже нормы","ပုံမှန်အောက် ဧရိယာ"],
+"Eng ko'p e'tibor talab dalalar":["Fields needing the most attention","Поля, требующие наибольшего внимания","အာရုံစိုက်ရန် အလိုအပ်ဆုံး လယ်ကွက်များ"],
+"Tuman bo'yicha 3 oygacha":["Township, up to 3 months","По району, до 3 месяцев","မြို့နယ်အလိုက်၊ ၃ လအထိ"],
+"Ishonchlilik":["Reliability","Надёжность","ယုံကြည်စိတ်ချရမှု"],
+"{0} kunlik prognozda bitta dala uchun o'rtacha xato ±{1} (me'yor bilan taxmin qilinsa ±{2}), ya'ni {3} % aniqroq. Model ko'rmagan 2026-yilda ham {4} % aniqroq chiqdi. Bu taxmin — qaror qabul qilishda dala ko'rigi bilan birga foydalaning.":["In the {0}-day forecast the average error for one field is ±{1} (±{2} if the normal is used as the guess), i.e. {3} % more accurate. In 2026, a year the model never saw, it was also {4} % more accurate. This is an estimate: use it together with a field visit when making decisions.","В прогнозе на {0} дней средняя ошибка для одного поля ±{1} (при оценке по норме ±{2}), то есть на {3} % точнее. В 2026 году, который модель не видела, тоже вышло на {4} % точнее. Это оценка — используйте её при принятии решений вместе с выездом на поле.","{0} ရက် ခန့်မှန်းချက်တွင် လယ်ကွက်တစ်ကွက်အတွက် ပျမ်းမျှအမှားသည် ±{1} ဖြစ်သည် (ပုံမှန်တန်ဖိုးဖြင့် ခန့်မှန်းလျှင် ±{2})၊ ဆိုလိုသည်မှာ {3} % ပိုတိကျသည်။ မော်ဒယ် မမြင်ဖူးသော ၂၀၂၆ ခုနှစ်တွင်လည်း {4} % ပိုတိကျခဲ့သည်။ ၎င်းသည် ခန့်မှန်းချက်ဖြစ်သဖြင့် ဆုံးဖြတ်ချက်ချရာတွင် ကွင်းဆင်းစစ်ဆေးမှုနှင့်အတူ အသုံးပြုပါ။"],
+"Manba: Sentinel-2 va Sentinel-1 sun'iy yo'ldoshlari, ERA5-Land ob-havo ma'lumoti · Minbu Portal, Index Forecast.":["Source: Sentinel-2 and Sentinel-1 satellites, ERA5-Land weather data · Minbu Portal, Index Forecast.","Источник: спутники Sentinel-2 и Sentinel-1, данные о погоде ERA5-Land · Minbu Portal, Index Forecast.","ရင်းမြစ်: Sentinel-2 နှင့် Sentinel-1 ဂြိုဟ်တုများ၊ ERA5-Land ရာသီဥတုဒေတာ · Minbu Portal, Index Forecast။"],
+"Prognoz qanday tuziladi":["How the forecast is made","Как строится прогноз","ခန့်မှန်းချက်ကို မည်သို့ ပြုလုပ်သနည်း"],
+"Yangilangan: {0} · {1} dala (kontur) · prognoz {2} holatidan.":["Updated: {0} · {1} fields (contours) · forecast based on {2}.","Обновлено: {0} · {1} полей (контуров) · прогноз по состоянию на {2}.","အပ်ဒိတ်: {0} · လယ်ကွက် {1} ကွက် · {2} အခြေအနေအရ ခန့်မှန်းချက်။"],
+"Savol":["The question","Вопрос","မေးခွန်း"],
+"Dalaga suv (yomg'ir yoki sug'orish) kelsa, o'simlik yashilligi (NDVI) qancha vaqtda va qancha o'zgaradi? Shu bog'lanish 2019–2026 yillar ma'lumotidan o'rganilib, har bir dala uchun 10, 20 va 30 kun keyingi NDVI taxmin qilinadi.":["When water (rain or irrigation) reaches a field, how soon and by how much does crop greenness (NDVI) change? This relationship is learned from 2019–2026 data, and NDVI 10, 20 and 30 days ahead is estimated for every field.","Когда на поле приходит вода (дождь или полив), как скоро и насколько меняется зелень растений (NDVI)? Эта связь изучена по данным 2019–2026 годов, и для каждого поля оценивается NDVI через 10, 20 и 30 дней.","လယ်ကွက်သို့ ရေ (မိုး သို့မဟုတ် ရေသွင်းခြင်း) ရောက်သောအခါ အပင်စိမ်းလန်းမှု (NDVI) သည် မည်မျှကြာ၍ မည်မျှ ပြောင်းလဲသနည်း။ ဤဆက်စပ်မှုကို 2019–2026 ဒေတာမှ သင်ယူပြီး လယ်ကွက်တိုင်းအတွက် ၁၀၊ ၂၀ နှင့် ၃၀ ရက်အကြာ NDVI ကို ခန့်မှန်းသည်။"],
+"Ma'lumotlar":["Data","Данные","ဒေတာ"],
+"<b>Sentinel-2</b> — optik sun'iy yo'ldosh: NDVI (Normalized Difference Vegetation Index, normallashtirilgan vegetatsiya farqi indeksi — yashillik) va NDMI (Normalized Difference Moisture Index, normallashtirilgan namlik farqi indeksi — barg va tuproq namligi). Bulutli piksellar olib tashlangan.":["<b>Sentinel-2</b>: an optical satellite. NDVI (Normalized Difference Vegetation Index, greenness) and NDMI (Normalized Difference Moisture Index, leaf and soil moisture). Cloudy pixels are removed.","<b>Sentinel-2</b> — оптический спутник: NDVI (Normalized Difference Vegetation Index, нормализованный разностный вегетационный индекс — зелень) и NDMI (Normalized Difference Moisture Index, нормализованный разностный индекс влажности — влажность листьев и почвы). Облачные пиксели удалены.","<b>Sentinel-2</b> — အလင်းသုံး ဂြိုဟ်တု: NDVI (Normalized Difference Vegetation Index၊ စိမ်းလန်းမှု) နှင့် NDMI (Normalized Difference Moisture Index၊ အရွက်နှင့် မြေအစိုဓာတ်)။ တိမ်ဖုံးသော pixel များကို ဖယ်ရှားထားသည်။"],
+"<b>Sentinel-1</b> — radar (SAR, Synthetic Aperture Radar, sintetik aperturali radar): bulut orqali ham ko'radi, shuning uchun yomg'irli mavsumda surat yo'q paytlarni to'ldiradi.":["<b>Sentinel-1</b>: radar (SAR, Synthetic Aperture Radar). It sees through cloud, so it fills the gaps when there are no images in the rainy season.","<b>Sentinel-1</b> — радар (SAR, Synthetic Aperture Radar, радар с синтезированной апертурой): видит сквозь облака, поэтому заполняет пробелы без снимков в сезон дождей.","<b>Sentinel-1</b> — ရေဒါ (SAR, Synthetic Aperture Radar): တိမ်ကို ဖောက်၍ မြင်နိုင်သဖြင့် မိုးရာသီတွင် ပုံမရှိသော အချိန်များကို ဖြည့်ပေးသည်။"],
+"<b>ERA5-Land</b> — ECMWF (Yevropa o'rta muddatli ob-havo prognozlari markazi) qayta tahlili: harorat, havo quruqligi, quyosh radiatsiyasi, tuproq namligi; <b>IMERG</b> — NASA sun'iy yo'ldosh yog'in ma'lumoti.":["<b>ERA5-Land</b>: reanalysis by ECMWF (European Centre for Medium-Range Weather Forecasts) with temperature, air dryness, solar radiation and soil moisture; <b>IMERG</b>: NASA satellite rainfall data.","<b>ERA5-Land</b> — реанализ ECMWF (Европейский центр среднесрочных прогнозов погоды): температура, сухость воздуха, солнечная радиация, влажность почвы; <b>IMERG</b> — спутниковые данные NASA об осадках.","<b>ERA5-Land</b> — ECMWF (ဥရောပ အလယ်အလတ်ကာလ မိုးလေဝသ ခန့်မှန်းရေးစင်တာ) ၏ ပြန်လည်ဆန်းစစ်ချက်: အပူချိန်၊ လေခြောက်သွေ့မှု၊ နေရောင်ခြည်၊ မြေအစိုဓာတ်; <b>IMERG</b> — NASA ၏ ဂြိုဟ်တု မိုးရေချိန်ဒေတာ။"],
+"Model":["Model","Модель","မော်ဒယ်"],
+"Vaqt o'nkunliklarga (10 kunlik bo'laklar) bo'lingan. Har bir dala uchun <b>me'yor</b> — shu o'nkunlikdagi 2019–2025 o'rtachasi.":["Time is split into 10-day periods. For every field the <b>normal</b> is its 2019–2025 average for that 10-day period.","Время разделено на декады (10-дневные отрезки). Для каждого поля <b>норма</b> — среднее за 2019–2025 годы в эту декаду.","အချိန်ကို ၁၀ ရက်ပတ်များအဖြစ် ပိုင်းထားသည်။ လယ်ကွက်တိုင်းအတွက် <b>ပုံမှန်တန်ဖိုး</b> သည် ထို ၁၀ ရက်ပတ်၏ 2019–2025 ပျမ်းမျှဖြစ်သည်။"],
+"Model me'yordan <b>farqni</b> taxmin qiladi: hozirgi farq, o'simlik bosqichi (ko'karish, eng yashil payt, sarg'ayish), oxirgi 30 kun yog'ini, namlik sakrashi (suv kelgani belgisi), radar va ob-havo.":["The model estimates the <b>difference</b> from the normal using the current difference, the crop stage (green-up, peak green, yellowing), rain in the last 30 days, a jump in moisture (a sign that water arrived), radar and weather.","Модель оценивает <b>отклонение</b> от нормы: текущее отклонение, стадия растений (рост зелени, пик зелени, пожелтение), осадки за последние 30 дней, скачок влажности (признак прихода воды), радар и погода.","မော်ဒယ်သည် ပုံမှန်တန်ဖိုးမှ <b>ကွာခြားချက်</b> ကို ခန့်မှန်းသည်: လက်ရှိကွာခြားချက်၊ သီးနှံအဆင့် (စိမ်းလာချိန်၊ အစိမ်းဆုံးချိန်၊ ဝါလာချိန်)၊ နောက်ဆုံး ရက် ၃၀ မိုးရေချိန်၊ အစိုဓာတ် ခုန်တက်မှု (ရေရောက်သည့် လက္ခဏာ)၊ ရေဒါနှင့် ရာသီဥတု။"],
+"Usul — GBM (Gradient Boosting Machine, gradiyent kuchaytirish mashinasi; LightGBM kutubxonasi): ko'p sonli kichik qaror daraxtlari ketma-ket bir-birining xatosini tuzatadi.":["Method: GBM (Gradient Boosting Machine; the LightGBM library), in which many small decision trees correct each other's errors one after another.","Метод — GBM (Gradient Boosting Machine, градиентный бустинг; библиотека LightGBM): множество небольших деревьев решений последовательно исправляют ошибки друг друга.","နည်းလမ်း — GBM (Gradient Boosting Machine; LightGBM library): ဆုံးဖြတ်ချက်သစ်ပင်ငယ် အများအပြားက တစ်ခုပြီးတစ်ခု အချင်းချင်း၏ အမှားကို ပြင်ပေးသည်။"],
+"<b>80 % oraliq</b> — sinovdagi haqiqiy xatolar taqsimotidan olingan. <b>Xavf ehtimoli</b> shu oraliqdan taxminan (normal taqsimot yaqinlashuvi bilan) hisoblanadi.":["The <b>80 % range</b> comes from the distribution of real errors in testing. The <b>risk probability</b> is computed approximately from this range (normal-distribution approximation).","<b>Интервал 80 %</b> получен из распределения реальных ошибок при проверке. <b>Вероятность риска</b> вычисляется по этому интервалу приближённо (аппроксимация нормальным распределением).","<b>80 % အပိုင်းအခြား</b> ကို စမ်းသပ်မှုရှိ တကယ့်အမှားများ၏ ဖြန့်ကျက်မှုမှ ရယူသည်။ <b>အန္တရာယ် ဖြစ်နိုင်ခြေ</b> ကို ထိုအပိုင်းအခြားမှ ခန့်မှန်းခြေအားဖြင့် (normal distribution ဖြင့်) တွက်ချက်သည်။"],
+"Aniqlik (har yil chetga olinib sinalgan, 2019–2025; alohida 2026)":["Accuracy (each year left out and tested, 2019–2025; 2026 separately)","Точность (каждый год исключался и проверялся, 2019–2025; отдельно 2026)","တိကျမှု (2019–2025 နှစ်တစ်နှစ်စီကို ချန်ထား၍ စမ်းသပ်; 2026 သီးသန့်)"],
+"MAE (Mean Absolute Error, o'rtacha mutlaq xato) — prognoz haqiqatdan o'rtacha qancha farq qiladi.":["MAE (Mean Absolute Error): how far, on average, the forecast is from reality.","MAE (Mean Absolute Error, средняя абсолютная ошибка) — насколько в среднем прогноз отличается от факта.","MAE (Mean Absolute Error၊ ပျမ်းမျှ ပကတိအမှား) — ခန့်မှန်းချက်သည် အမှန်တကယ်မှ ပျမ်းမျှ မည်မျှ ကွာသနည်း။"],
+"Muddat":["Horizon","Срок","ကာလ"],
+"Me'yor xatosi":["Error of the normal","Ошибка нормы","ပုံမှန်တန်ဖိုး၏ အမှား"],
+"Model xatosi":["Model error","Ошибка модели","မော်ဒယ်၏ အမှား"],
+"Yutuq":["Gain","Выигрыш","အမြတ်"],
+"Tuman":["Township","Район","မြို့နယ်"],
+"Ko'rsatiladi":["Shown","Показывается","ပြသသည်"],
+"Cheklovlar":["Limitations","Ограничения","ကန့်သတ်ချက်များ"],
+"Sug'orish miqdori va dala ma'lumoti (ekin turi, ekish sanasi) yo'q — suv kelishi faqat NDMI sakrashidan bilinadi.":["There are no data on irrigation amounts or on the fields (crop type, sowing date): the arrival of water is known only from a jump in NDMI.","Нет данных об объёмах полива и о полях (культура, дата сева) — приход воды определяется только по скачку NDMI.","ရေသွင်းပမာဏနှင့် လယ်ကွက်ဒေတာ (သီးနှံအမျိုးအစား၊ စိုက်ရက်) မရှိပါ — ရေရောက်ခြင်းကို NDMI ခုန်တက်မှုမှသာ သိနိုင်သည်။"],
+"Bitta dala uchun ±0,01 aniqlikka bir oy oldin erishib bo'lmaydi: NDVI o'zgarishining ~91 % qismi dalaning o'ziga xos sabablariga bog'liq.":["An accuracy of ±0.01 for a single field one month ahead is not achievable: about 91 % of NDVI variation depends on causes specific to each field.","Точность ±0,01 для одного поля за месяц вперёд недостижима: около 91 % изменчивости NDVI зависит от причин, специфичных для каждого поля.","လယ်ကွက်တစ်ကွက်အတွက် တစ်လကြိုတင်၍ ±0.01 တိကျမှုကို မရနိုင်ပါ: NDVI ပြောင်းလဲမှု၏ ~91 % သည် လယ်ကွက်တစ်ခုချင်း၏ ကိုယ်ပိုင်အကြောင်းရင်းများပေါ် မူတည်သည်။"],
+"Yakka sanalarda natija o'zgarib turadi (masalan, 2026-yil 21-oktabr prognozi me'yordan yomon chiqdi).":["Results vary on single dates (for example, the forecast for 21 October 2026 was worse than the normal).","На отдельные даты результат меняется (например, прогноз на 21 октября 2026 года оказался хуже нормы).","ရက်တစ်ရက်ချင်းအလိုက် ရလဒ် ကွဲပြားသည် (ဥပမာ 2026 အောက်တိုဘာ 21 ရက်အတွက် ခန့်မှန်းချက်သည် ပုံမှန်တန်ဖိုးထက် ဆိုးခဲ့သည်)။"],
+"Ob-havo ERA5-Land ~10 kun kechikib keladi; yangi ob-havo to'liq kelgach prognoz yangilanadi.":["ERA5-Land weather arrives about 10 days late; the forecast is updated once the new weather is complete.","Погода ERA5-Land приходит с задержкой около 10 дней; прогноз обновляется, когда новые данные поступят полностью.","ERA5-Land ရာသီဥတုဒေတာသည် ၁၀ ရက်ခန့် နောက်ကျ၍ ရောက်သည်; ဒေတာအသစ် အပြည့်အစုံရောက်သောအခါ ခန့်မှန်းချက်ကို အပ်ဒိတ်လုပ်မည်။"]
+};
+
+</script>
+<script>
+/* Index Forecast page logic (inlined into prognoz.html by .build/build_prognoz.py).
+   Every visible text goes through L("uzbek key", args...) -> src/i18n_fc.js holds English / Russian / Burmese. */
 (function(){
 'use strict';
 var MODE='agol',IDS={"data": "0a345e7052434403b9638d6cc9c3ba95", "parcels": "4e541b92a3964aa7886a8914173f4db5", "rasters": "b28aea0e5a5b4389af784621bd21f730", "forecast": "5508d753653d47ca8da45ed0517af75e"},PORTAL='https://land-tiiame.maps.arcgis.com';
 var $=function(i){return document.getElementById(i)};
-var MUZ=['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentabr','oktabr','noyabr','dekabr'];
-var STG=['yalang\'och yer','ko\'karish','eng yashil payt','sarg\'ayish'];
+I18N.add(window.__FC_I18N||{});
+var MON={uz:['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentabr','oktabr','noyabr','dekabr'],
+  en:['January','February','March','April','May','June','July','August','September','October','November','December'],
+  ru:['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'],
+  my:['ဇန်နဝါရီ','ဖေဖော်ဝါရီ','မတ်','ဧပြီ','မေ','ဇွန်','ဇူလိုင်','ဩဂုတ်','စက်တင်ဘာ','အောက်တိုဘာ','နိုဝင်ဘာ','ဒီဇင်ဘာ']};
+var STGK=["yalang'och yer","ko'karish","eng yashil payt","sarg'ayish"],STC=['#c9b99a','#a6d96a','#1a9641','#e0b04a'];
 var HD=[1,2,3];                 /* field horizons in dekads (10, 20, 30 days) */
-var S={h:2,mode:'v',v:-1,pick:-1};
-var META,D,M,nf,FC,VI,AREA,map,HB={},HSER=null,NH;
-function f(x,d){if(x==null||isNaN(x))return '—';d=d==null?0:d;return Number(x).toLocaleString('uz-UZ',{minimumFractionDigits:d,maximumFractionDigits:d}).replace(/,/g,' ').replace('.',',')}
+var S={h:2,mode:'s',v:-1,pick:-1,cls:-1,tab:'v',vsort:'low',sat:false,lab:true,wat:false};
+var META,D,M,nf,FC,VI,AREA,CEN,map,HB={},HSER=null,NH,TB,DCUR=null;
+function lg(){return I18N.lang}
+/* numbers: "1 234,56" (uz, ru) or "1,234.56" (en, my), whatever the browser locale is */
+function f(x,d){if(x==null||isNaN(x))return '—';d=d||0;var dot=lg()==='en'||lg()==='my',p=Math.abs(x).toFixed(d).split('.');p[0]=p[0].replace(/\B(?=(\d{3})+(?!\d))/g,dot?',':' ');return (x<0?'−':'')+p[0]+(p[1]?(dot?'.':',')+p[1]:'')}
 function iv(x){return x==null||isNaN(x)?'—':f(x,3)}
 function sg(x,d){return x==null||isNaN(x)?'—':(x>0?'+':x<0?'−':'±')+f(Math.abs(x),d==null?3:d)}
-function ds(s){var p=s.split('-');return (+p[2])+'-'+MUZ[+p[1]-1]}
+function dfmt(d,m,y){var l=lg(),n=MON[l][m-1];return l==='uz'?d+'-'+n+(y?' '+y:''):l==='my'?(y?y+' ':'')+n+' '+d+' ရက်':d+' '+n+(y?' '+y:'')}
+function ds(s,y){var p=s.split('-');return dfmt(+p[2],+p[1],y?p[0]:0)}
 function kd(k){return {y:2019+Math.floor(k/36),m:Math.floor((k%36)/3)+1,d:1+10*(k%3)}}
-function kds(k){var o=kd(k);return o.d+'-'+MUZ[o.m-1]+' '+o.y}
+function kds(k){var o=kd(k);return dfmt(o.d,o.m,o.y)}
+function ha(x,d){return f(x,d)+' '+L("ga")}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function toast(t){var d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(function(){d.remove()},2600)}
 
 /* ---------- data access: local files (DEV) or private ArcGIS Online items (signed-in token) ---------- */
 var TOK=null;
@@ -196,274 +917,411 @@ function agol(id,res){return PORTAL+'/sharing/rest/content/items/'+id+(res?'/res
 function getText(kind,name){
   var u=MODE==='agol'?(kind==='data'?agol(IDS.data):kind==='parcels'?agol(IDS.parcels):agol(IDS.forecast,'fc2/'+name))
     :(kind==='data'?'../.build/data.json':kind==='parcels'?'../.build/parcels.b64':'fc2/'+name);
-  return fetch(u).then(function(r){if(r.status===498||r.status===499||r.status===403){if(MODE==='agol')location.replace('index.html');throw new Error('ruxsat')}if(!r.ok)throw new Error(r.status+' '+name);return r.text()});
+  return fetch(u).then(function(r){if(r.status===498||r.status===499||r.status===403){if(MODE==='agol')location.replace('index.html');throw new Error('403')}if(!r.ok)throw new Error(r.status+' '+name);return r.text()});
 }
 function inflate(b64){var bin=atob(b64.trim()),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
   return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('deflate'))).arrayBuffer()}
 
-/* ---------- per-contour values (f22_portal_export.py) ---------- */
+/* ---------- per-contour values (forecast/f22_portal_export.py) ---------- */
 function gv(r,c){var q=FC.a[r*nf+c];return q===-32768?null:q/10000}
 function pred(c,h){return gv(4*h,c)}function lo(c,h){return gv(4*h+1,c)}function hi(c,h){return gv(4*h+2,c)}function nrm(c,h){return gv(4*h+3,c)}
 function lastObs(c){return gv(12,c)}
 function q8(q){return q===255?null:-0.2+q/254*1.2}
+/* status: forecast minus the field's own multi-year norm, 5 plain classes */
+var CC=['#c44e3a','#eda65a','#d6d9c6','#86c57a','#2a8540'],CA=0.04,CB=0.10;
+function cn(i){return [L("Ancha past"),L("Pastroq"),L("Me'yorda"),L("Yaxshiroq"),L("Ancha yaxshi")][i]}
+function cr(i){var a=f(CA,2),b=f(CB,2);return [L("{0} dan ko'p past",b),L("{0}–{1} past",a,b),L("±{0} ichida",a),L("{0}–{1} yuqori",a,b),L("{0} dan ko'p yuqori",b)][i]}
+function dcls(d){return d<-CB?0:d<-CA?1:d<=CA?2:d<=CB?3:4}
+function cls(c,h){var v=pred(c,h),n=nrm(c,h);return v==null||n==null?-1:dcls(v-n)}
+/* chance that the field ends up below its norm: normal approximation of the 80 % interval */
+function phi(z){var t=1/(1+0.2316419*Math.abs(z)),p=1-Math.exp(-z*z/2)/2.5066283*t*(0.31938153+t*(-0.356563782+t*(1.781477937+t*(-1.821255978+t*1.330274429))));return z>=0?p:1-p}
+function pbelow(c,h){var v=pred(c,h),n=nrm(c,h);if(v==null||n==null)return null;var s=(hi(c,h)-lo(c,h))/2.563;return s>0?phi((n-v)/s):null}
 
 /* ---------- colours ---------- */
 var VAL=['#8c510a','#bf812d','#dfc27d','#f0e5b8','#e2efb8','#c2e19a','#99cf78','#6db75a','#45a046','#26843a','#11672c','#034a1d'],VLO=0.05,VHI=0.85;
-var DIV=['#7f3b08','#b35806','#e08214','#fdb863','#fee0b6','#f4f1ea','#d9f0d3','#a6dba0','#5aae61','#1b7837','#00441b'],DST=0.03;
-var WID=['#f2f0f7','#dadaeb','#bcbddc','#9e9ac8','#756bb1','#54278f'],WLO=0.10,WST=0.05;
-var MODES={v:['Prognoz NDVI','Kutilayotgan yashillik darajasi',VAL],a:['Normadan farq','Ko\'p yillik o\'rtachadan yuqori yoki past',DIV],u:['Noaniqlik','80 % oraliq kengligi: qancha keng bo\'lsa, shuncha ishonch kam',WID]};
-function cid(c){var h=S.h,v=pred(c,h);if(v==null)return 0;
-  if(S.mode==='v')return 1+Math.max(0,Math.min(VAL.length-1,Math.floor((v-VLO)/(VHI-VLO)*VAL.length)));
-  if(S.mode==='a'){var n=nrm(c,h);return n==null?0:100+Math.max(0,Math.min(10,Math.round((v-n)/DST)+5))}
-  return 200+Math.max(0,Math.min(WID.length-1,Math.floor((hi(c,h)-lo(c,h)-WLO)/WST)))}
+var DIV=['#7f3b08','#b35806','#e08214','#fdb863','#fee0b6','#f1eee6','#d9f0d3','#a6dba0','#5aae61','#1b7837','#00441b'],DST=0.04;
+var PRB=['#2a8540','#a8d58f','#ece7d2','#f0a35e','#c44e3a'];
+var MCOL={s:CC,p:PRB,v:VAL,c:DIV,n:VAL},MKEYS=['s','p','v','c','n'];
+function mname(k){return {s:L("Holat: me'yorga nisbatan"),p:L("Xavf ehtimoli"),v:L("Yashillik darajasi (NDVI)"),c:L("Hozirgidan o'zgarish"),n:L("Bugungi holat")}[k]}
+function mdesc(k){return {s:L("Dala odatdagidan yaxshimi yoki yomonmi"),p:L("Me'yordan past bo'lish ehtimoli, %"),v:L("Prognoz qilingan qiymatning o'zi"),c:L("Bugungi holatdan ortadimi yoki kamayadimi"),n:L("Oxirgi bulutsiz sun'iy yo'ldosh surati")}[k]}
+function vcol(v){return Math.max(0,Math.min(VAL.length-1,Math.floor((v-VLO)/(VHI-VLO)*VAL.length)))}
+function cid(c){var h=S.h,v=pred(c,h);
+  if(S.mode==='n'){var l=lastObs(c);return l==null?0:10+vcol(l)}
+  if(v==null)return 0;
+  if(S.mode==='s'){var k=cls(c,h);return k<0?0:1+k}
+  if(S.mode==='v')return 10+vcol(v);
+  if(S.mode==='c'){var l2=lastObs(c);return l2==null?0:100+Math.max(0,Math.min(10,Math.round((v-l2)/DST)+5))}
+  var p=pbelow(c,h);return p==null?0:200+Math.min(4,Math.floor(p*5))}
 
 /* ---------- boot ---------- */
+I18N.mount(document.querySelector('.top'),$('gbtn'));I18N.apply();
 Promise.all([getText('fc','meta.json'),getText('data'),getText('parcels'),getText('fc','main.txt')]).then(function(r){
   META=JSON.parse(r[0]);D=JSON.parse(r[1]);M=D.meta;nf=M.nf;NH=META.hist_dates.length;
-  if(META.nf!==nf)throw new Error('kontur soni mos emas');
-  $('loadt').textContent='Konturlar chizilmoqda…';
+  if(META.nf!==nf)throw new Error('nf');
+  $('loadt').textContent=L("Konturlar chizilmoqda…");
   return Promise.all([decode(r[2]),inflate(r[3])]).then(function(x){
     var buf=x[1];FC={a:new Int16Array(buf,0,13*nf),stage:new Uint8Array(buf,26*nf,nf),days:new Uint8Array(buf,27*nf,nf),flags:new Uint8Array(buf,28*nf,nf)};
     start(x[0])});
-}).catch(function(e){$('loadt').textContent='Ma\'lumot yuklanmadi ('+e.message+'). Sahifani yangilang.';if(window.console)console.warn(e)});
+}).catch(function(e){$('loadt').textContent=L("Ma'lumot yuklanmadi ({0}). Sahifani yangilang.",e.message);if(window.console)console.warn(e)});
 
 function decode(b64){
   return inflate(b64).then(function(buf){
     var nr=M.nr,nv=M.nv,o=0,area=new Float32Array(buf,0,nf);o=4*nf;
     var fr=new Uint16Array(buf,o,nf);o+=2*nf;var rl=new Uint16Array(buf,o,nr);o+=2*nr;var vi=new Uint8Array(buf,o,nf);o+=nf;o+=nf;o+=(4-o%4)%4;
-    var co=new Uint16Array(buf,o,2*nv);VI=new Uint8Array(vi);AREA=new Float32Array(area);
+    var co=new Uint16Array(buf,o,2*nv);VI=new Uint8Array(vi);AREA=new Float32Array(area);CEN=new Float32Array(2*nf);
     var R=6378137,K=180/Math.PI,feats=new Array(nf),ri=0,k=0;
-    for(var n=0;n<nf;n++){var polys=[],sign=0;
+    for(var n=0;n<nf;n++){var polys=[],sign=0,x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
       for(var j=0;j<fr[n];j++){var len=rl[ri++],ring=new Array(len),px=0,py=0,sa=0,lx=0,ly=0;
-        for(var q=0;q<len;q++){px=(px+co[k++])&65535;py=(py+co[k++])&65535;sa+=lx*py-px*ly;lx=px;ly=py;ring[q]=[(M.xmin+px)/R*K,(2*Math.atan(Math.exp((M.ymin+py)/R))-Math.PI/2)*K]}
+        for(var q=0;q<len;q++){px=(px+co[k++])&65535;py=(py+co[k++])&65535;sa+=lx*py-px*ly;lx=px;ly=py;var X=(M.xmin+px)/R*K,Y=(2*Math.atan(Math.exp((M.ymin+py)/R))-Math.PI/2)*K;ring[q]=[X,Y];
+          if(j===0){if(X<x0)x0=X;if(X>x1)x1=X;if(Y<y0)y0=Y;if(Y>y1)y1=Y}}
         if(!polys.length){polys.push([ring]);sign=sa}else if(sa*sign>0)polys.push([ring]);else polys[polys.length-1].push(ring)}
+      CEN[2*n]=(x0+x1)/2;CEN[2*n+1]=(y0+y1)/2;
       feats[n]={type:'Feature',id:n,properties:{},geometry:polys.length===1?{type:'Polygon',coordinates:polys[0]}:{type:'MultiPolygon',coordinates:polys}}}
     return {type:'FeatureCollection',features:feats};
   });
 }
-
+/* ---------- page state in the address (shareable link) ---------- */
+function readHash(){var m=location.hash.replace('#','').split('&');m.forEach(function(kv){var p=kv.split('=');
+  if(p[0]==='h'&&+p[1]>=0&&+p[1]<3)S.h=+p[1];if(p[0]==='m'&&MCOL[p[1]])S.mode=p[1];if(p[0]==='v'&&+p[1]>=0&&+p[1]<D.V.length)S.v=+p[1]})}
+function writeHash(){try{history.replaceState(null,'','#h='+S.h+'&m='+S.mode+(S.v>=0?'&v='+S.v:''))}catch(e){}}
+function confw(k){return k>30?L("yuqori"):k>15?L("o'rta"):L("pastroq")}
+/* left rail + header texts that depend on the language */
+function buildRail(){
+  var V=D.V;
+  $('asof').innerHTML='<i></i>'+L("{0} holatidan · yangilangan {1}",ds(META.origin,1),META.generated);
+  $('vsel').innerHTML='<option value="-1">'+L("Butun Minbu tumani")+'</option>'+V.map(function(v,i){return {i:i,n:v.name}}).sort(function(a,b){return a.n.localeCompare(b.n)}).map(function(v){return '<option value="'+v.i+'">'+esc(v.n)+'</option>'}).join('');
+  $('vsel').value=String(S.v);
+  $('hz').innerHTML=HD.map(function(h,i){var k=META.skill[i].cv,lv=k>30?0:k>15?1:2;
+    return '<button data-h="'+i+'"><b>'+L("{0} kun",h*10)+'</b><span>'+ds(META.targets[i])+'</span><em>'+[0,1,2].map(function(j){return '<u'+(j<3-lv?' class="on"':'')+'></u>'}).join('')+' '+confw(k)+'</em></button>'}).join('');
+  $('mode').innerHTML=MKEYS.map(function(k){var c=MCOL[k];return '<button data-m="'+k+'"><span class="sw" style="background:linear-gradient(135deg,'+c[0]+' 0 33%,'+c[Math.floor(c.length/2)]+' 33% 66%,'+c[c.length-1]+' 66%)"></span><span><b>'+mname(k)+'</b><small>'+mdesc(k)+'</small></span></button>'}).join('');
+}
 function start(gj){
-  var V=D.V,TB=[[Math.min.apply(null,V.map(function(v){return v.b[0]})),Math.min.apply(null,V.map(function(v){return v.b[1]}))],[Math.max.apply(null,V.map(function(v){return v.b[2]})),Math.max.apply(null,V.map(function(v){return v.b[3]}))]];
-  $('asof').innerHTML='<i></i>Prognoz '+ds(META.origin)+' holatidan · ob-havo → '+ds(META.weather_to);
-  $('vsel').innerHTML='<option value="-1">Butun tuman</option>'+V.map(function(v,i){return {i:i,n:v.name}}).sort(function(a,b){return a.n.localeCompare(b.n)}).map(function(v){return '<option value="'+v.i+'">'+v.n+'</option>'}).join('');
-  $('vsel').onchange=function(){S.v=+this.value;S.pick=-1;$('pc').hidden=true;all();if(S.v>=0){var b=V[S.v].b;map.fitBounds([[b[0],b[1]],[b[2],b[3]]],{padding:60,duration:700})}else map.fitBounds(TB,{padding:40,duration:700})};
-  $('mode').innerHTML=Object.keys(MODES).map(function(k){var m=MODES[k];return '<button data-m="'+k+'"><span class="sw" style="background:linear-gradient(135deg,'+m[2][1]+','+m[2][Math.floor(m[2].length/2)]+','+m[2][m[2].length-1]+')"></span><span><b>'+m[0]+'</b><small>'+m[1]+'</small></span></button>'}).join('');
-  $('mode').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.mode=b.dataset.m;all()};
-  $('tl').innerHTML=HD.map(function(h,i){return '<button data-h="'+i+'">'+(h*10)+' kun<small>'+ds(META.targets[i])+'</small></button>'}).join('')+
-    '<div class="far">60–90 kun: faqat tuman o\'rtachasi, ko\'p yillik norma (o\'ng panel)</div>';
-  $('tl').onclick=function(e){var b=e.target.closest('button');if(!b)return;stopPlay();S.h=+b.dataset.h;all()};
-  $('play').onclick=function(){PLAY?stopPlay():startPlay()};
-  $('mbtn').onclick=openMethod;
+  var V=D.V;TB=[[Math.min.apply(null,V.map(function(v){return v.b[0]})),Math.min.apply(null,V.map(function(v){return v.b[1]}))],[Math.max.apply(null,V.map(function(v){return v.b[2]})),Math.max.apply(null,V.map(function(v){return v.b[3]}))]];
+  readHash();buildRail();
+  $('vsel').onchange=function(){setVillage(+this.value)};
+  $('hz').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.h=+b.dataset.h;all()};
+  $('mode').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.mode=b.dataset.m;S.cls=-1;all()};
+  $('tabs').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.tab=b.dataset.t;renderTab()};
+  $('mbtn').onclick=openMethod;$('gbtn').onclick=openGuide;$('rbtn').onclick=openReport;
+  $('t_sat').onchange=function(){S.sat=this.checked;layers()};$('t_lab').onchange=function(){S.lab=this.checked;layers()};$('t_wat').onchange=function(){S.wat=this.checked;layers()};
   map=new maplibregl.Map({container:'map',attributionControl:false,bounds:TB,fitBoundsOptions:{padding:40},maxPitch:60,
-    style:{version:8,sources:{},layers:[{id:'bg',type:'background',paint:{'background-color':'#e9e3d6'}}]}});
+    style:{version:8,sources:{},layers:[{id:'bg',type:'background',paint:{'background-color':'#f1ede3'}}]}});
   map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
   map.on('load',function(){
-    map.addSource('town',{type:'geojson',data:{type:'Feature',properties:{},geometry:{type:'MultiLineString',coordinates:D.town}}});
+    map.addSource('sat',{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,maxzoom:18,attribution:'Esri World Imagery'});
+    map.addLayer({id:'sat',type:'raster',source:'sat',layout:{visibility:'none'}});
+    var hasTown=D.town&&D.town.length;   /* township outline exists only in the newer data file */
+    if(hasTown)map.addSource('town',{type:'geojson',data:{type:'Feature',properties:{},geometry:{type:'MultiLineString',coordinates:D.town}}});
     map.addSource('bound',{type:'geojson',data:D.bound});
     map.addSource('p',{type:'geojson',data:gj,tolerance:.35,buffer:8,maxzoom:15});
-    map.addLayer({id:'town-glow',type:'line',source:'town',paint:{'line-color':'#c8553d','line-width':9,'line-blur':8,'line-opacity':.18}});
-    var CC=['coalesce',['feature-state','c'],0],H=['coalesce',['feature-state','h'],0],PCX=['match',CC];
-    VAL.forEach(function(c,i){PCX.push(1+i,c)});DIV.forEach(function(c,i){PCX.push(100+i,c)});WID.forEach(function(c,i){PCX.push(200+i,c)});PCX.push('#d6cfc0');
-    map.addLayer({id:'p-fill',type:'fill',source:'p',paint:{'fill-color':PCX,'fill-opacity':['case',['==',H,1],.12,['boolean',['feature-state','sel'],false],.95,.85]}});
-    map.addLayer({id:'p-line',type:'line',source:'p',paint:{'line-color':['case',['boolean',['feature-state','sel'],false],'#1f1b14',['boolean',['feature-state','hv'],false],'#1f1b14',PCX],
-      'line-width':['interpolate',['linear'],['zoom'],9,['case',['boolean',['feature-state','sel'],false],1.8,.3],13,['case',['boolean',['feature-state','sel'],false],3,.9],16,['case',['boolean',['feature-state','sel'],false],3.6,1.6]],
-      'line-opacity':['case',['==',H,1],.15,1]}});
-    map.addLayer({id:'bound-line',type:'line',source:'bound',paint:{'line-color':'#6b6152','line-opacity':.45,'line-width':['interpolate',['linear'],['zoom'],9,.6,14,1.6]}});
-    map.addLayer({id:'town-edge',type:'line',source:'town',paint:{'line-color':'#7a3e22','line-width':1.4,'line-opacity':.85}});
+    if(hasTown)map.addLayer({id:'town-glow',type:'line',source:'town',paint:{'line-color':'#c8553d','line-width':9,'line-blur':8,'line-opacity':.16}});
+    var CX=['coalesce',['feature-state','c'],0],H=['coalesce',['feature-state','h'],0],PCX=['match',CX];
+    CC.forEach(function(c,i){PCX.push(1+i,c)});VAL.forEach(function(c,i){PCX.push(10+i,c)});DIV.forEach(function(c,i){PCX.push(100+i,c)});PRB.forEach(function(c,i){PCX.push(200+i,c)});PCX.push('#e3ddd0');
+    var SEL=['boolean',['feature-state','sel'],false];
+    map.addLayer({id:'p-fill',type:'fill',source:'p',paint:{'fill-color':PCX,'fill-opacity':['case',['==',H,1],.1,SEL,.97,.88]}});
+    map.addLayer({id:'p-line',type:'line',source:'p',paint:{'line-color':['case',SEL,'#1f1b14',['boolean',['feature-state','hv'],false],'#1f1b14',PCX],
+      'line-width':['interpolate',['linear'],['zoom'],9,['case',SEL,1.8,.3],13,['case',SEL,3,.9],16,['case',SEL,3.6,1.6]],'line-opacity':['case',['==',H,1],.12,1]}});
+    map.addLayer({id:'p-water',type:'line',source:'p',layout:{visibility:'none'},paint:{'line-color':'#0a6fd1','line-width':['interpolate',['linear'],['zoom'],9,1.2,14,2.6],'line-opacity':['case',['boolean',['feature-state','w'],false],1,0]}});
+    map.addLayer({id:'bound-line',type:'line',source:'bound',paint:{'line-color':'#6b6152','line-opacity':.5,'line-width':['interpolate',['linear'],['zoom'],9,.7,14,1.8]}});
+    if(hasTown)map.addLayer({id:'town-edge',type:'line',source:'town',paint:{'line-color':'#7a3e22','line-width':1.5,'line-opacity':.85}});
+    for(var c=0;c<nf;c++)if(FC.flags[c]&1)map.setFeatureState({source:'p',id:c},{w:true});
+    V.forEach(function(v,i){var el=document.createElement('div');el.className='vlab';el.textContent=v.name;el.onclick=function(e){e.stopPropagation();setVillage(i===S.v?-1:i)};
+      new maplibregl.Marker({element:el}).setLngLat(v.c).addTo(map)});
+    var zl=function(){$('map').classList.toggle('farz',map.getZoom()<10.9)};map.on('zoom',zl);zl();   /* names would cover the whole township view */
     var HV=-1,tip=$('tip');
     map.on('mousemove','p-fill',function(e){var ft=e.features[0];if(!ft)return;var id=ft.id,h=S.h;map.getCanvas().style.cursor='pointer';
       if(HV!==id){if(HV>=0)map.setFeatureState({source:'p',id:HV},{hv:false});HV=id;map.setFeatureState({source:'p',id:id},{hv:true})}
-      var v=pred(id,h),n=nrm(id,h);
-      tip.innerHTML='<b>'+V[VI[id]].name+'</b> · '+f(AREA[id],2)+' ga<br>'+ds(META.targets[h])+' prognozi: <b>'+iv(v)+'</b>'+(v==null?'':' ('+iv(lo(id,h))+' … '+iv(hi(id,h))+')')+
-        '<br>norma '+iv(n)+(v!=null&&n!=null?' · <span class="'+(v>=n?'up':'dn')+'">'+sg(v-n)+'</span>':'');
-      tip.hidden=false;var w=$('map').clientWidth;tip.style.left=Math.min(w-tip.offsetWidth-8,e.point.x+14)+'px';tip.style.top=Math.max(6,e.point.y-64)+'px'});
+      var v=pred(id,h),n=nrm(id,h),k=cls(id,h),pb=pbelow(id,h);
+      tip.innerHTML='<b>'+esc(V[VI[id]].name)+'</b> · '+ha(AREA[id],2)+(k>=0?' · <b style="color:'+(k<2?'var(--bad)':k>2?'var(--good)':'var(--tx2)')+'">'+cn(k)+'</b>':'')+
+        '<br>'+L("{0} prognozi",ds(META.targets[h]))+': <b>'+iv(v)+'</b> · '+L("me'yor")+' '+iv(n)+(v!=null&&n!=null?' ('+sg(v-n)+')':'')+
+        (pb!=null?'<br>'+L("Me'yordan past bo'lish ehtimoli")+': <b>'+f(pb*100,0)+' %</b>':'')+'<br><span style="color:var(--tx3)">'+L("Batafsil uchun bosing")+'</span>';
+      tip.hidden=false;var w=$('map').clientWidth;tip.style.left=Math.min(w-tip.offsetWidth-8,e.point.x+14)+'px';tip.style.top=Math.max(6,e.point.y-84)+'px'});
     map.on('mouseleave','p-fill',function(){tip.hidden=true;map.getCanvas().style.cursor='';if(HV>=0)map.setFeatureState({source:'p',id:HV},{hv:false});HV=-1});
     map.on('click',function(e){var ft=map.queryRenderedFeatures(e.point,{layers:['p-fill']})[0];pick(ft&&ft.id!==S.pick?ft.id:-1)});
-    $('load').hidden=true;all();
+    $('load').hidden=true;layers();all();
+    if(S.v>=0){var b=V[S.v].b;map.fitBounds([[b[0],b[1]],[b[2],b[3]]],{padding:60,duration:0})}
+    var seen=false;try{seen=localStorage.getItem('minbu_fc_guide')==='1'}catch(e){}
+    if(!seen){openGuide();try{localStorage.setItem('minbu_fc_guide','1')}catch(e){}}
   });
+}
+window.__relang=function(){if(!META||!map)return;buildRail();all();if(DCUR&&!$('drawer').hidden)DCUR()};
+function setVillage(k){S.v=k;$('vsel').value=String(k);if(S.pick>=0)pick(-1,true);all();
+  if(k>=0){var b=D.V[k].b;map.fitBounds([[b[0],b[1]],[b[2],b[3]]],{padding:60,duration:700})}else map.fitBounds(TB,{padding:40,duration:700})}
+function layers(){
+  if(!map||!map.getLayer('sat'))return;
+  map.setLayoutProperty('sat','visibility',S.sat?'visible':'none');
+  map.setPaintProperty('p-fill','fill-opacity',['case',['==',['coalesce',['feature-state','h'],0],1],S.sat?0:.1,['boolean',['feature-state','sel'],false],.97,S.sat?.72:.88]);
+  map.setLayoutProperty('p-water','visibility',S.wat?'visible':'none');
+  $('map').classList.toggle('nolab',!S.lab);
+  $('t_sat').checked=S.sat;$('t_lab').checked=S.lab;$('t_wat').checked=S.wat;
 }
 /* ---------- map colouring: only changed contours are touched ---------- */
 var KC=null,KH=null;
 function applyMap(){
   if(!map||!map.getSource('p'))return;
   if(!KC){KC=new Int16Array(nf).fill(-1);KH=new Int8Array(nf).fill(-1)}
-  for(var c=0;c<nf;c++){var id=cid(c),hh=S.v>=0&&VI[c]!==S.v?1:0;
+  var fcl=S.mode==='s'&&S.cls>=0;
+  for(var c=0;c<nf;c++){var id=cid(c),hh=(S.v>=0&&VI[c]!==S.v)||(fcl&&id!==1+S.cls)?1:0;
     if(KC[c]!==id||KH[c]!==hh){KC[c]=id;KH[c]=hh;map.setFeatureState({source:'p',id:c},{c:id,h:hh})}}
-  legend();
 }
+/* ---------- statistics of the chosen area and of every village (cached per horizon) ---------- */
+var ST={};
+function stats(h){
+  if(ST[h])return ST[h];
+  var nv=D.V.length,A=[],N=[],T={a:[0,0,0,0,0],n:[0,0,0,0,0]};
+  for(var k=0;k<nv;k++){A.push([0,0,0,0,0]);N.push([0,0,0,0,0])}
+  for(var c=0;c<nf;c++){var q=cls(c,h);if(q<0)continue;var a=AREA[c],v=VI[c];T.a[q]+=a;T.n[q]++;if(v<nv){A[v][q]+=a;N[v][q]++}}
+  return ST[h]={A:A,N:N,T:T};
+}
+function sel(h){var s=stats(h);if(S.v<0)return {a:s.T.a,n:s.T.n};return {a:s.A[S.v],n:s.N[S.v]}}
+function sum(a){return a.reduce(function(x,y){return x+y},0)}
+function hot(h,lim){ /* fields that matter most: area x shortfall below the norm */
+  var r=[];for(var c=0;c<nf;c++){if(S.v>=0&&VI[c]!==S.v)continue;var v=pred(c,h),n=nrm(c,h);if(v==null||n==null||v-n>=-CA)continue;r.push([AREA[c]*(n-v),c])}
+  r.sort(function(a,b){return b[0]-a[0]});return r.slice(0,lim).map(function(x){return x[1]})}
+/* ---------- legend on the map ---------- */
 function legend(){
-  var el=$('legend'),m=MODES[S.mode],g='<div class="bar" style="background:linear-gradient(90deg,'+m[2].join(',')+')"></div>';
-  if(S.mode==='v')el.innerHTML='<h3>Shkala</h3>'+g+'<div class="ax"><span>≤ '+f(VLO,2)+'</span><span>NDVI</span><span>≥ '+f(VHI,2)+'</span></div>';
-  else if(S.mode==='a')el.innerHTML='<h3>Shkala</h3>'+g+'<div class="ax"><span>normadan past</span><span>≈ norma</span><span>yuqori</span></div><div class="ax"><span>−'+f(DST*5.5,2)+'</span><span>0</span><span>+'+f(DST*5.5,2)+'</span></div>';
-  else el.innerHTML='<h3>Shkala</h3>'+g+'<div class="ax"><span>tor</span><span>80 % oraliq kengligi</span><span>keng</span></div><div class="ax"><span>'+f(WLO,2)+'</span><span></span><span>'+f(WLO+WST*WID.length,2)+'+</span></div>';
+  var el=$('legend'),h=S.h,g=function(c){return '<div class="bar" style="background:linear-gradient(90deg,'+c.join(',')+')"></div>'};
+  if(S.mode==='s'){var s=sel(h),tot=sum(s.a)||1;
+    el.innerHTML='<h4>'+L("{0}: me'yorga nisbatan holat",ds(META.targets[h]))+'</h4>'+[0,1,2,3,4].map(function(i){return '<button data-c="'+i+'" aria-pressed="'+(S.cls===i)+'"><i style="background:'+CC[i]+'"></i><span><b>'+cn(i)+'</b> <small>'+cr(i)+'</small></span><b>'+f(s.a[i]/tot*100,0)+' %</b></button>'}).join('')+
+      '<div class="hint">'+(S.cls>=0?L("Faqat tanlangan toifa ko'rsatilmoqda. Qayta bosing — hammasi."):L("Toifani bosing — xaritada faqat o'sha dalalar qoladi. Foiz — maydon ulushi."))+'</div>';
+    el.onclick=function(e){var b=e.target.closest('button');if(!b)return;S.cls=S.cls===+b.dataset.c?-1:+b.dataset.c;all()};return}
+  el.onclick=null;
+  if(S.mode==='p')el.innerHTML='<h4>'+L("Me'yordan past bo'lish ehtimoli")+'</h4>'+g(PRB)+'<div class="ax"><span>0 %</span><span>50 %</span><span>100 %</span></div><div class="hint">'+L("Qizil — dala odatdagidan yomon bo'lishi deyarli aniq. Yashil — xavf kam.")+'</div>';
+  else if(S.mode==='c')el.innerHTML='<h4>'+L("Bugundan {0}gacha o'zgarish",ds(META.targets[h]))+'</h4>'+g(DIV)+'<div class="ax"><span>'+L("kamayadi")+' −'+f(DST*5,2)+'</span><span>0</span><span>+'+f(DST*5,2)+' '+L("ortadi")+'</span></div><div class="hint">'+L("Kuzda kamayish tabiiy: ekin pishib, sarg'ayadi.")+'</div>';
+  else el.innerHTML='<h4>'+(S.mode==='n'?L("Bugungi yashillik (NDVI), {0}",ds(META.last_s2)):L("{0} uchun yashillik (NDVI)",ds(META.targets[h])))+'</h4>'+g(VAL)+'<div class="ax"><span>'+f(VLO,2)+' '+L("yalang'och")+'</span><span>'+f(VHI,2)+' '+L("qalin yashil")+'</span></div>';
 }
 /* ---------- picked contour ---------- */
-function pick(id){
+function pick(id,quiet){
   if(S.pick>=0)map.setFeatureState({source:'p',id:S.pick},{sel:false});
-  S.pick=id;if(id<0){$('pc').hidden=true;renderSide();return}
+  S.pick=id;if(id<0){$('pc').hidden=true;if(!quiet)renderSide();return}
   map.setFeatureState({source:'p',id:id},{sel:true});
-  var b=id>>10,L=NH+36;HSER=null;
+  var b=id>>10,Ln=NH+36;HSER=null;
   (HB[b]||(HB[b]=getText('fc','h/b'+b+'.txt').then(inflate).then(function(buf){return new Uint8Array(buf)}))).then(function(B){
-    if(S.pick!==id)return;var o=(id-(b<<10))*L,obs=[],n36=[];
+    if(S.pick!==id)return;var o=(id-(b<<10))*Ln,obs=[],n36=[];
     for(var i=0;i<NH;i++)obs.push(q8(B[o+i]));for(var j=0;j<36;j++)n36.push(q8(B[o+NH+j]));
     HSER={id:id,obs:obs,norm:n36};renderSide();
   }).catch(function(){});
   renderSide();
 }
+function goField(c){map.flyTo({center:[CEN[2*c],CEN[2*c+1]],zoom:Math.max(map.getZoom(),14.3),duration:900});pick(c)}
+function fname(c){return L("Dala")+' #'+(c+1)}
 /* ---------- series for the chosen area ---------- */
 function series(){
   if(S.pick>=0){var c=S.pick;
-    return {name:'Kontur #'+(c+1),obs:HSER&&HSER.id===c?HSER.obs:[],norm:HSER&&HSER.id===c?HSER.norm:[],
+    return {kind:'f',name:fname(c),obs:HSER&&HSER.id===c?HSER.obs:[],norm:HSER&&HSER.id===c?HSER.norm:[],last:lastObs(c),
       fc:HD.map(function(h,i){return {h:h,v:pred(c,i),lo:lo(c,i),hi:hi(c,i),n:nrm(c,i)}})}}
   if(S.v>=0){var g=META.villages[S.v];
-    return {name:D.V[S.v].name,obs:g.obs,norm:g.norm,fc:HD.map(function(h,i){return {h:h,v:g.fc?g.fc[i]:null,n:g.fn?g.fn[i]:null}})}}
+    return {kind:'v',name:D.V[S.v].name,obs:g.obs,norm:g.norm,fc:HD.map(function(h,i){return {h:h,v:g.fc?g.fc[i]:null,n:g.fn?g.fn[i]:null}})}}
   var T=META.town;
-  return {name:'Minbu tumani',obs:T.obs,norm:T.norm,fc:T.rows.map(function(r){return {h:r.horizon_days/10,v:r.ndvi,lo:r.lo80,hi:r.hi80,n:r.norm,clim:r.model.indexOf('GBM')<0}})};
+  return {kind:'t',name:L("Minbu tumani"),obs:T.obs,norm:T.norm,fc:T.rows.map(function(r){return {h:r.horizon_days/10,v:r.ndvi,lo:r.lo80,hi:r.hi80,n:r.norm,clim:r.model.indexOf('GBM')<0}})};
+}
+function lastVal(Sx){if(Sx.last!=null)return Sx.last;for(var i=Sx.obs.length-1;i>=0;i--)if(Sx.obs[i]!=null)return Sx.obs[i];return null}
+/* plain-language verdict for an area mean (areas vary less than single fields -> narrower limits) */
+function verdict(d,field){var a=field?CA:0.015,b=field?CB:0.04;
+  return d==null?{t:L("ma'lumot yo'q"),c:2}:d<-b?{t:L("me'yordan sezilarli past"),c:0}:d<-a?{t:L("me'yordan biroz past"),c:1}:d<=a?{t:L("me'yorga yaqin"),c:2}:d<=b?{t:L("me'yordan biroz yuqori"),c:3}:{t:L("me'yordan sezilarli yuqori"),c:4}}
+function headline(Sx){
+  var h=S.h,cur=Sx.fc[h],d=cur.v!=null&&cur.n!=null?cur.v-cur.n:null,vd=verdict(d,Sx.kind==='f'),last=lastVal(Sx),ch=cur.v!=null&&last!=null?cur.v-last:null;
+  var k0=META.hist_k0+NH-1,n0=Sx.norm.length?Sx.norm[k0%36]:null,n1=Sx.norm.length?Sx.norm[(k0+HD[h])%36]:null,seas=n0!=null&&n1!=null?n1-n0:null;
+  var tr=ch==null?'':Math.abs(ch)<0.02?L("Bugungi holatdan deyarli o'zgarmaydi."):(ch<0?L("Bugungi {0} dan {1} ga kamayadi.",iv(last),iv(cur.v)):L("Bugungi {0} dan {1} ga ortadi.",iv(last),iv(cur.v)))+(seas!=null&&seas*ch>0&&Math.abs(seas)>0.02?' '+L("Bu yilning shu davriga xos mavsumiy o'zgarish."):'');
+  var who=Sx.kind==='t'?L("Minbu tumani ekinlarining"):Sx.kind==='v'?L("{0} qishlog'i ekinlarining",esc(Sx.name)):L("bu dalaning");
+  return {vd:vd,d:d,cur:cur,last:last,ch:ch,tr:tr,
+    h2:L("{0}ga borib {1} yashilligi {2} bo'lishi kutilmoqda.",'<b>'+ds(META.targets[h])+'</b>',who,'<b style="color:'+(vd.c<2?'var(--bad)':vd.c>2?'var(--good)':'inherit')+'">'+vd.t+'</b>')}
 }
 function renderSide(){
   if(!META)return;
-  var h=S.h,Sx=series(),cur=Sx.fc[h],V=D.V;
-  /* counts over the chosen area */
-  var low=0,lowA=0,tot=0,totA=0,wide=0;
-  for(var c=0;c<nf;c++){if(S.v>=0&&VI[c]!==S.v)continue;var x=pred(c,h);if(x==null)continue;tot++;totA+=AREA[c];var n=nrm(c,h);if(n!=null&&x<n-0.02){low++;lowA+=AREA[c]}}
-  var dv=cur.v!=null&&cur.n!=null?cur.v-cur.n:null;
-  $('kpis').innerHTML=
-    kpi('NDVI · '+ds(META.targets[h])+' ('+HD[h]*10+' kun)',iv(cur.v),'norma '+iv(cur.n)+' · <span class="'+(dv>=0?'up':'dn')+'">'+sg(dv)+'</span>')+
-    kpi('80 % ishonch oralig\'i',cur.lo!=null?iv(cur.lo)+' <small>…</small> '+iv(cur.hi):'—',cur.lo!=null?'haqiqat 10 holatdan ~8 tasida shu oraliqda':'qishloq uchun oraliq hisoblanmagan')+
-    kpi('Normadan past konturlar',f(low)+' <small>/ '+f(tot)+'</small>',f(lowA)+' ga · 0,02 dan ko\'proq past')+
-    kpi('Oxirgi kuzatuv · '+ds(META.last_s2),iv(lastVal(Sx)),'Sentinel-2, bulutsiz suratlar');
-  var md=MODES[S.mode][0];
-  $('badge').innerHTML='<b>'+ds(META.targets[h])+' 2026</b> · '+HD[h]*10+' kun oldin qilingan prognoz · '+md;
-  chart1(Sx);townTable();btTable();rank();skillBox();stateBox();
+  var h=S.h,Sx=series(),H=headline(Sx),s=sel(h),tot=sum(s.a)||1,low=s.a[0]+s.a[1],high=s.a[3]+s.a[4],k=META.skill[h];
+  $('hero').style.borderLeftColor=CC[H.vd.c];
+  $('hero').innerHTML='<div class="k"><span>'+L("Qisqa xulosa")+' · '+esc(Sx.name)+'</span><span class="chip" style="background:'+CC[H.vd.c]+'33"><i style="background:'+CC[H.vd.c]+'"></i>'+H.vd.t+'</span></div>'+
+    '<h2>'+H.h2+'</h2><p>'+H.tr+'</p>'+
+    '<div class="big"><div><span>'+L("Prognoz")+' · '+ds(META.targets[h])+'</span><b>'+iv(H.cur.v)+'</b><small>'+(H.cur.lo!=null?iv(H.cur.lo)+' … '+iv(H.cur.hi):L("yashillik ko'rsatkichi"))+'</small></div>'+
+    '<div><span>'+L("Me'yor (odatda)")+'</span><b>'+iv(H.cur.n)+'</b><small class="'+(H.d>=0?'up':'dn')+'">'+L("farq")+' '+sg(H.d)+'</small></div>'+
+    '<div><span>'+L("Bugun")+' · '+ds(META.last_s2)+'</span><b>'+iv(H.last)+'</b><small>'+(H.ch==null?'':(H.ch<0?'↓ ':'↑ ')+f(Math.abs(H.ch),3))+'</small></div></div>'+
+    (Sx.kind==='f'?'':'<div class="dist"><div class="bar">'+s.a.map(function(a,i){return '<span style="width:'+(a/tot*100)+'%;background:'+CC[i]+'"></span>'}).join('')+'</div>'+
+      '<div class="lb"><div><b class="dn">'+f(low/tot*100,0)+' %</b>'+L("me'yordan past")+'<br>'+ha(low)+'</div><div><b>'+f(s.a[2]/tot*100,0)+' %</b>'+L("me'yorda")+'<br>'+ha(s.a[2])+'</div><div><b class="up">'+f(high/tot*100,0)+' %</b>'+L("me'yordan yuqori")+'<br>'+ha(high)+'</div></div></div>')+
+    '<p class="cap">'+L("Ishonchlilik: {0}. {1} kunlik prognoz xatosi oddiy «har yilgidek bo'ladi» taxminidan {2} % kam.",'<b style="color:var(--tx)">'+confw(k.cv)+'</b>',k.days,f(k.cv,0))+' <a class="lnk" href="#" id="whyl">'+L("Bu nimani anglatadi?")+'</a></p>';
+  $('whyl').onclick=function(e){e.preventDefault();openGuide()};
+  var fl=S.mode==='s'&&S.cls>=0?' · '+L("faqat: {0}",cn(S.cls)):'';
+  $('badge').innerHTML='<b>'+(S.mode==='n'?ds(META.last_s2,1):ds(META.targets[h],1))+'</b> · '+(S.mode==='n'?L("bugungi holat"):L("{0} kun oldinga prognoz",HD[h]*10))+' · '+mname(S.mode)+fl;
+  legend();chart1(Sx);renderTab();stateBox();
   if(S.pick>=0)pcard();
   [].forEach.call($('mode').children,function(b){b.setAttribute('aria-pressed',String(b.dataset.m===S.mode))});
-  [].forEach.call($('tl').querySelectorAll('button'),function(b,i){b.setAttribute('aria-pressed',String(i===S.h))});
-}
-function lastVal(Sx){for(var i=Sx.obs.length-1;i>=0;i--)if(Sx.obs[i]!=null)return Sx.obs[i];return null}
-function kpi(l,v,d){return '<div class="kpi"><div class="l">'+l+'</div><div class="v">'+v+'</div><div class="d">'+d+'</div></div>'}
-function skillBox(){
-  var k=META.skill[S.h];
-  $('skill').innerHTML='<h3>Aniqlik · '+k.days+' kunlik prognoz</h3>'+
-    '<div class="row"><span>Dala o\'rtacha xatosi</span><b>± '+f(k.mae,3)+'</b></div>'+
-    '<div class="row"><span>Normaning xatosi</span><b>± '+f(k.mae_norm,3)+'</b></div>'+
-    '<div class="row"><span>Normadan aniqroq (2019–2025)</span><b class="up">'+sg(k.cv,1)+' %</b></div>'+
-    '<div class="row"><span>Model ko\'rmagan 2026-yil</span><b class="up">'+sg(k.hold,1)+' %</b></div>'+
-    '<div class="row"><span>Tuman o\'rtachasi</span><b class="up">'+sg(k.cv_town,1)+' %</b></div>'+
-    '<div class="note">Har bir yil navbatma-navbat chetga olib qo\'yilib, model u yilni ko\'rmay turib sinalgan. Norma — konturning shu o\'nkunlikdagi ko\'p yillik o\'rtachasi.</div>';
+  [].forEach.call($('hz').children,function(b,i){b.setAttribute('aria-pressed',String(i===S.h))});
 }
 function stateBox(){
-  var C=META.counts,s=C.stage;
-  $('state').innerHTML='<h3>Ma\'lumot holati</h3>'+
-    '<div class="row"><span>Oxirgi Sentinel-2 o\'nkunligi</span><b>'+ds(META.last_s2)+'</b></div>'+
-    '<div class="row"><span>Ob-havo (ERA5-Land) gacha</span><b>'+ds(META.weather_to)+'</b></div>'+
-    '<div class="row"><span>Konturlar</span><b>'+f(META.nf)+'</b></div>'+
-    '<div class="row"><span>Hozir: ko\'karish / eng yashil / sarg\'ayish</span><b>'+f(s['green-up']/1000,1)+' / '+f(s.peak/1000,1)+' / '+f(s.senescence/1000,1)+' ming</b></div>'+
-    '<div class="row"><span>Yaqinda suv kelgan (NDMI sakrashi)</span><b>'+f(C.jump)+'</b></div>'+
-    '<div class="row"><span>Past ishonch (30 kun surat yo\'q)</span><b>'+f(C.low_conf)+'</b></div>';
+  var C=META.counts,s=C.stage,ks=['bare','green-up','peak','senescence'],tt=ks.reduce(function(a,k){return a+s[k]},0)||1;
+  $('state').innerHTML='<h3>'+L("Ma'lumot holati")+'</h3>'+
+    '<div class="row"><span>'+L("Oxirgi sun'iy yo'ldosh surati")+'</span><b>'+ds(META.last_s2)+'</b></div>'+
+    '<div class="row"><span>'+L("Ob-havo ma'lumoti (shu sanagacha)")+'</span><b>'+ds(META.weather_to)+'</b></div>'+
+    '<div class="row"><span>'+L("Dalalar soni")+'</span><b>'+f(META.nf)+'</b></div>'+
+    '<div class="row"><span>'+L("Yaqinda suv kelgan dalalar")+'</span><b>'+f(C.jump)+'</b></div>'+
+    '<div class="row"><span>'+L("30 kun surati yo'q (ishonch past)")+'</span><b>'+f(C.low_conf)+'</b></div>'+
+    '<div class="row" style="margin-top:4px"><span>'+L("Ekinlar hozir qaysi bosqichda")+'</span></div><div class="stg">'+ks.map(function(k,i){return '<span style="width:'+(s[k]/tt*100)+'%;background:'+STC[i]+'"></span>'}).join('')+'</div>'+
+    '<div class="stgl">'+ks.map(function(k,i){return s[k]/tt<0.005?'':'<span><i style="background:'+STC[i]+'"></i>'+L(STGK[i])+' '+f(s[k]/tt*100,0)+' %</span>'}).join('')+'</div>';
 }
 function pcard(){
-  var c=S.pick,st=FC.stage[c],dy=FC.days[c],fl=FC.flags[c];
-  var rows=HD.map(function(h,i){var v=pred(c,i),n=nrm(c,i);return '<tr'+(i===S.h?' class="on"':'')+'><td>'+ds(META.targets[i])+' ('+h*10+' k)</td><td><b>'+iv(v)+'</b></td><td>'+iv(lo(c,i))+'–'+iv(hi(c,i))+'</td><td>'+iv(n)+'</td><td class="'+(v>=n?'up':'dn')+'">'+sg(v!=null&&n!=null?v-n:null)+'</td></tr>'}).join('');
+  var c=S.pick,st=FC.stage[c],dy=FC.days[c],fl=FC.flags[c],pb=pbelow(c,S.h);
+  var rows=HD.map(function(h,i){var v=pred(c,i),n=nrm(c,i),k=cls(c,i);return '<tr'+(i===S.h?' class="on"':'')+'><td>'+ds(META.targets[i])+' ('+L("{0} kun",h*10)+')</td><td><b>'+iv(v)+'</b></td><td>'+iv(lo(c,i))+'–'+iv(hi(c,i))+'</td><td>'+iv(n)+'</td><td>'+(k<0?'—':'<span class="chip" style="padding:1px 8px;background:'+CC[k]+'44">'+cn(k)+'</span>')+'</td></tr>'}).join('');
   $('pc').hidden=false;
-  $('pc').innerHTML='<button class="x" id="pcx" aria-label="Yopish">×</button><div class="ch"><h4>Kontur #'+(c+1)+'</h4><span>'+D.V[VI[c]].name+' · '+f(AREA[c],2)+' ga</span></div>'+
-    '<table class="tb"><tr><th>Sana</th><th>NDVI</th><th>80 %</th><th>Norma</th><th>Farq</th></tr>'+rows+'</table>'+
-    '<dl><dt>Oxirgi bulutsiz NDVI</dt><dd>'+iv(lastObs(c))+(dy<255?' <span class="tag">'+(dy===0?'shu o\'nkunlik':dy+' kun oldin')+'</span>':'')+'</dd>'+
-    '<dt>Hozirgi bosqich</dt><dd>'+(st<4?STG[st]:'—')+'</dd>'+
-    '<dt>Belgilar</dt><dd>'+(fl&1?'<span class="tag w">suv keldi (NDMI ↑)</span> ':'')+(fl&2?'<span class="tag l">past ishonch</span>':'')+(!(fl&3)?'<span class="tag">oddiy</span>':'')+'</dd></dl>';
+  $('pc').innerHTML='<button class="x" id="pcx" aria-label="'+L("Yopish")+'">×</button><div class="ch"><h4>'+fname(c)+'</h4><span>'+esc(D.V[VI[c]].name)+' · '+ha(AREA[c],2)+'</span></div>'+
+    '<table class="tb"><tr><th>'+L("Sana")+'</th><th>'+L("Prognoz")+'</th><th>'+L("Oraliq (80 %)")+'</th><th>'+L("Me'yor")+'</th><th>'+L("Holat")+'</th></tr>'+rows+'</table>'+
+    '<dl><dt>'+L("Me'yordan past bo'lish ehtimoli")+' ('+ds(META.targets[S.h])+')</dt><dd class="'+(pb>0.6?'dn':pb<0.4?'up':'')+'">'+(pb==null?'—':'≈ '+f(pb*100,0)+' %')+'</dd>'+
+    '<dt>'+L("Oxirgi bulutsiz surat")+'</dt><dd>'+iv(lastObs(c))+(dy<255?' <span class="tag">'+(dy===0?L("shu o'nkunlik"):L("{0} kun oldin",dy))+'</span>':'')+'</dd>'+
+    '<dt>'+L("Ekin bosqichi")+'</dt><dd>'+(st<4?L(STGK[st]):'—')+'</dd>'+
+    '<dt>'+L("Belgilar")+'</dt><dd>'+(fl&1?'<span class="tag w">'+L("suv kelgan (namlik oshgan)")+'</span> ':'')+(fl&2?'<span class="tag l">'+L("surat kam — ishonch past")+'</span>':'')+(!(fl&3)?'<span class="tag">'+L("odatiy")+'</span>':'')+'</dd></dl>';
   $('pcx').onclick=function(){pick(-1)};
 }
-function townTable(){
-  var T=META.town.rows,sk=META.skill;
-  $('town').innerHTML='<table class="tb"><tr><th>Sana</th><th>NDVI</th><th>80 %</th><th>Norma</th><th>Aniqlik</th></tr>'+
-    T.map(function(r,i){var cl=r.model.indexOf('GBM')<0;return '<tr class="'+(cl?'clim':'')+(i===S.h?' on':'')+'"><td>'+ds(r.target_date)+' ('+r.horizon_days+' k)</td><td><b>'+iv(r.ndvi)+'</b></td><td>'+iv(r.lo80)+'–'+iv(r.hi80)+'</td><td>'+iv(r.norm)+'</td><td>'+(cl?'norma':sg(sk[i].cv_town,0)+' %')+'</td></tr>'}).join('')+'</table>'+
-    '<p class="cap">60 va 90 kun uchun model normadan aniqroq emas, shuning uchun ko\'p yillik o\'rtacha (norma) ko\'rsatiladi. "Aniqlik" — tuman o\'rtachasi xatosi normaga nisbatan qancha kam.</p>';
+/* ---------- tabs ---------- */
+function vrows(h){var s=stats(h),r=[];
+  D.V.forEach(function(v,k){var g=META.villages[k],t=sum(s.A[k]);if(!g.fc||g.fc[h]==null||!t)return;
+    r.push({k:k,n:v.name,d:g.fc[h]-g.fn[h],v:g.fc[h],low:(s.A[k][0]+s.A[k][1])/t*100,lowha:s.A[k][0]+s.A[k][1],ha:t})});
+  return r}
+function townRows(on){var sk=META.skill;
+  return '<table class="tb"><tr><th>'+L("Sana")+'</th><th>NDVI</th><th>'+L("Oraliq (80 %)")+'</th><th>'+L("Me'yor")+'</th><th>'+L("Manba")+'</th></tr>'+
+    META.town.rows.map(function(r,i){var cl=r.model.indexOf('GBM')<0;return '<tr class="'+(cl?'clim':'')+(on&&i===S.h?' on':'')+'"><td>'+ds(r.target_date,1)+' ('+L("{0} kun",r.horizon_days)+')</td><td><b>'+iv(r.ndvi)+'</b></td><td>'+iv(r.lo80)+'–'+iv(r.hi80)+'</td><td>'+iv(r.norm)+'</td><td>'+(cl?L("me'yor"):L("model")+', '+sg(sk[i].cv_town,0)+' %')+'</td></tr>'}).join('')+'</table>'}
+function renderTab(){
+  var h=S.h,el=$('tab');
+  [].forEach.call($('tabs').children,function(b){b.setAttribute('aria-selected',String(b.dataset.t===S.tab))});
+  if(S.tab==='v'){var r=vrows(h),so=S.vsort;
+    r.sort(so==='low'?function(a,b){return b.low-a.low}:so==='d'?function(a,b){return a.d-b.d}:function(a,b){return a.n.localeCompare(b.n)});
+    el.innerHTML='<div class="vscroll"><table class="tb"><tr><th data-s="n">'+L("Qishloq")+'</th><th data-s="d">'+L("Me'yordan farq")+'</th><th data-s="low">'+L("Past maydon ulushi")+'</th></tr>'+
+      r.map(function(x){return '<tr class="clk'+(x.k===S.v?' on':'')+'" data-v="'+x.k+'"><td>'+esc(x.n)+'</td><td class="'+(x.d<-0.015?'dn':x.d>0.015?'up':'')+'">'+sg(x.d)+'</td><td><span class="mb"><i style="width:'+Math.min(100,x.low)+'%;background:'+(x.low>40?'var(--c0)':x.low>25?'var(--c1)':'var(--c3)')+'"></i></span>'+f(x.low,0)+' %</td></tr>'}).join('')+'</table></div>'+
+      '<p class="cap">'+L("{0} prognozi. «Past maydon ulushi» — qishloq ekin maydonining qancha qismi me'yordan past kutilmoqda. Ustun nomini bosib saralang, qatorni bosib qishloqqa o'ting.",ds(META.targets[h]))+' <a class="lnk" href="#" id="csv">'+L("Jadvalni yuklab olish (CSV)")+'</a></p>';
+    el.querySelector('table').onclick=function(e){var th=e.target.closest('th[data-s]');if(th){S.vsort=th.dataset.s;renderTab();return}var tr=e.target.closest('tr[data-v]');if(tr){var k=+tr.dataset.v;setVillage(k===S.v?-1:k)}};
+    $('csv').onclick=function(e){e.preventDefault();csv()};
+  }else if(S.tab==='f'){var Lh=hot(h,12);
+    el.innerHTML=(Lh.length?'<div class="hot vscroll">'+Lh.map(function(c){var v=pred(c,h),n=nrm(c,h);return '<button data-c="'+c+'"><span><b>'+fname(c)+'</b> <small>'+esc(D.V[VI[c]].name)+'</small></span><span>'+ha(AREA[c],1)+'</span><b class="dn">'+sg(v-n,2)+'</b></button>'}).join('')+'</div>':'<p class="cap">'+L("Bu hududda me'yordan sezilarli past kutilayotgan dala yo'q.")+'</p>')+
+      '<p class="cap">'+L("{0}: {1} uchun eng ko'p yo'qotish kutilayotgan dalalar (maydon × me'yordan pastlik). Bosing — xarita o'sha dalaga boradi.",S.v>=0?esc(D.V[S.v].name):L("Butun tuman"),ds(META.targets[h]))+'</p>';
+    var hb=el.querySelector('.hot');if(hb)hb.onclick=function(e){var b=e.target.closest('button');if(b)goField(+b.dataset.c)};
+  }else if(S.tab==='t'){
+    el.innerHTML=townRows(true)+'<p class="cap">'+L("Butun tuman o'rtachasi. 30 kungacha — model prognozi (foiz: xato me'yorga qaraganda qancha kam). 60 va 90 kun uchun ob-havoni oldindan bilib bo'lmaydi, shuning uchun ko'p yillik me'yor ko'rsatiladi.")+'</p>';
+  }else{var B=META.backtest.filter(function(r){return r.origin==='2026-10-01'}),A=META.bt2026,mx=META.skill[0].mae_norm;
+    el.innerHTML='<p class="cap" style="margin-top:0">'+L("Bitta dala uchun o'rtacha xato (NDVI birligida). Yashil — bizning model, kulrang — oddiy «har yilgidek» taxmini.")+'</p><div class="acc">'+
+      META.skill.slice(0,3).map(function(k,i){return '<b'+(i===S.h?' style="color:var(--acc)"':'')+'>'+L("{0} kun",k.days)+'</b><div class="bars"><div style="width:'+(k.mae/mx*100)+'%;background:var(--c4)"></div><small>'+L("model")+' ±'+f(k.mae,3)+' · '+L("{0} % aniqroq",f(k.cv,0))+'</small><div style="width:'+(k.mae_norm/mx*100)+'%;background:#c9c2b3"></div><small>'+L("me'yor")+' ±'+f(k.mae_norm,3)+'</small></div>'}).join('')+'</div>'+
+      '<p class="cap">'+L("<b>O'tmishdan sinov.</b> {0} ma'lumoti bilan prognoz qilinib, keyin haqiqiy sun'iy yo'ldosh surati bilan solishtirildi:",ds('2026-10-01'))+'</p>'+
+      '<table class="tb"><tr><th>'+L("Sana")+'</th><th>'+L("Prognoz")+'</th><th>'+L("Haqiqat")+'</th><th>'+L("Xato ≤ {0}",f(0.1,2))+'</th><th>'+L("Me'yordan")+'</th></tr>'+
+      B.map(function(r){return '<tr><td>'+ds(r.target)+' ('+L("{0} kun",r.days)+')</td><td>'+iv(r.town_pred)+'</td><td>'+iv(r.town_obs)+'</td><td>'+L("{0} % dala",f(r.within_010,0))+'</td><td class="'+(r.skill_pct>0?'up':'dn')+'">'+sg(r.skill_pct,0)+' %</td></tr>'}).join('')+'</table>'+
+      '<p class="cap">'+L("Model ko'rmagan 2026-yilning har bir o'nkunligida: 10 kunlik prognoz {0} sanadan {1} tasida, 20 kunlik {2} tasida, 30 kunlik {3} tasida me'yordan aniqroq chiqdi. Eng yomon sana ({4}) ham yashirilmagan.",A['1'].n,A['1'].pos,A['2'].pos,A['3'].pos,ds('2026-10-21'))+'</p>';
+  }
 }
-function btTable(){
-  var B=META.backtest.filter(function(r){return r.origin==='2026-10-01'}),A=META.bt2026;
-  $('bt').innerHTML='<p class="cap" style="margin:0 0 6px">1-oktabr ma\'lumoti bilan prognoz qilib, keyin Sentinel-2 surati bilan solishtirildi:</p>'+
-    '<table class="tb"><tr><th>Sana</th><th>Prognoz</th><th>Haqiqat</th><th>Dala xatosi</th><th>Normadan</th></tr>'+
-    B.map(function(r){return '<tr><td>'+ds(r.target)+' ('+r.days+' k)</td><td>'+iv(r.town_pred)+'</td><td>'+iv(r.town_obs)+'</td><td>'+f(r.mae_model,3)+'</td><td class="'+(r.skill_pct>0?'up':'dn')+'">'+sg(r.skill_pct,0)+' %</td></tr>'}).join('')+'</table>'+
-    '<p class="cap">2026-yilning har bir o\'nkunligi bo\'yicha: 10 kunlik prognoz '+A['1'].n+' sanadan '+A['1'].pos+' tasida, 20 kunlik '+A['2'].pos+' tasida, 30 kunlik '+A['3'].pos+' tasida normadan yaxshi chiqdi. 21-oktabr eng yomon sana bo\'ldi — bu ham halol ko\'rsatildi.</p>';
-}
-function rank(){
-  var h=S.h,rows=[];
-  D.V.forEach(function(v,k){var g=META.villages[k];if(!g.fc||g.fc[h]==null||g.fn[h]==null)return;rows.push({k:k,n:v.name,d:g.fc[h]-g.fn[h]})});
-  rows.sort(function(a,b){return a.d-b.d});var mx=Math.max.apply(null,rows.map(function(r){return Math.abs(r.d)}))||1;
-  $('rks').textContent=ds(META.targets[h])+' · eng pastdan';
-  $('rank').innerHTML=rows.map(function(r,i){var w=Math.abs(r.d)/mx*50;return '<button data-v="'+r.k+'"'+(r.k===S.v?' aria-current="true"':'')+'><span class="n">'+(i+1)+'</span><span>'+r.n+'</span><span class="bw"><b style="'+(r.d<0?'right:50%;width:'+w+'%;background:var(--bad)':'left:50%;width:'+w+'%;background:var(--good)')+'"></b></span><span class="p '+(r.d<0?'dn':'up')+'">'+sg(r.d)+'</span></button>'}).join('');
-  $('rank').onclick=function(e){var b=e.target.closest('button');if(!b)return;var k=+b.dataset.v;$('vsel').value=String(k===S.v?-1:k);$('vsel').onchange()};
+function csv(){
+  var Lr=['qishloq;kod;maydon_ga;'+[0,1,2].map(function(i){return 'sana_'+HD[i]*10+'k;ndvi_prognoz;ndvi_meyor;farq;past_maydon_foiz'}).join(';')];
+  D.V.forEach(function(v,k){var g=META.villages[k];if(!g.fc)return;var row=[v.name,v.code,''];
+    [0,1,2].forEach(function(i){var s=stats(i),t=sum(s.A[k])||1;if(i===0)row[2]=t.toFixed(1).replace('.',',');
+      row.push(META.targets[i],String(g.fc[i]).replace('.',','),String(g.fn[i]).replace('.',','),(g.fc[i]-g.fn[i]).toFixed(4).replace('.',','),((s.A[k][0]+s.A[k][1])/t*100).toFixed(1).replace('.',','))});
+    Lr.push(row.join(';'))});
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+Lr.join('\r\n')],{type:'text/csv;charset=utf-8'}));a.download='minbu_ndvi_prognoz_qishloqlar_'+META.origin+'.csv';document.body.appendChild(a);a.click();a.remove();toast(L("Jadval yuklab olindi"));
 }
 /* ---------- chart: observed (2 years of dekads) + norm + forecast with 80 % band ---------- */
 function chart1(Sx){
-  var el=$('c1'),W=el.clientWidth||370,Hh=200,l=34,r=8,t=10,b=22,iw=W-l-r,ih=Hh-t-b;
+  var el=$('c1'),W=el.clientWidth||370,Hh=205,l=36,r=8,t=10,b=22,iw=W-l-r,ih=Hh-t-b;
   var k0=META.hist_k0,N=NH+9,all=[];
   Sx.obs.forEach(function(x){if(x!=null)all.push(x)});Sx.norm.forEach(function(x){if(x!=null)all.push(x)});
   Sx.fc.forEach(function(p){if(p.v!=null)all.push(p.v);if(p.lo!=null){all.push(p.lo);all.push(p.hi)}});
-  if(!all.length){el.innerHTML='<p style="color:var(--tx2);font-size:12px">Yuklanmoqda…</p>';return}
+  $('c1t').textContent=L("Yashillik (NDVI)")+' · '+Sx.name;$('c1s').textContent=L("har 10 kunda · 2 yil + prognoz");
+  if(!Sx.obs.length){el.innerHTML='<p style="color:var(--tx2);font-size:12.5px">'+L("Dala tarixi yuklanmoqda…")+'</p>';return}
   var mn=Math.min.apply(null,all),mx=Math.max.apply(null,all),pd=(mx-mn)*.08||.05;mn-=pd;mx+=pd;
   var X=function(i){return l+i/(N-1)*iw},Y=function(v){return t+(1-(v-mn)/(mx-mn))*ih},FI=function(hd){return NH-1+hd};
   var s='<svg viewBox="0 0 '+W+' '+Hh+'">';
-  for(var g=0;g<=3;g++){var vv=mn+(mx-mn)*g/3;s+='<line x1="'+l+'" x2="'+(W-r)+'" y1="'+Y(vv)+'" y2="'+Y(vv)+'" stroke="rgba(60,48,30,.1)"/><text x="'+(l-5)+'" y="'+(Y(vv)+3)+'" text-anchor="end" font-size="9.5" fill="#958a78">'+f(vv,2)+'</text>'}
-  for(var i=0;i<N;i++){var o=kd(k0+i);if(o.d===1&&o.m===1){s+='<text x="'+X(i)+'" y="'+(Hh-6)+'" font-size="9.5" fill="#958a78">'+o.y+'</text><line x1="'+X(i)+'" x2="'+X(i)+'" y1="'+t+'" y2="'+(t+ih)+'" stroke="rgba(60,48,30,.07)"/>'}}
-  s+='<rect x="'+X(NH-1)+'" y="'+t+'" width="'+(X(N-1)-X(NH-1))+'" height="'+ih+'" fill="rgba(27,79,191,.05)"/><text x="'+(X(NH-1)+4)+'" y="'+(t+10)+'" font-size="9.5" fill="#1b4fbf">prognoz →</text>';
+  for(var g=0;g<=3;g++){var vv=mn+(mx-mn)*g/3;s+='<line x1="'+l+'" x2="'+(W-r)+'" y1="'+Y(vv)+'" y2="'+Y(vv)+'" stroke="rgba(60,48,30,.1)"/><text x="'+(l-5)+'" y="'+(Y(vv)+3)+'" text-anchor="end" font-size="10.5" fill="#8d8271">'+f(vv,2)+'</text>'}
+  for(var i=0;i<N;i++){var o=kd(k0+i);if(o.d===1&&o.m===1){s+='<text x="'+X(i)+'" y="'+(Hh-6)+'" font-size="10.5" fill="#8d8271">'+o.y+'</text><line x1="'+X(i)+'" x2="'+X(i)+'" y1="'+t+'" y2="'+(t+ih)+'" stroke="rgba(60,48,30,.07)"/>'}}
+  s+='<rect x="'+X(NH-1)+'" y="'+t+'" width="'+(X(N-1)-X(NH-1))+'" height="'+ih+'" fill="rgba(27,79,191,.06)"/><text x="'+(X(NH-1)-4)+'" y="'+(t+11)+'" text-anchor="end" font-size="10.5" fill="#1b4fbf">'+L("prognoz")+' →</text>';
   if(Sx.norm.length){var np='';for(var i2=0;i2<N;i2++){var nv=Sx.norm[(k0+i2)%36];if(nv!=null)np+=(np?'L':'M')+X(i2).toFixed(1)+' '+Y(nv).toFixed(1)}
-    s+='<path d="'+np+'" fill="none" stroke="#8a8070" stroke-opacity=".55" stroke-dasharray="3 3" stroke-width="1.2"/>'}
+    s+='<path d="'+np+'" fill="none" stroke="#8a8070" stroke-opacity=".6" stroke-dasharray="3 3" stroke-width="1.3"/>'}
   var fb=Sx.fc.filter(function(p){return p.lo!=null});
   if(fb.length>1){var up='',dn='';fb.forEach(function(p){up+=(up?'L':'M')+X(FI(p.h)).toFixed(1)+' '+Y(p.hi).toFixed(1)});for(var j=fb.length-1;j>=0;j--)dn+='L'+X(FI(fb[j].h)).toFixed(1)+' '+Y(fb[j].lo).toFixed(1);s+='<path d="'+up+dn+'Z" fill="rgba(27,79,191,.16)"/>'}
   var hp='',pen=false;Sx.obs.forEach(function(x,i){if(x==null){pen=false;return}hp+=(pen?'L':'M')+X(i).toFixed(1)+' '+Y(x).toFixed(1);pen=true});
-  s+='<path d="'+hp+'" fill="none" stroke="#2b8a3e" stroke-width="1.8"/>';
-  Sx.obs.forEach(function(x,i){if(x!=null)s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(x).toFixed(1)+'" r="1.6" fill="#2b8a3e"/>'});
+  s+='<path d="'+hp+'" fill="none" stroke="#2b8a3e" stroke-width="1.9"/>';
+  Sx.obs.forEach(function(x,i){if(x!=null)s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(x).toFixed(1)+'" r="1.7" fill="#2b8a3e"/>'});
   var last=null;for(var q=NH-1;q>=0;q--)if(Sx.obs[q]!=null){last=q;break}
   var fp=last!=null?'M'+X(last).toFixed(1)+' '+Y(Sx.obs[last]).toFixed(1):'';Sx.fc.forEach(function(p){if(p.v!=null)fp+=(fp?'L':'M')+X(FI(p.h)).toFixed(1)+' '+Y(p.v).toFixed(1)});
-  s+='<path d="'+fp+'" fill="none" stroke="#1b4fbf" stroke-width="2"/>';
-  Sx.fc.forEach(function(p,i){if(p.v==null)return;var on=i===S.h;s+='<circle cx="'+X(FI(p.h))+'" cy="'+Y(p.v)+'" r="'+(on?5:3.2)+'" fill="'+(p.clim?'#ffffff':'#1b4fbf')+'" stroke="'+(p.clim?'#1b4fbf':'#ffffff')+'" stroke-width="'+(on?2:1.5)+'"/>'});
+  s+='<path d="'+fp+'" fill="none" stroke="#1b4fbf" stroke-width="2.1"/>';
+  Sx.fc.forEach(function(p,i){if(p.v==null)return;var on=i===S.h;s+='<circle cx="'+X(FI(p.h))+'" cy="'+Y(p.v)+'" r="'+(on?5.5:3.3)+'" fill="'+(p.clim?'#ffffff':'#1b4fbf')+'" stroke="'+(p.clim?'#1b4fbf':'#ffffff')+'" stroke-width="'+(on?2.2:1.5)+'"/>'});
   s+='<rect x="'+l+'" y="'+t+'" width="'+iw+'" height="'+ih+'" fill="transparent" id="c1hit"/></svg><div class="ctip" id="c1tip" hidden></div>';
   el.innerHTML=s;
-  $('c1t').textContent='NDVI · '+Sx.name;$('c1s').textContent='har 10 kun · 2 yil + prognoz';
-  $('c1l').innerHTML='<span><i style="background:#2b8a3e"></i>kuzatilgan (Sentinel-2)</span><span><i style="background:#1b4fbf"></i>prognoz</span>'+(fb.length?'<span><i style="background:rgba(27,79,191,.3);height:8px"></i>80 % oraliq</span>':'')+'<span><i style="background:#8a8070;opacity:.6"></i>norma</span>';
+  $('c1l').innerHTML='<span><i style="background:#2b8a3e"></i>'+L("haqiqatda kuzatilgan")+'</span><span><i style="background:#1b4fbf"></i>'+L("prognoz")+'</span>'+(fb.length?'<span><i style="background:rgba(27,79,191,.3);height:8px"></i>'+L("ehtimoliy oraliq (80 %)")+'</span>':'')+'<span><i style="background:#8a8070;opacity:.6"></i>'+L("me'yor (odatda)")+'</span>';
   var hit=el.querySelector('#c1hit'),tip=$('c1tip');
   hit.onmousemove=function(e){var rc=el.getBoundingClientRect(),sx=(e.clientX-rc.left)*W/rc.width,i=Math.max(0,Math.min(N-1,Math.round((sx-l)/iw*(N-1))));
-    var val=null,lab='';if(i<NH)val=Sx.obs[i];else Sx.fc.forEach(function(p){if(FI(p.h)===i){val=p.v;lab=' (prognoz'+(p.clim?', norma':'')+')'}});
+    var val=null,lab='';if(i<NH)val=Sx.obs[i];else Sx.fc.forEach(function(p){if(FI(p.h)===i){val=p.v;lab=' ('+L("prognoz")+')'}});
     var nv=Sx.norm.length?Sx.norm[(k0+i)%36]:null;
-    tip.hidden=false;tip.innerHTML=kds(k0+i)+': <b>'+iv(val)+'</b>'+lab+' · norma '+iv(nv);
-    tip.style.left=(X(i)/W*rc.width)+'px';tip.style.top=((val!=null?Y(val):t+20)/Hh*rc.height-6)+'px'};
+    tip.hidden=false;tip.innerHTML=kds(k0+i)+': <b>'+iv(val)+'</b>'+lab+' · '+L("me'yor")+' '+iv(nv);
+    tip.style.left=Math.max(80,Math.min(rc.width-80,X(i)/W*rc.width))+'px';tip.style.top=((val!=null?Y(val):t+20)/Hh*rc.height-6)+'px'};
   hit.onmouseleave=function(){tip.hidden=true};
-  hit.onclick=function(e){var rc=el.getBoundingClientRect(),sx=(e.clientX-rc.left)*W/rc.width,i=Math.round((sx-l)/iw*(N-1));for(var j=0;j<3;j++)if(FI(HD[j])===i){stopPlay();S.h=j;all()}};
+  hit.onclick=function(e){var rc=el.getBoundingClientRect(),sx=(e.clientX-rc.left)*W/rc.width,i=Math.round((sx-l)/iw*(N-1));for(var j=0;j<3;j++)if(FI(HD[j])===i){S.h=j;all()}};
 }
-/* ---------- play through the horizons ---------- */
-var PLAY=null;
-function startPlay(){if(PLAY)return;$('play').innerHTML='<svg viewBox="0 0 16 16"><path d="M4 3h3v10H4zM9 3h3v10H9z"/></svg>';PLAY=setInterval(function(){S.h=(S.h+1)%3;all()},1500)}
-function stopPlay(){if(!PLAY)return;clearInterval(PLAY);PLAY=null;$('play').innerHTML='<svg viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z"/></svg>'}
-function all(){applyMap();renderSide()}
+function all(){applyMap();renderSide();writeHash()}
+addEventListener('hashchange',function(){if(!map||!META)return;var v0=S.v;readHash();$('vsel').value=String(S.v);if(S.v!==v0)setVillage(S.v);else all()});
 var rzt;addEventListener('resize',function(){clearTimeout(rzt);rzt=setTimeout(renderSide,150)});
-addEventListener('keydown',function(e){if(e.key==='Escape'){if(!$('drawer').hidden)$('drawer').hidden=true;else if(S.pick>=0)pick(-1)}
-  if(e.target.tagName==='SELECT')return;if(e.key==='ArrowRight'){stopPlay();S.h=Math.min(2,S.h+1);all()}if(e.key==='ArrowLeft'){stopPlay();S.h=Math.max(0,S.h-1);all()}});
-/* ---------- methodology ---------- */
+addEventListener('keydown',function(e){if(e.key==='Escape'){if(!$('drawer').hidden)closeD();else if(S.pick>=0)pick(-1)}
+  if(e.target.tagName==='SELECT'||e.target.tagName==='INPUT'||!$('drawer').hidden||e.target.closest('.lang'))return;if(e.key==='ArrowRight'){S.h=Math.min(2,S.h+1);all()}if(e.key==='ArrowLeft'){S.h=Math.max(0,S.h-1);all()}});
+/* ---------- drawers: guide, one-page report, methodology ---------- */
+function closeD(){$('drawer').hidden=true;DCUR=null}
+function openD(html,print){var st=$('drawer').hidden?0:$('dbox').scrollTop;
+  $('dbox').innerHTML='<div class="dact">'+(print?'<button class="pr" id="dprint">'+L("Chop etish / PDF")+'</button>':'')+'<button id="dclose">'+L("Yopish")+'</button></div>'+html;$('drawer').hidden=false;$('dbox').scrollTop=st;
+  $('dclose').onclick=closeD;if(print)$('dprint').onclick=function(){window.print()};$('drawer').onclick=function(e){if(e.target===$('drawer'))closeD()}}
+function openGuide(){
+  DCUR=openGuide;
+  var st=[[L("Sanani tanlang"),L("Chapda 10, 20 yoki 30 kun. Yaqin sana — aniqroq; uzoq sana — taxminiyroq (nuqtalar ishonch darajasini ko'rsatadi).")],
+    [L("Xaritaga qarang"),L("Qizil va to'q sariq — dala odatdagidan yomonroq bo'lishi kutilmoqda. Yashil — odatdagidan yaxshi. Kulrang — me'yorda.")],
+    [L("Hududni tanlang"),L("Qishloq nomini xaritada yoki ro'yxatda bosing. O'ngdagi «Qisqa xulosa» shu hudud uchun oddiy tilda yoziladi.")],
+    [L("Dalani bosing"),L("Har bir dala uchun prognoz, ehtimoliy oraliq, me'yordan past bo'lish ehtimoli va 2 yillik tarix chiqadi.")],
+    [L("E'tibor talab dalalar"),L("O'ng paneldagi shu nomli bo'lim eng ko'p yo'qotish kutilayotgan dalalarni ro'yxat qilib beradi — bosilsa xarita o'sha yerga boradi.")],
+    [L("Hisobot oling"),L("Yuqoridagi «Hisobot» tugmasi rahbariyat uchun bir sahifali xulosani tayyorlaydi: chop etish yoki PDF qilib saqlash mumkin.")]];
+  var gl=[['NDVI',L("Normalized Difference Vegetation Index — normallashtirilgan vegetatsiya farqi indeksi. Oddiy qilib aytganda, yashillik ko'rsatkichi: 0 ga yaqin — yalang'och yer, 0,8 atrofida — qalin, sog'lom ekin.")],
+    [L("Me'yor"),L("Shu dalaning yilning aynan shu kunlaridagi ko'p yillik o'rtacha yashilligi (2019–2025). «Odatda qanday bo'ladi» degan savolga javob.")],
+    [L("Holat"),L("Prognoz me'yordan qancha farq qilishi. Farq ±0,04 ichida bo'lsa — «me'yorda»; 0,10 dan ko'p past bo'lsa — «ancha past».")],
+    [L("Ehtimoliy oraliq (80 %)"),L("Haqiqiy qiymat 10 holatdan taxminan 8 tasida shu oraliq ichida chiqadi. Oraliq qancha tor bo'lsa, prognoz shuncha ishonchli.")],
+    [L("Xavf ehtimoli"),L("Dala me'yordan past bo'lib chiqish ehtimoli, foizda. 80 % dan yuqori bo'lsa — signal jiddiy.")],
+    [L("Suv kelgan dala"),L("Oxirgi suratda namligi keskin oshgan dala (yomg'ir yoki sug'orish belgisi). Bunday dalalarda yashillik odatda 10–30 kunda ortadi.")]];
+  openD('<h2>'+L("Bu sahifa nima va qanday o'qiladi")+'</h2><p>'+L("Sun'iy yo'ldosh suratlari, radar va ob-havo ma'lumotlari asosida Minbu tumanidagi har bir dala 10, 20 va 30 kundan keyin qanchalik yashil bo'lishi oldindan taxmin qilinadi. Maqsad — muammo ko'zga ko'rinmasidan oldin qaysi hududga e'tibor kerakligini bilish.")+'</p>'+
+  '<div class="guide">'+st.map(function(x,i){return '<div><b><i>'+(i+1)+'</i>'+x[0]+'</b><p>'+x[1]+'</p></div>'}).join('')+'</div>'+
+  '<h3>'+L("Asosiy tushunchalar")+'</h3><dl class="gl">'+gl.map(function(x){return '<dt>'+x[0]+'</dt><dd>'+x[1]+'</dd>'}).join('')+'</dl>'+
+  '<h3>'+L("Nimani yodda tutish kerak")+'</h3><div class="warn">'+L("Bu — taxmin, kafolat emas. Bitta dala uchun xato o'rtacha ±0,05–0,07; butun tuman o'rtachasi uchun ancha kichik (±0,03). Shuning uchun qarorlarni yakka dala emas, hudud va qishloq darajasida, dala ko'rigi bilan birga qabul qilish tavsiya etiladi.")+'</div>');
+}
+var RIMG=null;
+function openReport(){
+  var h=S.h,sv=S.pick,again=DCUR===openReport;if(sv>=0)pick(-1,true);DCUR=openReport;
+  var build=function(img){RIMG=img;
+    var Sx=series(),H=headline(Sx),s=sel(h),tot=sum(s.a)||1,k=META.skill[h],r=vrows(h).sort(function(a,b){return b.low-a.low}).slice(0,8),Lh=hot(h,8);
+    openD('<div class="rep"><h2>'+L("Minbu: ekinlar yashilligi prognozi")+'</h2><p>'+esc(Sx.name)+' · '+L("prognoz sanasi {0} ({1} kun oldinga) · {2} holatidan · tayyorlangan {3}",'<b>'+ds(META.targets[h],1)+'</b>',HD[h]*10,ds(META.origin,1),META.generated)+'</p>'+
+      '<h3>'+L("Qisqa xulosa")+'</h3><p style="font-size:16px;color:var(--tx)">'+H.h2+'</p><p>'+H.tr+' '+L("Prognoz")+' NDVI <b>'+iv(H.cur.v)+'</b>'+(H.cur.lo!=null?' ('+L("ehtimoliy oraliq (80 %)")+' '+iv(H.cur.lo)+'–'+iv(H.cur.hi)+')':'')+', '+L("me'yor")+' '+iv(H.cur.n)+'.</p>'+
+      '<div class="rdist">'+s.a.map(function(a,i){return '<span style="width:'+(a/tot*100)+'%;background:'+CC[i]+'"></span>'}).join('')+'</div>'+
+      '<table><tr><th>'+L("Holat")+'</th>'+[0,1,2,3,4].map(function(i){return '<th>'+cn(i)+'</th>'}).join('')+'</tr><tr><td>'+L("Maydon, ga")+'</td>'+s.a.map(function(a){return '<td>'+f(a)+'</td>'}).join('')+'</tr><tr><td>'+L("Ulush")+'</td>'+s.a.map(function(a){return '<td>'+f(a/tot*100,0)+' %</td>'}).join('')+'</tr><tr><td>'+L("Dalalar soni")+'</td>'+s.n.map(function(a){return '<td>'+f(a)+'</td>'}).join('')+'</tr></table>'+
+      (img?'<img src="'+img+'" alt="">':'')+
+      (S.v<0?'<h3>'+L("Eng ko'p e'tibor talab qishloqlar")+'</h3><table><tr><th>'+L("Qishloq")+'</th><th>'+L("Me'yordan farq")+'</th><th>'+L("Past maydon")+'</th><th>'+L("Ulush")+'</th></tr>'+r.map(function(x){return '<tr><td>'+esc(x.n)+'</td><td>'+sg(x.d)+'</td><td>'+ha(x.lowha)+'</td><td>'+f(x.low,0)+' %</td></tr>'}).join('')+'</table>':'')+
+      (Lh.length?'<h3>'+L("Eng ko'p e'tibor talab dalalar")+'</h3><table><tr><th>'+L("Dala")+'</th><th>'+L("Qishloq")+'</th><th>'+L("Maydon, ga")+'</th><th>'+L("Prognoz")+'</th><th>'+L("Me'yor")+'</th><th>'+L("Me'yordan farq")+'</th></tr>'+Lh.map(function(c){var v=pred(c,h),n=nrm(c,h);return '<tr><td>#'+(c+1)+'</td><td>'+esc(D.V[VI[c]].name)+'</td><td>'+f(AREA[c],1)+'</td><td>'+iv(v)+'</td><td>'+iv(n)+'</td><td>'+sg(v-n)+'</td></tr>'}).join('')+'</table>':'')+
+      '<h3>'+L("Tuman bo'yicha 3 oygacha")+'</h3>'+townRows(false).replace('class="tb"','')+
+      '<h3>'+L("Ishonchlilik")+'</h3><p>'+L("{0} kunlik prognozda bitta dala uchun o'rtacha xato ±{1} (me'yor bilan taxmin qilinsa ±{2}), ya'ni {3} % aniqroq. Model ko'rmagan 2026-yilda ham {4} % aniqroq chiqdi. Bu taxmin — qaror qabul qilishda dala ko'rigi bilan birga foydalaning.",k.days,f(k.mae,3),f(k.mae_norm,3),f(k.cv,0),f(k.hold,0))+'</p>'+
+      '<p style="font-size:12px">'+L("Manba: Sentinel-2 va Sentinel-1 sun'iy yo'ldoshlari, ERA5-Land ob-havo ma'lumoti · Minbu Portal, Index Forecast.")+'</p></div>',true);
+    if(sv>=0)pick(sv);
+  };
+  if(again){build(RIMG);return}   /* language change while the report is open: keep the same map picture */
+  if(map){map.once('render',function(){var u=null;try{u=map.getCanvas().toDataURL('image/jpeg',.88)}catch(e){}build(u)});map.triggerRepaint()}else build(null);
+}
 function openMethod(){
-  var rows=META.skill.map(function(k){var far=k.days>30;return '<tr'+(far?' style="color:var(--tx3)"':'')+'><td>'+k.days+' kun</td><td>'+f(k.mae_norm,3)+'</td><td>'+f(k.mae,3)+'</td><td class="'+(k.cv>1?'up':'')+'">'+sg(k.cv,1)+' %</td><td>'+sg(k.hold,1)+' %</td><td>'+sg(k.cv_town,1)+' %</td><td>'+(far?'norma':'model')+'</td></tr>'}).join('');
-  $('dbox').innerHTML='<button class="dclose" id="dclose">Yopish</button><h2>Prognoz qanday tuziladi</h2><p>Yangilangan: '+META.generated+' · '+f(META.nf)+' kontur · prognoz '+ds(META.origin)+' 2026 holatidan.</p>'+
-    '<h3>1. Savol</h3><p>Dalaga suv (yomg\'ir yoki sug\'orish) kelsa, o\'simlik yashilligi (NDVI) qancha vaqtda va qancha o\'zgaradi? Shu bog\'lanishni 2019–2026 yillar ma\'lumotidan o\'rganib, har bir kontur uchun 10, 20 va 30 kun keyingi NDVI taxmin qilinadi.</p>'+
-    '<h3>2. Ma\'lumotlar</h3><ul>'+
-    '<li><b>Sentinel-2</b> — optik sun\'iy yo\'ldosh: NDVI (Normalized Difference Vegetation Index, normallashtirilgan vegetatsiya farqi indeksi — yashillik) va NDMI (Normalized Difference Moisture Index, normallashtirilgan namlik farqi indeksi — barg va tuproq namligi). Bulutli piksellar Cloud Score+ va SCL (Scene Classification Layer, sahna tasnifi qatlami) bilan olib tashlangan.</li>'+
-    '<li><b>Sentinel-1</b> — radar (SAR, Synthetic Aperture Radar, sintetik aperturali radar): bulut orqali ham ko\'radi, shuning uchun yomg\'irli mavsumda surat yo\'q paytlarni to\'ldiradi.</li>'+
-    '<li><b>ERA5-Land</b> — ECMWF (Yevropa o\'rta muddatli ob-havo prognozlari markazi) qayta tahlili: harorat, havo quruqligi, quyosh radiatsiyasi, tuproq namligi; <b>IMERG</b> — NASA sun\'iy yo\'ldosh yog\'in ma\'lumoti.</li></ul>'+
-    '<h3>3. Model</h3><ul>'+
-    '<li>Vaqt o\'nkunliklarga (10 kunlik bo\'laklar) bo\'lingan. Har bir kontur uchun <b>norma</b> — shu o\'nkunlikdagi 2019–2025 o\'rtachasi.</li>'+
-    '<li>Model normadan <b>farqni</b> taxmin qiladi: hozirgi farq, o\'simlik bosqichi (ko\'karish, eng yashil payt, sarg\'ayish), oxirgi 30 kun yog\'ini, namlik sakrashi (suv kelgani belgisi), radar va ob-havo.</li>'+
-    '<li>Usul — GBM (Gradient Boosting Machine, gradiyent kuchaytirish mashinasi; LightGBM kutubxonasi): ko\'p sonli kichik qaror daraxtlari ketma-ket bir-birining xatosini tuzatadi.</li>'+
-    '<li><b>80 % oraliq</b> — sinovdagi haqiqiy xatolar taqsimotidan olingan: haqiqat 10 holatdan taxminan 8 tasida shu oraliq ichida bo\'ladi.</li></ul>'+
-    '<h3>4. Aniqlik (har yil chetga olinib sinalgan, 2019–2025; alohida 2026)</h3><p>MAE (Mean Absolute Error, o\'rtacha mutlaq xato) — prognoz haqiqatdan o\'rtacha qancha farq qiladi.</p>'+
-    '<table><tr><th>Muddat</th><th>Norma xatosi</th><th>Model xatosi</th><th>Yutuq</th><th>2026</th><th>Tuman</th><th>Ko\'rsatiladi</th></tr>'+rows+'</table>'+
-    '<h3>5. Qanday o\'qish kerak</h3><div class="ok">Eng ishonchli — 10 kunlik prognoz (xato normaga qaraganda ~38 % kam). 30 kunda yutuq ~9 %, tuman o\'rtachasi esa ancha aniq (xato ±0,03 atrofida). 60–90 kun uchun ob-havoni oldindan bilib bo\'lmaydi, shuning uchun ko\'p yillik norma ko\'rsatiladi.</div>'+
-    '<h3>6. Cheklovlar</h3><div class="warn"><ul style="margin:0;padding-left:18px">'+
-    '<li>Sug\'orish miqdori va dala ma\'lumoti (ekin turi, ekish sanasi) yo\'q — suv kelishi faqat NDMI sakrashidan bilinadi.</li>'+
-    '<li>Bitta dala uchun ±0,01 aniqlik bir oy oldin erishib bo\'lmaydi: NDVI o\'zgarishining ~91 % qismi dalaning o\'ziga xos sabablariga bog\'liq.</li>'+
-    '<li>Yakka sanalarda natija o\'zgarib turadi (masalan, 21-oktabr prognozi normadan yomon chiqdi).</li>'+
-    '<li>Ob-havo ERA5-Land ~10 kun kechikib keladi; 1–10-noyabr ob-havosi to\'liq kelgach (~16–17-noyabr) prognoz yangilanadi.</li></ul></div>';
-  $('drawer').hidden=false;$('dclose').onclick=function(){$('drawer').hidden=true};
-  $('drawer').onclick=function(e){if(e.target===$('drawer'))$('drawer').hidden=true};
+  DCUR=openMethod;
+  var rows=META.skill.map(function(k){var far=k.days>30;return '<tr'+(far?' style="color:var(--tx3)"':'')+'><td>'+L("{0} kun",k.days)+'</td><td>'+f(k.mae_norm,3)+'</td><td>'+f(k.mae,3)+'</td><td class="'+(k.cv>1?'up':'')+'">'+sg(k.cv,1)+' %</td><td>'+sg(k.hold,1)+' %</td><td>'+sg(k.cv_town,1)+' %</td><td>'+(far?L("me'yor"):L("model"))+'</td></tr>'}).join('');
+  var li=function(a){return '<ul>'+a.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul>'};
+  openD('<h2>'+L("Prognoz qanday tuziladi")+'</h2><p>'+L("Yangilangan: {0} · {1} dala (kontur) · prognoz {2} holatidan.",META.generated,f(META.nf),ds(META.origin,1))+'</p>'+
+    '<h3>1. '+L("Savol")+'</h3><p>'+L("Dalaga suv (yomg'ir yoki sug'orish) kelsa, o'simlik yashilligi (NDVI) qancha vaqtda va qancha o'zgaradi? Shu bog'lanish 2019–2026 yillar ma'lumotidan o'rganilib, har bir dala uchun 10, 20 va 30 kun keyingi NDVI taxmin qilinadi.")+'</p>'+
+    '<h3>2. '+L("Ma'lumotlar")+'</h3>'+li([
+      L("<b>Sentinel-2</b> — optik sun'iy yo'ldosh: NDVI (Normalized Difference Vegetation Index, normallashtirilgan vegetatsiya farqi indeksi — yashillik) va NDMI (Normalized Difference Moisture Index, normallashtirilgan namlik farqi indeksi — barg va tuproq namligi). Bulutli piksellar olib tashlangan."),
+      L("<b>Sentinel-1</b> — radar (SAR, Synthetic Aperture Radar, sintetik aperturali radar): bulut orqali ham ko'radi, shuning uchun yomg'irli mavsumda surat yo'q paytlarni to'ldiradi."),
+      L("<b>ERA5-Land</b> — ECMWF (Yevropa o'rta muddatli ob-havo prognozlari markazi) qayta tahlili: harorat, havo quruqligi, quyosh radiatsiyasi, tuproq namligi; <b>IMERG</b> — NASA sun'iy yo'ldosh yog'in ma'lumoti.")])+
+    '<h3>3. '+L("Model")+'</h3>'+li([
+      L("Vaqt o'nkunliklarga (10 kunlik bo'laklar) bo'lingan. Har bir dala uchun <b>me'yor</b> — shu o'nkunlikdagi 2019–2025 o'rtachasi."),
+      L("Model me'yordan <b>farqni</b> taxmin qiladi: hozirgi farq, o'simlik bosqichi (ko'karish, eng yashil payt, sarg'ayish), oxirgi 30 kun yog'ini, namlik sakrashi (suv kelgani belgisi), radar va ob-havo."),
+      L("Usul — GBM (Gradient Boosting Machine, gradiyent kuchaytirish mashinasi; LightGBM kutubxonasi): ko'p sonli kichik qaror daraxtlari ketma-ket bir-birining xatosini tuzatadi."),
+      L("<b>80 % oraliq</b> — sinovdagi haqiqiy xatolar taqsimotidan olingan. <b>Xavf ehtimoli</b> shu oraliqdan taxminan (normal taqsimot yaqinlashuvi bilan) hisoblanadi.")])+
+    '<h3>4. '+L("Aniqlik (har yil chetga olinib sinalgan, 2019–2025; alohida 2026)")+'</h3><p>'+L("MAE (Mean Absolute Error, o'rtacha mutlaq xato) — prognoz haqiqatdan o'rtacha qancha farq qiladi.")+'</p>'+
+    '<table><tr><th>'+L("Muddat")+'</th><th>'+L("Me'yor xatosi")+'</th><th>'+L("Model xatosi")+'</th><th>'+L("Yutuq")+'</th><th>2026</th><th>'+L("Tuman")+'</th><th>'+L("Ko'rsatiladi")+'</th></tr>'+rows+'</table>'+
+    '<h3>5. '+L("Cheklovlar")+'</h3><div class="warn"><ul style="margin:0;padding-left:18px">'+[
+      L("Sug'orish miqdori va dala ma'lumoti (ekin turi, ekish sanasi) yo'q — suv kelishi faqat NDMI sakrashidan bilinadi."),
+      L("Bitta dala uchun ±0,01 aniqlikka bir oy oldin erishib bo'lmaydi: NDVI o'zgarishining ~91 % qismi dalaning o'ziga xos sabablariga bog'liq."),
+      L("Yakka sanalarda natija o'zgarib turadi (masalan, 2026-yil 21-oktabr prognozi me'yordan yomon chiqdi)."),
+      L("Ob-havo ERA5-Land ~10 kun kechikib keladi; yangi ob-havo to'liq kelgach prognoz yangilanadi.")].map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul></div>');
 }
 })();
+
 </script>
 </body>
 </html>

@@ -1215,7 +1215,7 @@ var st=document.createElement('style');st.textContent=CSS;document.head.appendCh
 var fl=document.createElement('link');fl.rel='stylesheet';fl.href='https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@300;400;600&display=swap';document.head.appendChild(fl);
 document.documentElement.lang=lang;
 window.L=L;
-window.I18N={get lang(){return lang},set:set,apply:apply,mount:mount,ms:function(){return MS[lang].slice()},mf:function(){return MF[lang].slice()}};
+window.I18N={get lang(){return lang},set:set,apply:apply,mount:mount,add:function(o){for(var k in o)D[k]=o[k]},ms:function(){return MS[lang].slice()},mf:function(){return MF[lang].slice()}};
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
