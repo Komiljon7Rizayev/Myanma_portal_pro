@@ -42,19 +42,22 @@ a{color:inherit}
 .hb svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .hb.dark{background:var(--tx);color:var(--bg2);border-color:var(--tx)}
 /* layout */
-.grid{display:grid;grid-template-columns:316px 1fr clamp(400px,27vw,500px);grid-template-rows:minmax(0,1fr) clamp(250px,31vh,330px);min-height:0}
+.grid{display:grid;grid-template-columns:316px 1fr clamp(400px,27vw,500px);grid-template-rows:minmax(0,1fr) clamp(280px,35vh,360px);min-height:0}
 /* bottom: full-width NDVI chart with a scrollable window (like the Minbu Portal bottom row) */
-.bot{grid-column:1/-1;display:flex;flex-direction:column;gap:4px;min-height:0;padding:10px 18px 10px;border-top:1px solid var(--line);background:rgba(251,248,242,.75)}
+.rail{grid-column:1;grid-row:1/3}
+.insight{grid-column:3;grid-row:1/3}
+.bot{grid-column:2;grid-row:2;display:flex;flex-direction:column;gap:4px;min-height:0;padding:10px 18px 10px;border-top:1px solid var(--line);background:rgba(251,248,242,.75)}
 .bh{display:flex;align-items:center;gap:14px;flex-wrap:wrap;min-width:0}
 .bh h4{margin:0;font:500 15.5px var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .bh .sub{font-size:12px;color:var(--tx3);white-space:nowrap}
-.bh .lg{margin:0;flex:1;justify-content:flex-end}
+.bh .lg{margin:0;order:9;flex:1 0 100%;justify-content:flex-start;gap:4px 12px;font-size:11px}
+.bh .wsel{margin-left:auto}
 .wsel{display:flex;gap:3px;padding:3px;border-radius:10px;background:var(--card2)}
 .wsel button{height:28px;padding:0 10px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--tx2)}
 .wsel button[aria-pressed="true"]{background:var(--card);color:var(--tx);box-shadow:0 1px 3px rgba(60,48,30,.14)}
 #c1{flex:1;min-height:0;position:relative;touch-action:pan-y}
 #c1 svg{display:block}
-#c1ov{height:42px;flex:none;touch-action:none}
+#c1ov{height:30px;flex:none;touch-action:none}
 .ovh{font-size:11.5px;color:var(--tx3);margin:0 0 0 40px}
 /* day slider on top of the map */
 .dayb{position:absolute;top:12px;left:12px;right:58px;z-index:4;display:flex;align-items:center;gap:14px;padding:10px 16px 8px 12px;border-radius:16px;background:rgba(255,255,255,.95);border:1px solid var(--line2);box-shadow:0 12px 30px rgba(60,48,30,.16);backdrop-filter:blur(10px)}
@@ -207,6 +210,11 @@ select{width:100%;height:40px;border-radius:11px;background:var(--card);border:1
 .gl dt{font-weight:700;color:var(--tx)}.gl dd{margin:0;color:var(--tx2)}
 .rep img{width:100%;border-radius:12px;border:1px solid var(--line);margin:10px 0}
 .rep .rdist{display:flex;height:18px;border-radius:9px;overflow:hidden;margin:8px 0}
+.notice{width:min(560px,100%);text-align:center;padding:30px 30px 24px}
+.notice .ic{width:58px;height:58px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:#fdf3e3;border:1px solid #e8c58f;color:#b5651d;font:700 28px var(--display)}
+.notice h2{margin:0 0 10px}
+.notice p{margin:0 0 10px;font-size:14.5px}
+.notice .go{margin-top:12px;height:42px;padding:0 26px;border-radius:12px;background:var(--acc);color:#fff;font-weight:700;box-shadow:0 6px 16px rgba(200,85,61,.3)}
 .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:80;padding:10px 16px;border-radius:12px;background:var(--tx);color:var(--bg2);font-size:13.5px;box-shadow:0 12px 30px rgba(0,0,0,.3)}
 @media (max-width:1500px){.pill{display:none}}
 @media (max-width:1250px){.grid{grid-template-columns:280px 1fr 380px}.hb span{display:none}.hb{padding:0 11px}}
@@ -215,6 +223,7 @@ select{width:100%;height:40px;border-radius:11px;background:var(--card);border:1
   .top{flex-wrap:wrap;padding:10px;gap:8px}
   .grid{grid-template-columns:1fr}
   .rail,.insight{border:0;overflow:visible}
+  .rail,.bot,.insight{grid-column:auto;grid-row:auto}
   .grid{grid-template-rows:auto}
   .mapwrap{height:72vh;order:-1}
   .insight{order:-2}
@@ -702,6 +711,10 @@ window.I18N={get lang(){return lang},set:set,apply:apply,mount:mount,add:functio
 /* Index Forecast page texts: Uzbek key -> [English, Russian, Burmese]. Strict JSON inside (checked by .build/fc_i18n_tool.py check). */
 window.__FC_I18N={
 "Minbu Portal":["Minbu Portal","Minbu Portal","Minbu Portal"],
+"Ogohlantirish":["Notice","Внимание","သတိပေးချက်"],
+"Index Forecast portali hali yakuniga yetmagan — hozir sinov (test) rejimida ishlamoqda.":["The Index Forecast portal is not finished yet — it is currently running in test mode.","Портал Index Forecast ещё не завершён — сейчас он работает в тестовом режиме.","Index Forecast ပေါ်တယ်ကို မပြီးဆုံးသေးပါ — လက်ရှိတွင် စမ်းသပ်မုဒ်ဖြင့် လုပ်ဆောင်နေပါသည်။"],
+"Ko'rsatilgan prognozlar dastlabki natijalardir. Tez kunda yakuniy, to'liq tekshirilgan natijalar yuklanadi.":["The forecasts shown are preliminary results. Final, fully checked results will be uploaded soon.","Показанные прогнозы — предварительные результаты. В ближайшее время будут загружены окончательные, полностью проверенные результаты.","ပြသထားသော ခန့်မှန်းချက်များသည် ပဏာမရလဒ်များ ဖြစ်ပါသည်။ နောက်ဆုံး၊ အပြည့်အဝ စစ်ဆေးပြီးသော ရလဒ်များကို မကြာမီ တင်ပေးပါမည်။"],
+"Tushunarli":["Got it","Понятно","နားလည်ပါပြီ"],
 "Index Forecast":["Index Forecast","Index Forecast","Index Forecast"],
 "Flood Mapping":["Flood Mapping","Flood Mapping","Flood Mapping"],
 "Portallar":["Portals","Порталы","ပေါ်တယ်များ"],
@@ -1079,7 +1092,7 @@ function start(gj){
   $('hz').onclick=function(e){var b=e.target.closest('button');if(!b)return;stopPlay();setDay(+b.dataset.d)};
   $('mode').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.mode=b.dataset.m;S.cls=-1;all()};
   $('tabs').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.tab=b.dataset.t;renderTab()};
-  $('wsel').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.win=+b.dataset.w;S.wend=null;[].forEach.call(this.children,function(x){x.setAttribute('aria-pressed',String(x===b))});drawChart()};
+  $('wsel').onclick=function(e){var b=e.target.closest('button');if(!b)return;setWin(+b.dataset.w);drawChart()};
   $('mbtn').onclick=openMethod;$('gbtn').onclick=openGuide;$('rbtn').onclick=openReport;
   $('t_sat').onchange=function(){S.sat=this.checked;layers()};$('t_lab').onchange=function(){S.lab=this.checked;layers()};$('t_wat').onchange=function(){S.wat=this.checked;layers()};
   var rq=0;$('day').max=DMAX;$('day').value=S.d;
@@ -1119,7 +1132,7 @@ function start(gj){
       tip.hidden=false;var w=$('map').clientWidth;tip.style.left=Math.min(w-tip.offsetWidth-8,e.point.x+14)+'px';tip.style.top=Math.max(84,e.point.y-84)+'px'});
     map.on('mouseleave','p-fill',function(){tip.hidden=true;map.getCanvas().style.cursor='';if(HV>=0)map.setFeatureState({source:'p',id:HV},{hv:false});HV=-1});
     map.on('click',function(e){var ft=map.queryRenderedFeatures(e.point,{layers:['p-fill']})[0];pick(ft&&ft.id!==S.pick?ft.id:-1)});
-    $('load').hidden=true;layers();all();
+    $('load').hidden=true;layers();all();notice();
     if(S.v>=0){var b=V[S.v].b;map.fitBounds([[b[0],b[1]],[b[2],b[3]]],{padding:60,duration:0})}
   });
 }
@@ -1315,12 +1328,17 @@ function csv(){
 /* ---------- bottom chart: full history (every 10 days since 2019) + daily forecast; a window you scroll ---------- */
 function drawChart(){
   var Sx=CH.Sx;if(!Sx)return;
-  var el=$('c1'),ov=$('c1ov'),W=el.clientWidth||900,Hh=Math.max(120,el.clientHeight||170),l=40,r=14,t=10,b=22,iw=W-l-r,ih=Hh-t-b;
-  var k0=META.hist_k0,OD=dk(K0),END=OD+(Sx.kind==='t'?93:33),START=dk(k0);
+  var k0=META.hist_k0,OD=dk(K0),FEND=OD+(Sx.kind==='t'?93:33),START=dk(k0);
+  /* empty room after the forecast so it sits left of the edge, not squeezed against it */
+  var END=FEND+Math.min(75,Math.round(Math.min(S.yr!=null?365:S.win,FEND-START)*0.16));
+  /* a year picked on the ruler: exactly 1 Jan .. 31 Dec of that year, nothing of the neighbours */
+  var yws=null,ywe=null;if(S.yr!=null){yws=Math.max(START,(Date.UTC(S.yr,0,1)-T0)/DAY);ywe=Math.min(END,(Date.UTC(S.yr+1,0,1)-T0)/DAY);if(ywe-yws<20){S.yr=null;yws=null}}
+  var span=yws!=null?ywe-yws:Math.min(S.win,END-START);
+  var el=$('c1'),ov=$('c1ov'),W=el.clientWidth||900,Hh=Math.max(120,el.clientHeight||170),l=40,r=14,t=10,b=span<=800?40:26,iw=W-l-r,ih=Hh-t-b;
   $('c1t').textContent=L("Yashillik (NDVI)")+' · '+Sx.name;
   if(!Sx.obs.length){el.innerHTML='<p class="cap" style="padding:20px">'+L("Dala tarixi yuklanmoqda…")+'</p>';ov.innerHTML='';return}
-  var span=Math.min(S.win,END-START),we=S.wend==null?END:Math.max(START+span,Math.min(END,S.wend)),ws=we-span;
-  $('c1s').textContent=tds(ws,1)+' — '+tds(we,1);
+  var we=yws!=null?ywe:S.wend==null?END:Math.max(START+span,Math.min(END,S.wend)),ws=we-span;
+  $('c1s').textContent=tds(ws,1)+' — '+tds(yws!=null&&ywe<END?we-1:we,1);
   /* points */
   var P=[];Sx.obs.forEach(function(v,i){if(v!=null)P.push([dk(k0+i),v])});
   /* radar gap filling: cloudy periods get an estimate (purple), drawn apart from real images */
@@ -1341,10 +1359,13 @@ function drawChart(){
   var ms=I18N.ms(),y0=new Date(T0+ws*DAY).getUTCFullYear(),y1=new Date(T0+we*DAY).getUTCFullYear();
   for(var y=y0;y<=y1;y++)for(var m=0;m<12;m++){var tx=(Date.UTC(y,m,1)-T0)/DAY;if(tx<ws||tx>we)continue;
     if(span>800&&m)continue;var big=m===0,xx=X(tx);
-    s+='<line x1="'+xx+'" x2="'+xx+'" y1="'+t+'" y2="'+(t+ih)+'" stroke="rgba(60,48,30,'+(big?.16:.06)+')"/>';
-    if(span<=800||big)s+='<text x="'+(xx+3)+'" y="'+(Hh-6)+'" font-size="11" fill="'+(big?'#5f5648':'#8d8271')+'" font-weight="'+(big?600:400)+'">'+(big?y:ms[m])+'</text>'}
+    s+='<line x1="'+xx+'" x2="'+xx+'" y1="'+t+'" y2="'+(t+ih+(big?b-4:4))+'" stroke="rgba(60,48,30,'+(big?.3:.07)+')"/>';
+    if(span<=800&&X(tx)+20<l+iw)s+='<text x="'+(xx+3)+'" y="'+(t+ih+14)+'" font-size="11" fill="#8d8271">'+ms[m]+'</text>'}
+  /* year row: one clear label per year, centred in the visible part of that year */
+  for(y=y0;y<=y1;y++){var a0=Math.max(ws,(Date.UTC(y,0,1)-T0)/DAY),a1=Math.min(we,(Date.UTC(y+1,0,1)-T0)/DAY);
+    if(X(a1)-X(a0)<34)continue;s+='<text x="'+((X(a0)+X(a1))/2).toFixed(1)+'" y="'+(Hh-5)+'" text-anchor="middle" font-size="13" font-weight="700" fill="#1f1b14">'+y+'</text>'}
   s+='<g clip-path="url(#cw)">';
-  if(OD+0<=we)s+='<rect x="'+X(OD)+'" y="'+t+'" width="'+Math.max(0,X(Math.min(we,END))-X(OD))+'" height="'+ih+'" fill="rgba(27,79,191,.06)"/>';
+  if(OD+0<=we)s+='<rect x="'+X(OD)+'" y="'+t+'" width="'+Math.max(0,X(Math.min(we,FEND))-X(OD))+'" height="'+ih+'" fill="rgba(27,79,191,.06)"/>';
   s+='<path d="'+path(NP)+'" fill="none" stroke="#8a8070" stroke-opacity=".6" stroke-dasharray="3 3" stroke-width="1.3"/>';
   if(F[1][2]!=null){var up='',dn='';F.forEach(function(p){if(p[2]==null)return;up+=(up?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[3]).toFixed(1)});
     for(var j=F.length-1;j>=0;j--)if(F[j][2]!=null)dn+='L'+X(F[j][0]).toFixed(1)+' '+Y(F[j][2]).toFixed(1);s+='<path d="'+up+dn+'Z" fill="rgba(27,79,191,.16)"/>'}
@@ -1365,7 +1386,7 @@ function drawChart(){
   var hit=el.querySelector('#c1hit'),tip=$('c1tip'),drag=null;
   function tAt(e){var rc=el.getBoundingClientRect();return ws+((e.clientX-rc.left)*W/rc.width-l)/iw*(we-ws)}
   hit.onpointermove=function(e){
-    if(drag){var dx=(e.clientX-drag.x)/el.getBoundingClientRect().width*W/iw*(we-ws);if(Math.abs(e.clientX-drag.x)>3)drag.moved=true;S.wend=drag.we-dx;drawChart();return}
+    if(drag){var dx=(e.clientX-drag.x)/el.getBoundingClientRect().width*W/iw*(we-ws);if(Math.abs(e.clientX-drag.x)>3){drag.moved=true;freeYear(span)}S.wend=drag.we-dx;drawChart();return}
     var tt=tAt(e),rc=el.getBoundingClientRect(),best=null,lab='';
     if(tt>OD+0.5){var dd=Math.round(tt-OD);if(dd<=DMAX){best=F[dd];lab=' ('+L("prognoz")+')'}else FAR.forEach(function(p){if(!best||Math.abs(p[0]-tt)<Math.abs(best[0]-tt))best=p});if(dd>DMAX)lab=' ('+L("me'yor")+')'}
     else{P.forEach(function(p){if(!best||Math.abs(p[0]-tt)<Math.abs(best[0]-tt))best=p});
@@ -1378,32 +1399,55 @@ function drawChart(){
   hit.onpointerleave=function(){tip.hidden=true};
   hit.onpointerdown=function(e){drag={x:e.clientX,we:we,moved:false};hit.setPointerCapture(e.pointerId);hit.style.cursor='grabbing'};
   hit.onpointerup=function(e){var dr=drag;drag=null;hit.style.cursor='grab';if(dr&&!dr.moved){var tt=tAt(e);if(tt>OD+0.5&&tt<=OD+DMAX+0.5){stopPlay();setDay(Math.round(tt-OD))}}};
-  hit.onwheel=function(e){if(span>=END-START)return;e.preventDefault();S.wend=we+(e.deltaY+e.deltaX)/600*span;drawChart()};
+  hit.onwheel=function(e){if(span>=END-START)return;e.preventDefault();freeYear(span);S.wend=we+(e.deltaY+e.deltaX)/600*span;drawChart()};
   /* overview strip: the whole period, the visible window is the box you drag */
-  var OW=ov.clientWidth||W,OH=ov.clientHeight||42,oX=function(x){return l+(x-START)/(END-START)*(OW-l-r)},oy0=Math.min.apply(null,P.map(function(p){return p[1]})),oy1=Math.max.apply(null,P.map(function(p){return p[1]}));
-  var oY=function(v){return 4+(1-(v-oy0)/((oy1-oy0)||1))*(OH-8)};
-  var os='<svg viewBox="0 0 '+OW+' '+OH+'" width="'+OW+'" height="'+OH+'"><rect x="'+l+'" y="1" width="'+(OW-l-r)+'" height="'+(OH-2)+'" rx="6" fill="rgba(60,48,30,.04)"/>';
-  for(var yy=2019;yy<=new Date(T0+END*DAY).getUTCFullYear();yy++){var ox=oX((Date.UTC(yy,0,1)-T0)/DAY);os+='<line x1="'+ox+'" x2="'+ox+'" y1="2" y2="'+(OH-2)+'" stroke="rgba(60,48,30,.12)"/><text x="'+(ox+3)+'" y="'+(OH-5)+'" font-size="10" fill="#8d8271">'+yy+'</text>'}
-  var opth='',pen=false,prv=null;(CB.length?CB:P).forEach(function(p){if(prv!=null&&p[0]-prv>45)pen=false;opth+=(pen?'L':'M')+oX(p[0]).toFixed(1)+' '+oY(p[1]).toFixed(1);pen=true;prv=p[0]});
-  os+='<path d="'+opth+'" fill="none" stroke="#2b8a3e" stroke-opacity=".7" stroke-width="1"/><rect x="'+oX(OD)+'" y="2" width="'+(oX(END)-oX(OD))+'" height="'+(OH-4)+'" fill="rgba(27,79,191,.15)"/>';
+  /* plain year ruler (no curve on it): the box shows which part of 2019 → now you are looking at */
+  var OW=ov.clientWidth||W,OH=ov.clientHeight||30,oX=function(x){return l+(x-START)/(END-START)*(OW-l-r)};
+  var os='<svg viewBox="0 0 '+OW+' '+OH+'" width="'+OW+'" height="'+OH+'"><rect x="'+l+'" y="1" width="'+(OW-l-r)+'" height="'+(OH-2)+'" rx="6" fill="rgba(60,48,30,.05)"/>';
+  for(var yy=2019;yy<=new Date(T0+END*DAY).getUTCFullYear();yy++){var ox=oX(Math.max(START,(Date.UTC(yy,0,1)-T0)/DAY)),ox1=oX(Math.min(END,(Date.UTC(yy+1,0,1)-T0)/DAY));
+    if(yy>2019)os+='<line x1="'+ox+'" x2="'+ox+'" y1="3" y2="'+(OH-3)+'" stroke="rgba(60,48,30,.22)"/>';
+    if(ox1-ox>30&&!(yws!=null&&yy===S.yr))os+='<text x="'+((ox+ox1)/2).toFixed(1)+'" y="'+(OH/2+4.5)+'" text-anchor="middle" font-size="12" font-weight="600" fill="#5f5648">'+yy+'</text>'}
+  os+='<rect x="'+oX(OD)+'" y="2" width="'+(oX(FEND)-oX(OD))+'" height="'+(OH-4)+'" fill="rgba(27,79,191,.18)"/>';
+  if(yws!=null)os+='<text x="'+((oX(yws)+oX(ywe))/2).toFixed(1)+'" y="'+(OH/2+4.5)+'" text-anchor="middle" font-size="12.5" font-weight="800" fill="#a9452a">'+S.yr+'</text>';
   os+='<rect id="ovw" x="'+oX(ws)+'" y="1" width="'+Math.max(8,oX(we)-oX(ws))+'" height="'+(OH-2)+'" rx="6" fill="rgba(200,85,61,.12)" stroke="#c8553d" stroke-width="1.6" style="cursor:grab"/></svg>';
   ov.innerHTML=os;
-  var osv=ov.querySelector('svg'),od=null;
+  /* ruler: click a year = show only that year; click the same year again = back to all years; drag the box = scroll */
+  var osv=ov.querySelector('svg');osv.style.cursor='pointer';
   function oT(e){var rc=ov.getBoundingClientRect();return START+((e.clientX-rc.left)*OW/rc.width-l)/(OW-l-r)*(END-START)}
-  osv.onpointerdown=function(e){var tt=oT(e);if(tt<ws||tt>we){S.wend=tt+span/2;drawChart();return}od={t:tt,we:we};osv.setPointerCapture(e.pointerId)};
-  osv.onpointermove=function(e){if(!od)return;S.wend=od.we+(oT(e)-od.t);drawChart()};
-  osv.onpointerup=function(){od=null};
+  osv.onpointerdown=function(e){OVD={t:oT(e),we:we,x:e.clientX,moved:false,span:span}};
+  osv.onpointermove=function(e){if(!OVD)return;if(!OVD.moved&&Math.abs(e.clientX-OVD.x)<4)return;OVD.moved=true;freeYear(OVD.span);S.wend=OVD.we+(oT(e)-OVD.t);drawChart()};
+  osv.onpointerup=function(e){var o=OVD;OVD=null;if(!o||o.moved)return;
+    var yy=new Date(T0+Math.max(START,Math.min(END-1,oT(e)))*DAY).getUTCFullYear();
+    if(S.yr===yy)setWin(99999);else{S.yr=yy;S.wend=null;pressWin(-1)}drawChart()};
+  osv.onpointerleave=function(){OVD=null};
 }
+var OVD=null;
+function pressWin(w){[].forEach.call($('wsel').children,function(x){x.setAttribute('aria-pressed',String(+x.dataset.w===w))})}
+function setWin(w){S.win=w;S.yr=null;S.wend=null;pressWin(w)}
+/* leaving a picked year by dragging: keep the same width, just let it scroll */
+function freeYear(span){if(S.yr==null)return;S.yr=null;S.win=Math.round(span);pressWin(-1)}
 function all(){applyMap();renderSide();writeHash()}
 addEventListener('hashchange',function(){if(!map||!META)return;var v0=S.v;readHash();$('vsel').value=String(S.v);$('day').value=S.d;if(S.v!==v0)setVillage(S.v);else all()});
 var rzt;addEventListener('resize',function(){clearTimeout(rzt);rzt=setTimeout(renderSide,150)});
 addEventListener('keydown',function(e){if(e.key==='Escape'){if(!$('drawer').hidden)closeD();else if(S.pick>=0)pick(-1)}
   if(e.target.tagName==='SELECT'||e.target.tagName==='INPUT'||!$('drawer').hidden||e.target.closest('.lang'))return;if(e.key==='ArrowRight'){stopPlay();setDay(S.d+1)}if(e.key==='ArrowLeft'){stopPlay();setDay(S.d-1)}});
 /* ---------- drawers: guide, one-page report, methodology ---------- */
-function closeD(){$('drawer').hidden=true;DCUR=null}
+function closeD(){if($('dbox').classList.contains('notice')){try{sessionStorage.setItem('fc_notice','1')}catch(e){}$('dbox').classList.remove('notice')}$('drawer').hidden=true;DCUR=null}
 function openD(html,print){var st=$('drawer').hidden?0:$('dbox').scrollTop;
   $('dbox').innerHTML='<div class="dact">'+(print?'<button class="pr" id="dprint">'+L("Chop etish / PDF")+'</button>':'')+'<button id="dclose">'+L("Yopish")+'</button></div>'+html;$('drawer').hidden=false;$('dbox').scrollTop=st;
   $('dclose').onclick=closeD;if(print)$('dprint').onclick=function(){window.print()};$('drawer').onclick=function(e){if(e.target===$('drawer'))closeD()}}
+/* entry notice: the page is still a preview (shown once per browser session) */
+function notice(force){
+  var seen=false;try{seen=sessionStorage.getItem('fc_notice')==='1'}catch(e){}
+  if(seen&&!force)return;DCUR=function(){notice(true)};
+  $('dbox').innerHTML='<div><div class="ic">!</div><h2>'+L("Ogohlantirish")+'</h2>'+
+    '<p>'+L("Index Forecast portali hali yakuniga yetmagan — hozir sinov (test) rejimida ishlamoqda.")+'</p>'+
+    '<p>'+L("Ko'rsatilgan prognozlar dastlabki natijalardir. Tez kunda yakuniy, to'liq tekshirilgan natijalar yuklanadi.")+'</p>'+
+    '<button class="go" id="nok">'+L("Tushunarli")+'</button></div>';
+  $('dbox').classList.add('notice');$('drawer').hidden=false;
+  var close=closeD;
+  $('nok').onclick=close;$('drawer').onclick=function(e){if(e.target===$('drawer'))close()};$('nok').focus();
+}
 function openGuide(){
   DCUR=openGuide;
   var st=[[L("Sanani tanlang"),L("Chapdagi 10, 20, 30 kun tugmalari yoki xarita tepasidagi kun surgichi (1–30 kun). Yaqin sana — aniqroq; uzoq sana — taxminiyroq.")],
