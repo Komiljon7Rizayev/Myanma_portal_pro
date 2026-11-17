@@ -1223,16 +1223,27 @@ void main(){
         dt.rgb = dt.rgb * (.74 + .42 * tl) + vec3(.62, .80, 1.) * (w.y * .30 + w2.y * .12) + vec3(.96, .99, 1.) * w.z * .62;
         suvA = dt.a;
       }
-      if(uSuvOn > .5 && dt.a > .004 && dt.a < .51){
-        float fill = dt.a / .5;
-        vec2 q = vW.xz / (uSuvSc * 1.05), id = floor(q), fr = fract(q) - .5;
+      if(uSuvOn > .5 && dt.a > .004 && dt.a < .51){   // HEC-RAS suvi hajmli: tomchilar (sharsimon) qo'shilib do'mboq suyuqlik hosil qiladi
+        float fill = dt.a / .5, uzq = smoothstep(24., 96., uSuvSc);
+        vec2 q = vW.xz / (uSuvSc * .55), id = floor(q), fr = fract(q) - .5;
         vec2 o = (vec2(sHash(id + 3.1), sHash(id + 8.3)) - .5) * .45;
-        float hh = sHash(id + 1.7), rr = length(fr - o), rad = .16 + .26 * fill;
-        float drop = step(hh, fill * 1.25) * (1. - smoothstep(rad - .06, rad + .02, rr));
-        float m = max(drop, smoothstep(.72, 1., fill));
-        float hl = drop * (1. - smoothstep(0., rad * .7, length(fr - o + vec2(.06, -.06))));
-        dt.rgb = mix(dt.rgb, vec3(.85, .95, 1.), .18 + .45 * hl);
-        dt.a = m * .78;
+        float hh = sHash(id + 1.7), rad = .16 + .26 * fill;
+        vec2 dc = (fr - o) / (2. * rad); float rr = length(dc);           // tomchi ichi: chekka = 0.5
+        float drop = step(hh, fill * 1.25) * (1. - smoothstep(.42, .5, rr));
+        vec3 base = dt.rgb;
+        vec3 dcol = mix(base * .7, mix(base, vec3(.92, .98, 1.), .6), smoothstep(.45, .05, length(dc + vec2(.14, -.14))));
+        dcol *= .8 + .2 * smoothstep(.5, .3, rr);
+        float solid = smoothstep(.72, 1., fill);
+        vec2 gS = vec2(dFdx(fill), dFdy(fill)); float gl = length(gS); vec2 nd = gl > 1e-6 ? gS / gl : vec2(0.);
+        float lit = dot(-nd, normalize(vec2(-1., 1.)));                  // yorug'lik chap-yuqoridan (tomchilar bilan bir xil)
+        float rim = smoothstep(.62, .8, fill) * (1. - smoothstep(.9, 1., fill));
+        vec3 bcol = base * (.9 + .1 * smoothstep(.8, 1., fill));
+        bcol = mix(bcol, vec3(.92, .98, 1.), rim * max(0., lit) * .6);  // yorug' chekka yaltiraydi
+        bcol *= 1. - rim * max(0., -lit) * .38;                          // qarama-qarshi chekka soyada
+        vec3 c3 = drop > .5 && solid < .95 ? dcol : bcol;
+        float m = max(drop, solid);
+        dt.rgb = mix(c3, base, uzq);
+        dt.a = mix(m * .86, (.25 + .6 * fill) * .78, uzq);
       }
       col = mix(col, dt.rgb, dt.a); }
   }
@@ -4798,14 +4809,14 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
 })();
 </script>
 <script>
-// ===== Sel suvining DEM bo'yicha oqishi v4: ko'lmaklar tomchilardan yig'iladi, past tomonga qisqarib quriydi, suv qo'shni ko'llarga oqadi =====
+// ===== Sel suvining DEM bo'yicha oqishi v6: ko'lmaklar oqib kelgan tomchilar yig'ilishidan to'ladi, past tomonga qisqarib quriydi, suv qo'shni ko'llarga oqadi =====
 (function () {
   const PROB = window.PROB = { zarra: true, silliq: true };
-  const P = 12000, TR = 14; let kadrN = 0, rank = null, cx_ = null, cz_ = null, dJ = null, sJ = null, grow = null, shr = null, growN = 0, shrN = 0, shrM = null, curF = 0, wetV = 0, hadaf = 0, tirik = 0, gW = 0, sW = 0;                       // zarrachalar soni, iz uzunligi (nuqta)
+  const P = 12000, TR = 14; let kadrN = 0, rank = null, cx_ = null, cz_ = null, dJ = null, sJ = null, grow = null, shr = null, growN = 0, shrN = 0, shrM = null, curF = 0, wetV = 0, hadaf = 0, tirik = 0, gW = 0, sW = 0, vis = null, tgt = null, lastCh = 0, visYangi = true;                       // zarrachalar soni, iz uzunligi (nuqta)
   let dep = null, wet = null, wetN = 0, flow = null, joy = null, tf = -1, playOn = false, lastT = 0, lastDat = 0, lastStat = -1;
   const px = new Float32Array(P), pz = new Float32Array(P), age = new Float32Array(P), life = new Float32Array(P);
   const hx = new Float32Array(P * TR), hz = new Float32Array(P * TR), hy = new Float32Array(P * TR);
-  let geo = null, mesh = null, pos = null, colA = null, colC = null; const pr = new Float32Array(P * 3);
+  let suvKerak = false, lastSuv = 0; let geo = null, mesh = null, pos = null, colA = null, colC = null; const pr = new Float32Array(P * 3);
 
   function oqimMaydon() {           // uFlow teksturasi (x, z; -1..1) -> Float32
     const t = U.uFlow.value; if (!t) return null;
@@ -4823,7 +4834,7 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
         for (let dc = -Rr; dc <= Rr; dc++) { const c = c0 + dc; if (c < 0 || c >= W_) continue; const k = HEC.map[r * W_ + c]; if (k < 0) continue; const e = el[k]; if (e < mn) mn = e; if (e > mx) mx = e; } }
       rank[j] = Math.min(1, (el[j] - mn) / Math.max(mx - mn, .4));
     }
-    dJ = new Float32Array(N); sJ = new Float32Array(N); grow = new Int32Array(N); shr = new Int32Array(N); shrM = new Uint8Array(SUV.w * SUV.h);
+    dJ = new Float32Array(N); sJ = new Float32Array(N); vis = new Float32Array(N); tgt = new Float32Array(N); grow = new Int32Array(N); shr = new Int32Array(N); shrM = new Uint8Array(SUV.w * SUV.h);
   }
   function chuqurlik(a, b, f) {     // a -> b soat: yangi suv eng past joydan to'lib boradi, quriyotgan suv balanddan pastga chekinadi
     if (!rank) tayyorla();
@@ -4833,39 +4844,48 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
     let w = 0; if (!wet || wet.length !== N) wet = new Int32Array(N);
     const iso = typeof hudIso !== "undefined" && hudIso && HEC.hud;
     const Rv = cam.dist * .8, vx = cam.t.x, vz = cam.t.z; growN = 0; shrN = 0; wetV = 0; gW = 0; sW = 0;
+    const now = performance.now(), dtc = visYangi ? 0 : Math.min(.25, (now - lastCh) / 1000); lastCh = now;
+    const ichki = PROB.zarra && cam.dist < 16000;   // tomchilar ko'rinadigan masshtab
     for (let j = 0; j < N; j++) {
       const da = hecD(Ka[j]), db = hecD(Kb[j]); let d, sv;
-      if (!da && !db) { dJ[j] = 0; sJ[j] = 0; continue; }
+      if (!da && !db) { dJ[j] = 0; sJ[j] = 0; tgt[j] = 0; vis[j] = 0; continue; }
       if (!da) { sv = Math.min(1, Math.max(0, (f - rank[j] * .7) / .3)); d = db * sv; }
       else if (!db) { sv = Math.min(1, Math.max(0, ((1 - f) - rank[j] * .7) / .3)); d = da * sv; }
       else { d = da + (db - da) * f; sv = 1; }
       dJ[j] = d; sJ[j] = sv;
+      const tg = d <= .005 ? 0 : sv * (.45 + .55 * Math.min(1, Math.max(0, (d - .1) / .4)));
+      tgt[j] = tg;
       const ok = !iso || HEC.hud[j] === hudSel, ko = Math.abs(cx_[j] - vx) < Rv && Math.abs(cz_[j] - vz) < Rv;
+      if (visYangi || !ichki || !ko) vis[j] = tg;                       // ko'rinmaydigan joy: to'g'ridan-to'g'ri
+      else if (vis[j] > tg) vis[j] = Math.max(tg, vis[j] - dtc * .9);   // quriyapti: asta kamayadi
+      else vis[j] = Math.min(tg, vis[j] + dtc * .06);                   // tomchi kelmasa ham juda sekin to'ladi
       if (ok && ko) {
-        if (db > da + .03) { grow[growN++] = j; gW += Math.min(1, (db - da) / .3); }
+        const kam = tg - vis[j];
+        if (kam > .04) { grow[growN++] = j; gW += Math.min(1, kam * 2); }   // tomchi kutayotgan ko'lmak
         else if (db < da - .03) { shr[shrN++] = j; shrM[HEC.idx[j]] = 1; sW += Math.min(1, (da - db) / .3); }
         if (d > .005) wetV++;
       }
       if (d <= .005) continue;
       dep[HEC.idx[j]] = d; if (ok) wet[w++] = HEC.idx[j];
     }
-    wetN = w;
+    wetN = w; visYangi = false;
     // tomchilar soni: ko'rinishdagi suv + o'sayotgan suv (oqib keladi) + quriyotgan suv (oqib ketadi)
-    hadaf = Math.min(P, Math.round(wetV * .35 + gW * 6 + sW * 2.5));
+    hadaf = Math.min(P, Math.round(wetV * .35 + gW * 6 + sW * 2.5 + Math.min(5000, yomgirMm() * 1400)));
   }
   function suvChiz() {              // datData'ni chuqurlik() hisoblagan oraliq holatdan to'ldirish
     const D = datData, N = HEC.N;
     if (!joy || joy.length !== N) { joy = new Uint8Array(N); for (let j = 0; j < N; j++) joy[j] = hecJoy(j, HEC.idx[j]); }
     D.fill(0);
     for (let j = 0; j < N; j++) {
-      const d = dJ[j]; if (d <= .005) continue;
+      const d = dJ[j]; if (d <= .005 || vis[j] < .01) continue;
       const col = HEC_JOY[joy[j]][1], o = HEC.idx[j] * 4;
       D[o] = col[0]; D[o + 1] = col[1]; D[o + 2] = col[2];
-      D[o + 3] = Math.max(2, Math.round(127 * sJ[j] * (.45 + .55 * Math.min(1, Math.max(0, (d - .1) / .4)))));   // alfa = tomchilar zichligi (sayoz — siyrak, chuqur — yaxlit)
+      D[o + 3] = Math.max(2, Math.round(127 * vis[j]));   // alfa = tomchilar zichligi (sayoz — siyrak, chuqur — yaxlit)
     }
     datT.needsUpdate = true; dirty = true;
   }
   const tur = new Uint8Array(P), tin = new Float32Array(P);   // tur: 1 suv ichida, 0 quruq qiyalikda (yomg'ir oqimi)
+  function yomgirMm() { const t = playOn ? Math.floor(tf) : hecT; if (t < 0) return 0; return hecSoatMm(t) * (1 - curF) + hecSoatMm(Math.min(t + 1, HEC.T - 1)) * curF; }
   function yomgirUlush() {          // quruq qiyaliklarda tug'iladigan zarrachalar ulushi (yomg'ir kuchiga qarab)
     const t = playOn ? Math.floor(tf) : hecT;
     if (t < 0) return .35;
@@ -4873,29 +4893,39 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
   }
   function boshla_(i, x, z, t) {
     pr[i * 3] = .55; pr[i * 3 + 1] = .78; pr[i * 3 + 2] = 1.;
-    tur[i] = t; px[i] = x; pz[i] = z; age[i] = 0; tin[i] = 0; life[i] = t === 1 ? 3 + Math.random() * 3 : 5 + Math.random() * 4;
+    tur[i] = t; px[i] = x; pz[i] = z; age[i] = 0; tin[i] = 0; life[i] = t === 3 ? .7 + Math.random() * 1.3 : t === 1 ? 3 + Math.random() * 3 : 5 + Math.random() * 4;
     for (let q = 0; q < TR; q++) { hx[i * TR + q] = x; hz[i * TR + q] = z; hy[i * TR + q] = NaN; }
   }
-  function tepaga(x, z, qadam) {     // qiyalik bo'ylab yuqoriga: tomchi qayerdan kelishi
+  function grad(x, z) {
     const e = 15;
+    if (!validNear(x + e, z) || !validNear(x - e, z) || !validNear(x, z + e) || !validNear(x, z - e)) return null;
+    return [(fillAt(x + e, z) - fillAt(x - e, z)) / (2 * e), (fillAt(x, z + e) - fillAt(x, z - e)) / (2 * e)];
+  }
+  function tepaga(x0, z0, qadam) {   // ko'lmakdan qiyalik bo'ylab yuqoriga yo'l; boshlanish — yo'l ustidagi tasodifiy nuqta (cho'qqi emas)
+    const yol = []; let x = x0, z = z0;
     for (let k = 0; k < qadam; k++) {
-      if (!validNear(x + e, z) || !validNear(x - e, z) || !validNear(x, z + e) || !validNear(x, z - e)) break;
-      const gx = (fillAt(x + e, z) - fillAt(x - e, z)) / (2 * e), gz = (fillAt(x, z + e) - fillAt(x, z - e)) / (2 * e), sl = Math.hypot(gx, gz);
-      if (sl < .003) break;
-      x += gx / sl * 28; z += gz / sl * 28;
+      const g = grad(x, z); if (!g) break;
+      const sl = Math.hypot(g[0], g[1]); if (sl < .006) break;            // cho'qqi yoki tekislik — to'xtaydi
+      x += g[0] / sl * 22; z += g[1] / sl * 22; yol.push([x, z]);
     }
-    return [x, z];
+    if (yol.length < 2) return null;
+    const s = yol[(Math.random() * (yol.length - 1)) | 0];               // oxirgi (eng baland) nuqta olinmaydi
+    // tekshiruv: shu nuqtadan pastga oqim ko'lmakka yaqinlashadimi
+    let px_ = s[0], pz_ = s[1]; const d0 = Math.hypot(px_ - x0, pz_ - z0);
+    for (let k = 0; k < 6; k++) { const g = grad(px_, pz_); if (!g) return null; const sl = Math.hypot(g[0], g[1]); if (sl < .002) break; px_ -= g[0] / sl * 20; pz_ -= g[1] / sl * 20; }
+    return Math.hypot(px_ - x0, pz_ - z0) < d0 ? s : null;
   }
   function tugilsin(i) {            // tomchi: o'sayotgan ko'lmakka tepadan, quriyotgan ko'lmakdan tashqariga, yomg'irda qiyalikda yoki suv ichida
     const R = cam.dist * .75, cx = cam.t.x, cz = cam.t.z, rr = Math.random();
-    const wG = gW * 6, wS = sW * 2.5, wW = wetV * .35, jm = wG + wS + wW;
+    const wG = gW * 6, wS = sW * 2.5, wW = wetV * .35, wR = Math.min(5000, yomgirMm() * 1400), jm = wG + wS + wW + wR;
     if (!jm) { life[i] = 0; return; }
-    const pG = wG / jm, pS = wS / jm;
+    const pG = wG / jm, pS = wS / jm, pR = wR / jm;
     const iso = typeof hudIso !== "undefined" && hudIso;
     for (let k = 0; k < 14; k++) {
       let x, z, t;
-      if (rr < pG) { const j = grow[(Math.random() * growN) | 0]; [x, z] = tepaga(cx_[j] + (Math.random() - .5) * 30, cz_[j] + (Math.random() - .5) * 30, 2 + (Math.random() * 7 | 0)); t = 0; }
+      if (rr < pG) { const j = grow[(Math.random() * growN) | 0], s = tepaga(cx_[j] + (Math.random() - .5) * 30, cz_[j] + (Math.random() - .5) * 30, 3 + (Math.random() * 8 | 0)); if (!s) continue; [x, z] = s; t = 0; }
       else if (rr < pG + pS) { const j = shr[(Math.random() * shrN) | 0]; x = cx_[j] + (Math.random() - .5) * 30; z = cz_[j] + (Math.random() - .5) * 30; t = 2; }
+      else if (rr < pG + pS + pR) { x = cx + (Math.random() * 2 - 1) * R; z = cz + (Math.random() * 2 - 1) * R; t = 3; }
       else {
         if (!wetN) break; const g = wet[(Math.random() * wetN) | 0]; [x, z] = cellXZ(g); x += (Math.random() - .5) * SUV.res; z += (Math.random() - .5) * SUV.res; t = -1;
         if (Math.abs(x - cx) > R || Math.abs(z - cz) > R) continue; }
@@ -4912,8 +4942,8 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
     geo.setAttribute("position", new THREE.BufferAttribute(pos, 3).setUsage(THREE.DynamicDrawUsage));
     geo.setAttribute("aA", new THREE.BufferAttribute(colA, 2).setUsage(THREE.DynamicDrawUsage));
     geo.setAttribute("aC", new THREE.BufferAttribute(colC, 3).setUsage(THREE.DynamicDrawUsage));
-    const mat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
-      vertexShader: `attribute vec2 aA; attribute vec3 aC; varying float vA; varying vec3 vC; void main(){ vA = aA.x; vC = aC; gl_PointSize = aA.y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
+    const mat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, uniforms: { uFar: { value: 1 } },
+      vertexShader: `uniform float uFar; attribute vec2 aA; attribute vec3 aC; varying float vA; varying vec3 vC; void main(){ vA = aA.x * uFar; vC = aC; gl_PointSize = aA.y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
       fragmentShader: `varying float vA; varying vec3 vC; void main(){ vec2 c = gl_PointCoord - .5; float r = length(c); if(r > .5) discard;
         float k = 1. - smoothstep(.3, .5, r); vec3 col = mix(vC * .8, mix(vC, vec3(.92,.98,1.), .55), smoothstep(.45, .05, length(c + vec2(.12, .12))));
         gl_FragColor = vec4(col, vA * k); }` });
@@ -4922,7 +4952,7 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
     for (let i = 0; i < P; i++) { life[i] = 0; }
   }
   function qadam(dt) {
-    kadrN++; const siljit = kadrN % 3 === 0; const sp = cam.dist * .02, lift = cam.dist * .0015 + 3, e = 15;
+    kadrN++; const siljit = kadrN % 3 === 0, dpr = devicePixelRatio || 1; const sp = cam.dist * .02, lift = cam.dist * .0015 + 3, e = 15;
     let v = 0;
     let cur = tirik, tr = 0;
     for (let i = 0; i < P; i++) {
@@ -4937,14 +4967,22 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
       if (!validNear(x + e, z) || !validNear(x - e, z) || !validNear(x, z + e) || !validNear(x, z - e)) { age[i] = life[i]; continue; }
       const gx = (fillAt(x + e, z) - fillAt(x - e, z)) / (2 * e), gz = (fillAt(x, z + e) - fillAt(x, z - e)) / (2 * e);
       const sl = Math.hypot(gx, gz), g = hydCell(x, z), d = g >= 0 ? dep[g] : 0;
+      const jj = g >= 0 ? HEC.map[g] : -1;
+      if (jj >= 0 && tur[i] !== 1 && tgt[jj] > vis[jj]) {                 // tomchi suv yig'iladigan joyga yetdi: ko'lmakka qo'shiladi
+        const qo = tur[i] === 3 ? .025 : .09;
+        vis[jj] = Math.min(tgt[jj], vis[jj] + qo);
+        const r0 = (g / SUV.w) | 0, c0 = g % SUV.w;                        // atrofga ham ozgina
+        for (let q = 0; q < 4; q++) { const nb = HEC.map[(r0 + (q < 2 ? q * 2 - 1 : 0)) * SUV.w + c0 + (q >= 2 ? q * 2 - 5 : 0)]; if (nb >= 0 && tgt[nb] > vis[nb]) vis[nb] = Math.min(tgt[nb], vis[nb] + qo * .4); }
+        tur[i] = 1; age[i] = Math.max(age[i], life[i] - .5); suvKerak = true;   // tomchi ko'lmakka singib ketadi
+      }
       if (tur[i] === 2) { if (d > .005 && !shrM[g]) tur[i] = 1; }       // quriyotgan ko'lmak suvi qo'shni ko'lga yetdi
-      else if (d > .005) tur[i] = 1;
+      else if (tur[i] !== 3 && d > .005) tur[i] = 1;
       else if (tur[i] === 1) { age[i] = life[i]; continue; }          // suv zarrachasi suvdan chiqmaydi
       if (sl < .002) {                                                 // tekis joy (ko'lmak tubi): sekin tarqalib, so'nadi
         tin[i] += dt; if (tin[i] > 1.2) { age[i] = Math.max(age[i], life[i] - .6); }
         px[i] += (Math.random() - .5) * sp * .15 * dt; pz[i] += (Math.random() - .5) * sp * .15 * dt;
       } else {
-        const k = sp * (tur[i] === 1 ? .55 + .45 * Math.min(1, Math.sqrt(d)) : .5) * Math.min(1.6, .35 + Math.sqrt(sl * 25)) * dt / sl;
+        const k = sp * (tur[i] === 1 ? .55 + .45 * Math.min(1, Math.sqrt(d)) : tur[i] === 3 ? .18 : .5) * Math.min(1.6, .35 + Math.sqrt(sl * 25)) * dt / sl;
         px[i] -= gx * k; pz[i] -= gz * k;
       }
       { let tr_ = .55, tg_ = .78, tb_ = 1.;
@@ -4959,7 +4997,7 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
         const o = v * 3, k = 1 - q / TR;
         pos[o] = hx[b + q]; pos[o + 1] = hy[b + q]; pos[o + 2] = hz[b + q];
         colC[o] = pr[i * 3]; colC[o + 1] = pr[i * 3 + 1]; colC[o + 2] = pr[i * 3 + 2];
-        colA[v * 2] = al * (.25 + .75 * k) * (tur[i] === 1 ? 1 : .9); colA[v * 2 + 1] = (tur[i] === 1 ? 2.4 + 5 * k : 2.2 + 3.8 * k) * (devicePixelRatio || 1);
+        colA[v * 2] = al * (.25 + .75 * k) * (tur[i] === 1 ? 1 : tur[i] === 3 ? .75 : .9); colA[v * 2 + 1] = (tur[i] === 1 ? 1.8 + 3.6 * k : tur[i] === 3 ? 1.3 + 2 * k : 1.7 + 3.2 * k) * dpr;
         v++;
       }
     }
@@ -5000,19 +5038,21 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
   function kut() {
     if (typeof hecChiz === "undefined" || typeof $ === "undefined" || !$("hecPlay") || !$("hecPlay").onclick) return setTimeout(kut, 500);
     asl = hecChiz;
-    hecChiz = function () { asl.apply(this, arguments); if (!playOn) { tf = hecT; holat(true); } };
+    hecChiz = function () { asl.apply(this, arguments); if (!playOn) { tf = hecT; visYangi = true; holat(true); } };
     $("hecPlay").onclick = boshla;
     ["hecT", "hecMax", "hecSar"].forEach(id => { const o = $(id)[id === "hecT" ? "oninput" : "onclick"]; const h = function () { if (playOn) to_xta(); return o.apply(this, arguments); }; if (id === "hecT") $(id).oninput = h; else $(id).onclick = h; });
     let t0 = performance.now();
     (function z(now) {
       requestAnimationFrame(z);
       const dt = Math.min(.05, (now - t0) / 1000); t0 = now;
-      const faol = PROB.zarra && HEC && U.uDatOn.value > .5 && U.uSuvOn.value > .5;
+      const faol = PROB.zarra && HEC && U.uDatOn.value > .5 && U.uSuvOn.value > .5 && cam.dist < 16000;
+      if (mesh) mesh.material.uniforms.uFar.value = 1 - Math.min(1, Math.max(0, (cam.dist - 5000) / 11000));   // uzoqlashgan sari tomchilar so'nadi
       if (!mesh && faol) qur();
       if (mesh) mesh.visible = faol;
       if (!faol) return;
       if (!dep) holat();
-      if (!playOn && now - lastDat > 500) { lastDat = now; holat(); }   // kamera siljisa ko'rinishdagi ro'yxatlar yangilanadi
+      if (!playOn && now - lastDat > 300) { lastDat = now; holat(); if (growN || suvKerak) suvKerak = true; }   // kamera siljisa ro'yxatlar yangilanadi
+      if (!playOn && suvKerak && now - lastSuv > 160 && hecT >= 0) { lastSuv = now; suvKerak = false; suvChiz(); }
       qadam(dt); dirty = true;
     })(t0);
   }
