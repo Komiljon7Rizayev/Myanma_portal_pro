@@ -4786,5 +4786,165 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
   paint();
 })();
 </script>
+<script>
+// ===== Sel suvining DEM bo'yicha oqishi — oqim zarrachalari + soatlar orasida silliq o'tish =====
+(function () {
+  const PROB = window.PROB = { zarra: true, silliq: true };
+  const P = 12000, TR = 14; let kadrN = 0;                       // zarrachalar soni, iz uzunligi (nuqta)
+  let dep = null, wet = null, wetN = 0, flow = null, joy = null, tf = -1, playOn = false, lastT = 0, lastDat = 0, lastStat = -1;
+  const px = new Float32Array(P), pz = new Float32Array(P), age = new Float32Array(P), life = new Float32Array(P);
+  const hx = new Float32Array(P * TR), hz = new Float32Array(P * TR), hy = new Float32Array(P * TR);
+  let geo = null, mesh = null, pos = null, colA = null;
+
+  function oqimMaydon() {           // uFlow teksturasi (x, z; -1..1) -> Float32
+    const t = U.uFlow.value; if (!t) return null;
+    const D = t.image.data, n = SUV.w * SUV.h, f = new Float32Array(n * 2);
+    for (let i = 0; i < n; i++) { f[i * 2] = (D[i * 2] - 128) / 127; f[i * 2 + 1] = (D[i * 2 + 1] - 128) / 127; }
+    return f;
+  }
+  function chuqurlik(a, b, f) {     // a, b soatlar orasidagi chuqurlik (m) har panjara katagiga
+    const n = SUV.w * SUV.h; if (!dep || dep.length !== n) dep = new Float32Array(n);
+    dep.fill(0); const N = HEC.N, Ka = hecKadr(a), Kb = b >= 0 ? hecKadr(b) : Ka;
+    let w = 0; if (!wet || wet.length !== N) wet = new Int32Array(N);
+    const iso = typeof hudIso !== "undefined" && hudIso && HEC.hud;
+    for (let j = 0; j < N; j++) {
+      const d = hecD(Ka[j]) * (1 - f) + hecD(Kb[j]) * f; if (d < .1) continue;
+      dep[HEC.idx[j]] = d; if (!iso || HEC.hud[j] === hudSel) wet[w++] = HEC.idx[j];
+    }
+    wetN = w;
+  }
+  function suvChiz(a, b, f) {       // datData'ni oraliq chuqurlik bilan to'ldirish (chegara asta siljiydi)
+    const D = datData, N = HEC.N, Ka = hecKadr(a), Kb = hecKadr(b);
+    if (!joy || joy.length !== N) { joy = new Uint8Array(N); for (let j = 0; j < N; j++) joy[j] = hecJoy(j, HEC.idx[j]); }
+    D.fill(0);
+    for (let j = 0; j < N; j++) {
+      const d = hecD(Ka[j]) * (1 - f) + hecD(Kb[j]) * f; if (d < .1) continue;
+      const col = HEC_JOY[joy[j]][1], o = HEC.idx[j] * 4, e = Math.min(1, (d - .1) / .08);
+      D[o] = col[0]; D[o + 1] = col[1]; D[o + 2] = col[2]; D[o + 3] = Math.round((d < .3 ? 175 : 225) * (.35 + .65 * e));
+    }
+    datT.needsUpdate = true; dirty = true;
+  }
+  const tur = new Uint8Array(P), tin = new Float32Array(P);   // tur: 1 suv ichida, 0 quruq qiyalikda (yomg'ir oqimi)
+  function yomgirUlush() {          // quruq qiyaliklarda tug'iladigan zarrachalar ulushi (yomg'ir kuchiga qarab)
+    const t = playOn ? Math.floor(tf) : hecT;
+    if (t < 0) return .35;
+    const mm = hecSoatMm(t); return Math.min(.85, .12 + mm / 4);
+  }
+  function tugilsin(i) {            // zarrachani kamera ko'rinishidagi joyga qo'yish: suvga yoki yomg'ir paytida qiyalikka
+    const R = cam.dist * .75, cx = cam.t.x, cz = cam.t.z, quruq = Math.random() < yomgirUlush();
+    for (let k = 0; k < 14; k++) {
+      let x, z;
+      if (quruq || !wetN) { x = cx + (Math.random() * 2 - 1) * R; z = cz + (Math.random() * 2 - 1) * R; }
+      else { const g = wet[(Math.random() * wetN) | 0]; [x, z] = cellXZ(g); x += (Math.random() - .5) * SUV.res; z += (Math.random() - .5) * SUV.res;
+        if (Math.abs(x - cx) > R || Math.abs(z - cz) > R) continue; }
+      if (!validNear(x, z) || hudAt(x, z) < 0) continue;
+      if (typeof hudIso !== "undefined" && hudIso && hudAt(x, z) !== hudSel) continue;
+      const g = hydCell(x, z); tur[i] = g >= 0 && dep[g] >= .1 ? 1 : 0;
+      px[i] = x; pz[i] = z; age[i] = 0; tin[i] = 0; life[i] = tur[i] ? 3 + Math.random() * 3 : 4 + Math.random() * 4;
+      for (let q = 0; q < TR; q++) { hx[i * TR + q] = x; hz[i * TR + q] = z; hy[i * TR + q] = NaN; }
+      return;
+    }
+    life[i] = 0;
+  }
+  function qur() {
+    geo = new THREE.BufferGeometry();
+    pos = new Float32Array(P * TR * 3); colA = new Float32Array(P * TR * 2);   // colA: x = shaffoflik, y = o'lcham
+    geo.setAttribute("position", new THREE.BufferAttribute(pos, 3).setUsage(THREE.DynamicDrawUsage));
+    geo.setAttribute("aA", new THREE.BufferAttribute(colA, 2).setUsage(THREE.DynamicDrawUsage));
+    const mat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false,
+      vertexShader: `attribute vec2 aA; varying float vA; void main(){ vA = aA.x; gl_PointSize = aA.y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
+      fragmentShader: `varying float vA; void main(){ vec2 c = gl_PointCoord - .5; float r = length(c); if(r > .5) discard;
+        float k = 1. - smoothstep(.25, .5, r); vec3 col = mix(vec3(.05,.25,.6), vec3(.92,.98,1.), smoothstep(.45, .1, r));
+        gl_FragColor = vec4(col, vA * k); }` });
+    mesh = new THREE.Points(geo, mat);
+    mesh.frustumCulled = false; mesh.renderOrder = 5; scene.add(mesh);
+    for (let i = 0; i < P; i++) { life[i] = 0; }
+  }
+  function qadam(dt) {
+    kadrN++; const siljit = kadrN % 3 === 0; const sp = cam.dist * .02, lift = cam.dist * .0015 + 3, e = 15;
+    let v = 0;
+    for (let i = 0; i < P; i++) {
+      if (!(age[i] < life[i])) tugilsin(i);
+      if (!life[i]) continue;
+      age[i] += dt;
+      const x = px[i], z = pz[i];
+      if (!validNear(x + e, z) || !validNear(x - e, z) || !validNear(x, z + e) || !validNear(x, z - e)) { age[i] = life[i]; continue; }
+      const gx = (fillAt(x + e, z) - fillAt(x - e, z)) / (2 * e), gz = (fillAt(x, z + e) - fillAt(x, z - e)) / (2 * e);
+      const sl = Math.hypot(gx, gz), g = hydCell(x, z), d = g >= 0 ? dep[g] : 0;
+      if (d >= .1) tur[i] = 1;
+      else if (tur[i]) { age[i] = life[i]; continue; }                // suv zarrachasi suvdan chiqmaydi
+      if (sl < .002) {                                                 // tekis joy (ko'lmak tubi): sekin tarqalib, so'nadi
+        tin[i] += dt; if (tin[i] > 1.2) { age[i] = Math.max(age[i], life[i] - .6); }
+        px[i] += (Math.random() - .5) * sp * .15 * dt; pz[i] += (Math.random() - .5) * sp * .15 * dt;
+      } else {
+        const k = sp * (tur[i] ? .55 + .45 * Math.min(1, Math.sqrt(d)) : .45) * Math.min(1.6, .35 + Math.sqrt(sl * 25)) * dt / sl;
+        px[i] -= gx * k; pz[i] -= gz * k;
+      }
+      const b = i * TR;
+      if (siljit) for (let q = TR - 1; q > 0; q--) { hx[b + q] = hx[b + q - 1]; hz[b + q] = hz[b + q - 1]; hy[b + q] = hy[b + q - 1]; }
+      hx[b] = px[i]; hz[b] = pz[i]; hy[b] = validNear(px[i], pz[i]) ? sceneY(fillAt(px[i], pz[i])) + lift : NaN;
+      const al = Math.min(1, age[i] / .4, (life[i] - age[i]) / .6);
+      for (let q = 0; q < TR; q++) {
+        if (!(hy[b + q] === hy[b + q])) continue;
+        const o = v * 3, k = 1 - q / TR;
+        pos[o] = hx[b + q]; pos[o + 1] = hy[b + q]; pos[o + 2] = hz[b + q];
+        colA[v * 2] = al * (.25 + .75 * k) * (tur[i] ? 1 : .85); colA[v * 2 + 1] = (tur[i] ? 2.4 + 5 * k : 2 + 3.4 * k) * (devicePixelRatio || 1);
+        v++;
+      }
+    }
+    geo.setDrawRange(0, v); geo.attributes.position.needsUpdate = true; geo.attributes.aA.needsUpdate = true;
+  }
+  function holat() {                // hozirgi kadr bo'yicha chuqurlik maydoni
+    if (!HEC) return;
+    if (!flow) flow = oqimMaydon();
+    if (!HEC.hud) { HEC.hud = new Int16Array(HEC.N); for (let j = 0; j < HEC.N; j++) { const [x, z] = cellXZ(HEC.idx[j]); HEC.hud[j] = hudAt(x, z); } }
+    const a = Math.floor(Math.max(tf, 0)), f = tf < 0 ? 0 : tf - a;
+    if (hecT < 0 && !playOn) chuqurlik(-1, -1, 0); else chuqurlik(a, Math.min(a + 1, HEC.T - 1), f);
+  }
+  // hecChiz o'zgarganda (surgich, eng katta, hodisa almashinuvi) maydonni yangilash
+  let asl = null;
+  // Ijro: soatlar orasini silliq o'tkazish
+  function ijro(now) {
+    if (!playOn) return;
+    const dt = Math.min(.1, (now - lastT) / 1000); lastT = now;
+    tf += dt / .45;                                   // 1 soat = 0.45 s
+    if (tf >= HEC.T - 1) { tf = HEC.T - 1; to_xta(); return; }
+    const a = Math.floor(tf), f = tf - a;
+    if (a !== lastStat) { lastStat = a; hecT = a; $("hecT").value = a; asl(); }   // statistikalar soatiga bir marta
+    if (PROB.silliq && now - lastDat > 45) { lastDat = now; suvChiz(a, a + 1, f); }
+    chuqurlik(a, a + 1, f);
+    requestAnimationFrame(ijro);
+  }
+  function to_xta() { playOn = false; $("hecPlay").textContent = "▶ Ijro"; $("hecPlay").classList.remove("on"); yomgir(0); hecT = Math.round(tf); $("hecT").value = hecT; asl(); holat(); }
+  function boshla() {
+    if (playOn) { to_xta(); return; }
+    if (hecPlayId) hecStop();
+    if (hecT < 0 || hecT >= HEC.T - 1) hecT = 0;
+    tf = hecT; lastStat = -1; playOn = true; lastT = performance.now();
+    $("hecPlay").textContent = "❚❚ To'xtatish"; $("hecPlay").classList.add("on");
+    if (!YOG) { yogYuk = yogYuk || yogYukla(); yogYuk.catch(() => { yogYuk = null; }); }
+    requestAnimationFrame(ijro);
+  }
+  function kut() {
+    if (typeof hecChiz === "undefined" || typeof $ === "undefined" || !$("hecPlay") || !$("hecPlay").onclick) return setTimeout(kut, 500);
+    asl = hecChiz;
+    hecChiz = function () { asl.apply(this, arguments); if (!playOn) { tf = hecT; holat(); } };
+    $("hecPlay").onclick = boshla;
+    ["hecT", "hecMax", "hecSar"].forEach(id => { const o = $(id)[id === "hecT" ? "oninput" : "onclick"]; const h = function () { if (playOn) to_xta(); return o.apply(this, arguments); }; if (id === "hecT") $(id).oninput = h; else $(id).onclick = h; });
+    let t0 = performance.now();
+    (function z(now) {
+      requestAnimationFrame(z);
+      const dt = Math.min(.05, (now - t0) / 1000); t0 = now;
+      const faol = PROB.zarra && HEC && U.uDatOn.value > .5 && U.uSuvOn.value > .5;
+      if (!mesh && faol) qur();
+      if (mesh) mesh.visible = faol;
+      if (!faol) return;
+      if (!dep) holat();
+      qadam(dt); dirty = true;
+    })(t0);
+  }
+  kut();
+})();
+</script>
 </body>
 </html>
