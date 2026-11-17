@@ -435,6 +435,66 @@ html[data-theme="light"]{--sl:#228be6}
 #day::-webkit-slider-thumb{border-color:var(--sl)!important}
 #day::-moz-range-thumb{border-color:var(--sl)!important}
 </style>
+<style id="ticons-css">/* o'ng burchak: faqat belgilar (yozuv sichqoncha ustida, title orqali) */
+.top .ticons{display:flex;align-items:center;gap:6px;flex:none}
+.top .ticons .hb,.top .ticons .upd{width:32px;height:32px;padding:0;justify-content:center;gap:0;position:relative}
+.top .ticons .hb span,.top .ticons .upd span{display:none}
+.top .ticons .hb svg,.top .ticons .upd svg{width:16px;height:16px}
+.top .ticons .upd i{position:absolute;right:3px;top:3px;width:7px;height:7px}
+.top .ticons .upd i.new{width:8px;height:8px}
+.top .ticons .updp{left:auto;right:0}
+</style>
+<style id="srch-css">/* tepa qatordagi qishloq qidiruvi (index.html kabi) */
+.top .search{position:relative;flex:0 1 320px;min-width:150px}
+.top .search input{width:100%;height:34px;border:1px solid var(--tline);border-radius:10px;background:var(--glass-2);color:var(--ttx);font:400 13.5px var(--body);padding:0 30px 0 34px;outline:none}
+.top .search input:focus{border-color:#7fd06c}
+.top .search input::placeholder{color:var(--ttx2)}
+.top .search>svg{position:absolute;left:11px;top:9px;width:16px;height:16px;fill:none;stroke:var(--ttx2);stroke-width:1.7;stroke-linecap:round}
+.top .search .qx{position:absolute;right:5px;top:5px;width:24px;height:24px;border:0;border-radius:6px;background:none;color:var(--ttx2);font:600 16px/1 var(--body);cursor:pointer}
+.top .search .qx:hover{background:var(--glass-2);color:var(--ttx)}
+.results{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--bg2);border:1px solid var(--line2);border-radius:12px;padding:5px;z-index:70;box-shadow:0 14px 30px rgba(0,0,0,.45);max-height:340px;overflow:auto}
+.results button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:7px 10px;border:0;border-radius:8px;background:none;color:var(--tx);font:400 13.5px var(--body);cursor:pointer}
+.results button:hover,.results button:focus-visible,.results button.on{background:var(--glass-2)}
+.results button.cur{font-weight:700}
+.results span{color:var(--tx2);font-size:12.5px;white-space:nowrap}
+.results p{padding:8px 10px;margin:0;color:var(--tx2);font-size:13px}
+html[data-theme="light"] .results{box-shadow:0 14px 30px rgba(60,48,30,.2)}
+</style>
+<style id="mctl-css">/* xarita tugmalari: index.html dagi kabi (Maps / 3D / Tozalash / Full / Ekran) */
+.mctl{position:absolute;right:12px;bottom:92px;z-index:4;display:flex;flex-direction:column;align-items:stretch;gap:4px;background:var(--glass);border:1px solid var(--line2);border-radius:11px;padding:3px;backdrop-filter:blur(9px);box-shadow:0 10px 26px rgba(0,0,0,.35)}
+.mctl button{height:30px;min-width:40px;padding:0 10px;border:0;border-radius:8px;background:none;font:600 12.5px var(--body);color:var(--tx2);display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap}
+.mctl button:hover{background:var(--glass-2);color:var(--tx)}
+.mctl button[aria-pressed="true"]{background:#3f8f49;color:#fff}
+.mctl svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.bmseg{display:flex;flex-direction:column;gap:3px;padding-bottom:4px;margin-bottom:1px;border-bottom:1px solid var(--line2)}
+.bmseg .cv{width:9px;height:9px;margin-left:auto;opacity:.7}
+.bmg{position:absolute;right:120px;bottom:92px;width:400px;max-width:calc(100% - 140px);z-index:5;background:rgba(22,44,30,.96);border:1px solid var(--line2);border-radius:14px;padding:10px;box-shadow:0 16px 36px rgba(0,0,0,.5);backdrop-filter:blur(10px);color:var(--tx)}
+.bmg-h{display:flex;align-items:baseline;justify-content:space-between;margin:0 2px 8px}
+.bmg-h b{font:600 14px var(--display)}
+.bmg-h small{font-size:11.5px;color:var(--tx2)}
+.bmg-cur{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 2px 10px;padding:7px 10px;border-radius:9px;background:var(--glass-2);font-size:12.5px;color:var(--tx2)}
+.bmg-cur b{color:var(--tx);font-weight:600}
+.bmg-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 8px;max-height:min(470px,58vh);overflow-y:auto;overscroll-behavior:contain;padding:2px 6px 2px 2px}
+.bmg-g button{display:flex;flex-direction:column;gap:4px;align-items:stretch;padding:4px;border-radius:8px;border:1px solid transparent;background:none;text-align:center;font:500 11px/1.2 var(--body);color:var(--tx2);cursor:pointer;white-space:normal;word-break:break-word;overflow:hidden}
+.bmg-g i{display:block;aspect-ratio:4/3;border-radius:6px;border:1px solid var(--line2);background:#142819 center/cover no-repeat;transition:border-color .15s,transform .15s}
+.bmg-g button:hover{color:var(--tx)}
+.bmg-g button:hover i{border-color:#5fa86a;transform:translateY(-1px)}
+.bmg-g button[aria-pressed="true"]{background:rgba(127,208,108,.12);border-color:rgba(127,208,108,.5);color:#f0c744;font-weight:700}
+.bmg-g button[aria-pressed="true"] i{border-color:#f0c744;box-shadow:0 0 0 2px rgba(240,199,68,.3)}
+html[data-theme="light"] .bmg{background:rgba(250,247,240,.97);box-shadow:0 16px 36px rgba(60,48,30,.25)}
+html[data-theme="light"] .bmg-g i{background-color:#d8d2c4}
+html[data-theme="light"] .bmg-g button[aria-pressed="true"]{color:#8a6a00}
+html[data-theme="light"] .mctl{box-shadow:0 10px 26px rgba(60,48,30,.16)}
+.c3d{position:absolute;right:12px;bottom:92px;z-index:4;display:flex;flex-direction:column;gap:3px;background:var(--glass);border:1px solid var(--line2);border-radius:11px;padding:3px;backdrop-filter:blur(9px);box-shadow:0 10px 26px rgba(0,0,0,.35)}
+.c3d button{width:34px;height:32px;border:0;border-radius:8px;background:none;display:grid;place-items:center;color:var(--tx2);cursor:pointer}
+.c3d button:hover{background:var(--glass-2);color:var(--tx)}
+.c3d button[aria-pressed="true"]{background:#3f8f49;color:#fff}
+.c3d svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+#c-needle{width:18px;height:18px;transition:transform .1s linear}
+.tourcap{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:5;display:flex;flex-direction:column;align-items:center;padding:8px 16px;border-radius:12px;background:var(--glass);border:1px solid var(--line2);box-shadow:0 10px 26px rgba(0,0,0,.35);pointer-events:none}
+.tourcap b{font:600 15px var(--display)}.tourcap span{font-size:12px;color:var(--tx2)}
+html[data-theme="light"] .c3d,html[data-theme="light"] .tourcap{box-shadow:0 10px 26px rgba(60,48,30,.16)}
+</style>
 </head>
 <body>
 <script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('minbu.theme')==='light'?'light':'dark')}catch(e){}</script>
@@ -446,15 +506,23 @@ html[data-theme="light"]{--sl:#228be6}
     <a class="pb pfc" href="prognoz.html" aria-current="page" title="Index Prognosis: NDVI prognozi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 13.5h12"/><path d="M3 11l3-3.2 2.4 1.8L13 4.5"/><path d="M10.2 4.5H13v2.8"/></svg><span class="t">Index Prognosis</span></a>
     <a class="pb pfl" href="index_flood.html" title="Flood Mapping: suv toshqini xaritasi va prognozi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.6a3 3 0 0 0-3 3c0 2.1 3 4.7 3 4.7s3-2.6 3-4.7a3 3 0 0 0-3-3z"/><circle cx="8" cy="4.6" r=".9"/><path d="M1.4 11.4c1.1 0 1.5-.9 2.6-.9s1.5.9 2.6.9 1.5-.9 2.6-.9 1.5.9 2.6.9 1.5-.9 2.8-.9"/><path d="M1.4 14.2c1.1 0 1.5-.9 2.6-.9s1.5.9 2.6.9 1.5-.9 2.6-.9 1.5.9 2.6.9 1.5-.9 2.8-.9"/></svg><span class="t">Flood Mapping</span></a>
   </nav>
+  <div class="search">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="m11 11 3.5 3.5"/></svg>
+    <input id="q" type="search" placeholder="Qishloq nomini yozing" autocomplete="off" aria-label="Qishloq qidirish">
+    <button class="qx" id="qx" type="button" hidden>×</button>
+    <div class="results" id="res" hidden></div>
+  </div>
   <span class="pill" id="asof"><i></i>…</span>
+  <div class="sp"></div>
+  <div class="ticons">
   <div class="updw">
-    <button class="upd" id="updb" type="button" aria-expanded="false" aria-controls="updp"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.4 6.5A5.5 5.5 0 0 0 3.2 4.6"/><path d="M2.6 2.2v2.8h2.8"/><path d="M2.6 9.5a5.5 5.5 0 0 0 10.2 1.9"/><path d="M13.4 13.8V11h-2.8"/></svg><span>Yangilanishlar</span><i id="upddot"></i></button>
+    <button class="upd" id="updb" type="button" title="Yangilanishlar" aria-expanded="false" aria-controls="updp"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.4 6.5A5.5 5.5 0 0 0 3.2 4.6"/><path d="M2.6 2.2v2.8h2.8"/><path d="M2.6 9.5a5.5 5.5 0 0 0 10.2 1.9"/><path d="M13.4 13.8V11h-2.8"/></svg><span>Yangilanishlar</span><i id="upddot"></i></button>
     <div class="updp" id="updp" hidden></div>
   </div>
-  <div class="sp"></div>
   <button class="hb" id="gbtn" title="Sahifadan qanday foydalaniladi"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.3"/><path d="M6.3 6.2a1.8 1.8 0 1 1 2.6 1.6c-.6.3-.9.7-.9 1.4"/><path d="M8 11.4v.2"/></svg><span>Qo'llanma</span></button>
   <button class="hb" id="rbtn" title="Rahbariyat uchun bir sahifali hisobot"><svg viewBox="0 0 16 16"><path d="M4 1.8h5.5L12.5 5v9.2H4z"/><path d="M9.3 1.8V5h3.2M6 8h4.5M6 10.5h4.5"/></svg><span>Hisobot</span></button>
-  <button class="hb" id="mbtn"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.3"/><path d="M8 7.3v4"/><path d="M8 4.8v.2"/></svg><span>Model haqida</span></button>
+  <button class="hb" id="mbtn" title="Model haqida"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.3"/><path d="M8 7.3v4"/><path d="M8 4.8v.2"/></svg><span>Model haqida</span></button>
+  </div>
   <button class="thm" id="thb" type="button"></button>
   <button class="who" id="who" type="button" hidden title="Chiqish"></button>
 </header>
@@ -462,10 +530,10 @@ html[data-theme="light"]{--sl:#228be6}
   <aside class="rail">
     <section><h3 class="step"><i>1</i>Qaysi sanaga prognoz?</h3><div class="hz" id="hz"></div></section>
     <section><h3 class="step"><i>2</i>Xaritada nimani ko'ray?</h3><div class="modes" id="mode"></div></section>
-    <section><h3 class="step"><i>3</i>Qaysi hudud?</h3><select id="vsel" aria-label="Qishloq"></select></section>
+    <select id="vsel" hidden aria-hidden="true" tabindex="-1"></select>
     <section class="tog" aria-label="Qo'shimcha qatlamlar">
       <label id="t_ndw" hidden><input type="checkbox" id="t_nd">Haqiqiy NDVI rasteri (Sentinel-2)</label>
-      <label><input type="checkbox" id="t_sat">Sun'iy yo'ldosh surati (fon)</label>
+      <input type="checkbox" id="t_sat" hidden aria-hidden="true"><!-- fon endi Maps tugmasida -->
       <label><input type="checkbox" id="t_lab" checked>Qishloq nomlari (yaqinlashtirganda)</label>
       <label><input type="checkbox" id="t_wat">Yaqinda suv kelgan dalalar</label>
     </section>
@@ -480,6 +548,26 @@ html[data-theme="light"]{--sl:#228be6}
     </div>
     <div class="ndc" id="ndc" hidden><button id="ndp" type="button" title="Oldingi surat" aria-label="Oldingi surat">‹</button><span><b id="ndd"></b><small id="ndq"></small></span><button id="ndn" type="button" title="Keyingi surat" aria-label="Keyingi surat">›</button><button id="ndx" type="button" title="Rasterni yopish" aria-label="Rasterni yopish">×</button></div>
     <div class="lgd" id="legend"></div>
+    <div class="bmg" id="bmg" hidden role="dialog" aria-label="Asosiy xaritalar"><div class="bmg-h"><b id="bmg-t"></b><small>ArcGIS Online · Google</small></div><div class="bmg-cur"><span id="bmg-l"></span><b id="bmg-c"></b></div><div class="bmg-g" id="bmg-g"></div></div>
+    <div class="c3d" id="c3d" hidden role="group">
+      <button type="button" id="c-north"><svg viewBox="0 0 16 16" id="c-needle"><path d="M8 1.5 10.6 8H5.4z" fill="#e5534b" stroke="none"/><path d="M8 14.5 5.4 8h5.2z" fill="#dfe8dc" stroke="none"/></svg></button>
+      <button type="button" id="c-rl"><svg viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 0 1.5-3.6M3.2 2.4v2.6h2.6"/></svg></button>
+      <button type="button" id="c-rr"><svg viewBox="0 0 16 16"><path d="M13 8a5 5 0 1 1-1.5-3.6M12.8 2.4v2.6h-2.6"/></svg></button>
+      <button type="button" id="c-tu"><svg viewBox="0 0 16 16"><path d="M2 12h12M4 12l4-7 4 7"/></svg></button>
+      <button type="button" id="c-td"><svg viewBox="0 0 16 16"><rect x="3" y="3" width="10" height="10" rx="1.5"/><path d="M3 8h10"/></svg></button>
+      <button type="button" id="c-orb" aria-pressed="false"><svg viewBox="0 0 16 16"><ellipse cx="8" cy="8" rx="6.2" ry="2.8"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/><path d="M12.6 5.4l1.6-.4-.3 1.7"/></svg></button>
+      <button type="button" id="c-tour" aria-pressed="false"><svg viewBox="0 0 16 16"><path d="M2 9.5 14 3l-3.5 11-2.6-4.4z"/><path d="M7.9 9.6 14 3"/></svg></button>
+    </div>
+    <div class="tourcap" id="tourcap" hidden></div>
+    <div class="mctl" id="mctl">
+      <div class="bmseg" id="bm" role="group">
+        <button type="button" data-b="maps" id="bbm" aria-expanded="false"></button>
+        <button type="button" data-b="3d" id="b3d" aria-pressed="false"></button>
+      </div>
+      <button type="button" id="breset"></button>
+      <button type="button" id="bfull" aria-pressed="false"></button>
+      <button type="button" id="bfs" aria-pressed="false"></button>
+    </div>
     <div class="tip" id="tip" hidden></div>
     <div class="loading" id="load"><div><span class="spin"></span><span id="loadt">Prognoz ma'lumotlari yuklanmoqda…</span></div></div>
   </section>
@@ -1193,6 +1281,11 @@ window.__FC_I18N={
 var MODE='agol',IDS={"data": "0a345e7052434403b9638d6cc9c3ba95", "parcels": "4e541b92a3964aa7886a8914173f4db5", "rasters": "b28aea0e5a5b4389af784621bd21f730", "forecast": "5508d753653d47ca8da45ed0517af75e", "ndvi_days": "deadee2a1cd34bada3b1ccfe65d0dc5b"},PORTAL='https://land-tiiame.maps.arcgis.com';
 var $=function(i){return document.getElementById(i)};
 I18N.add(window.__FC_I18N||{});
+I18N.add({"Bosing — qishloqni tanlash":["Click to select the village","Нажмите, чтобы выбрать деревню","ကျေးရွာရွေးရန် နှိပ်ပါ"],
+"Qishloq nomini yozing":["Type a village name","Введите название деревни","ကျေးရွာအမည် ရိုက်ထည့်ပါ"],
+"Qishloq qidirish":["Search village","Поиск деревни","ကျေးရွာ ရှာရန်"],
+"Bunday qishloq topilmadi. Boshqa nom bilan urinib ko'ring.":["No such village. Try another name.","Такая деревня не найдена. Попробуйте другое название.","ဤကျေးရွာ မတွေ့ပါ။ အခြားအမည်ဖြင့် စမ်းကြည့်ပါ။"],
+"Qayta bosing — butun tuman":["Click again for the whole township","Нажмите ещё раз — весь район","မြို့နယ်တစ်ခုလုံးအတွက် ထပ်နှိပ်ပါ"]});
 var MON={uz:['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentabr','oktabr','noyabr','dekabr'],
   en:['January','February','March','April','May','June','July','August','September','October','November','December'],
   ru:['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'],
@@ -1329,10 +1422,20 @@ function buildRail(){
   $('dtk').innerHTML=[1,10,20,30].map(function(d){return '<span style="left:'+((d-1)/(DMAX-1)*100)+'%"><b>'+(d===1?'1':L("{0} kun",d))+'</b>'+dD(d)+'</span>'}).join('');
   $('wsel').innerHTML=[[183,L("6 oy")],[365,L("1 yil")],[730,L("2 yil")],[99999,L("Hammasi")]].map(function(w){return '<button data-w="'+w[0]+'" aria-pressed="'+(S.win===w[0])+'">'+w[1]+'</button>'}).join('');
 }
+/* township outline from the village polygons: edges shared by two villages cancel, the rest are chained into rings */
+function outline(fc){var K=function(p){return p[0].toFixed(6)+','+p[1].toFixed(6)},E={},P={},adj={},rings=[];
+  (fc&&fc.features||[]).forEach(function(f){var g=f.geometry,ps=g.type==='Polygon'?[g.coordinates]:g.type==='MultiPolygon'?g.coordinates:[];
+    ps.forEach(function(p){p.forEach(function(r){for(var i=0;i<r.length-1;i++){var a=K(r[i]),b=K(r[i+1]);if(a===b)continue;P[a]=r[i];P[b]=r[i+1];
+      var k=a<b?a+'|'+b:b+'|'+a;E[k]=(E[k]||0)+1}})})});
+  Object.keys(E).forEach(function(k){if(E[k]!==1)return;var q=k.split('|');(adj[q[0]]=adj[q[0]]||[]).push(q[1]);(adj[q[1]]=adj[q[1]]||[]).push(q[0])});
+  Object.keys(adj).forEach(function(s0){while(adj[s0].length){var r=[P[s0]],c=s0,n;
+    do{n=adj[c].pop();adj[n].splice(adj[n].indexOf(c),1);r.push(P[n]);c=n}while(c!==s0&&adj[c].length);
+    if(c===s0&&r.length>3)rings.push(r)}});
+  return rings}
 function start(gj){
   var V=D.V;TB=[[Math.min.apply(null,V.map(function(v){return v.b[0]})),Math.min.apply(null,V.map(function(v){return v.b[1]}))],[Math.max.apply(null,V.map(function(v){return v.b[2]})),Math.max.apply(null,V.map(function(v){return v.b[3]}))]];
   readHash();buildRail();
-  $('vsel').onchange=function(){setVillage(+this.value)};
+  $('vsel').onchange=function(){setVillage(+this.value)};qInit();
   $('hz').onclick=function(e){var b=e.target.closest('button');if(!b)return;stopPlay();setDay(+b.dataset.d)};
   $('mode').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.mode=b.dataset.m;S.cls=-1;if(NDI>=0)ndShow(-1);all()};
   $('tabs').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.tab=b.dataset.t;renderTab()};
@@ -1350,6 +1453,11 @@ function start(gj){
     map.addLayer({id:'sat',type:'raster',source:'sat',layout:{visibility:'none'}});
     var hasTown=D.town&&D.town.length;   /* township outline exists only in the newer data file */
     if(hasTown)map.addSource('town',{type:'geojson',data:{type:'Feature',properties:{},geometry:{type:'MultiLineString',coordinates:D.town}}});
+    var TRG=hasTown?D.town:outline(D.bound);
+    if(TRG.length){var ar=function(r){var a=0;for(var i=0;i<r.length-1;i++)a+=r[i][0]*r[i+1][1]-r[i+1][0]*r[i][1];return a};
+      map.addSource('tmask',{type:'geojson',maxzoom:10,buffer:64,data:{type:'Feature',properties:{},geometry:{type:'Polygon',
+        coordinates:[[[-180,-85],[180,-85],[180,85],[-180,85],[-180,-85]]].concat(TRG.map(function(r){return ar(r)>0?r.slice().reverse():r}))}}});
+      map.addLayer({id:'mask',type:'fill',source:'tmask',paint:{'fill-color':'#13261a','fill-opacity':1}})}
     map.addSource('bound',{type:'geojson',data:D.bound});
     map.addSource('p',{type:'geojson',data:gj,tolerance:.35,buffer:8,maxzoom:15});
     if(hasTown)map.addLayer({id:'town-glow',type:'line',source:'town',paint:{'line-color':'#c8553d','line-width':9,'line-blur':8,'line-opacity':.16}});
@@ -1360,7 +1468,11 @@ function start(gj){
     map.addLayer({id:'p-line',type:'line',source:'p',paint:{'line-color':['case',SEL,'#ffffff',['boolean',['feature-state','hv'],false],'#ffffff',PCX],
       'line-width':['interpolate',['linear'],['zoom'],9,['case',SEL,1.8,.3],13,['case',SEL,3,.9],16,['case',SEL,3.6,1.6]],'line-opacity':['case',['==',H,1],.12,1]}});
     map.addLayer({id:'p-water',type:'line',source:'p',layout:{visibility:'none'},paint:{'line-color':'#0a6fd1','line-width':['interpolate',['linear'],['zoom'],9,1.2,14,2.6],'line-opacity':['case',['boolean',['feature-state','w'],false],1,0]}});
+    map.addLayer({id:'vill-hit',type:'fill',source:'bound',paint:{'fill-color':'#000','fill-opacity':0}},'p-fill');
     map.addLayer({id:'bound-line',type:'line',source:'bound',paint:{'line-color':'#a9c2a3','line-opacity':.5,'line-width':['interpolate',['linear'],['zoom'],9,.7,14,1.8]}});
+    map.addLayer({id:'sel-fill',type:'fill',source:'bound',filter:['==',['get','v'],-1],paint:{'fill-color':'#f0c744','fill-opacity':.07}},'p-fill');
+    map.addLayer({id:'sel-glow',type:'line',source:'bound',filter:['==',['get','v'],-1],layout:{'line-join':'round'},paint:{'line-color':'#f0c744','line-width':10,'line-blur':7,'line-opacity':.55}});
+    map.addLayer({id:'sel-line',type:'line',source:'bound',filter:['==',['get','v'],-1],layout:{'line-join':'round'},paint:{'line-color':'#ffe58f','line-width':3}});
     if(hasTown)map.addLayer({id:'town-edge',type:'line',source:'town',paint:{'line-color':'#f0a07c','line-width':1.5,'line-opacity':.85}});
     for(var c=0;c<nf;c++)if(FC.flags[c]&1)map.setFeatureState({source:'p',id:c},{w:true});
     V.forEach(function(v,i){var el=document.createElement('div');el.className='vlab';el.textContent=v.name;el.onclick=function(e){e.stopPropagation();setVillage(i===S.v?-1:i)};
@@ -1375,14 +1487,192 @@ function start(gj){
         (pb!=null?'<br>'+L("Me'yordan past bo'lish ehtimoli")+': <b>'+f(pb*100,0)+' %</b>':'')+'<br><span style="color:var(--tx3)">'+L("Batafsil uchun bosing")+'</span>';
       tip.hidden=false;var w=$('map').clientWidth;tip.style.left=Math.min(w-tip.offsetWidth-8,e.point.x+14)+'px';tip.style.top=Math.max(84,e.point.y-84)+'px'});
     map.on('mouseleave','p-fill',function(){tip.hidden=true;map.getCanvas().style.cursor='';if(HV>=0)map.setFeatureState({source:'p',id:HV},{hv:false});HV=-1});
-    map.on('click',function(e){var ft=map.queryRenderedFeatures(e.point,{layers:['p-fill']})[0];pick(ft&&ft.id!==S.pick?ft.id:-1)});
-    $('load').hidden=true;mapTheme();layers();all();notice();ndLoad();
+    map.on('click',function(e){var ft=map.queryRenderedFeatures(e.point,{layers:['p-fill']})[0];
+      if(ft){pick(ft.id!==S.pick?ft.id:-1);return}
+      var vf=map.queryRenderedFeatures(e.point,{layers:['vill-hit']})[0],k=vf&&vf.properties?+vf.properties.v:-1;
+      if(k>=0&&k<V.length){if(S.pick>=0)pick(-1,true);setVillage(k===S.v?-1:k);return}
+      showAll()});
+    /* empty ground inside a village: its name and a pointer (the contour tooltip has priority) */
+    var VHR=0;map.on('mousemove',function(e){var pt=e.point;cancelAnimationFrame(VHR);VHR=requestAnimationFrame(function(){
+      if(map.queryRenderedFeatures(pt,{layers:['p-fill']}).length)return;
+      var vf=map.queryRenderedFeatures(pt,{layers:['vill-hit']})[0],k=vf&&vf.properties?+vf.properties.v:-1;
+      if(k<0||k>=V.length){tip.hidden=true;map.getCanvas().style.cursor='';return}
+      map.getCanvas().style.cursor='pointer';
+      tip.innerHTML='<b>'+esc(V[k].name)+'</b><br><span style="color:var(--tx3)">'+L(k===S.v?"Qayta bosing — butun tuman":"Bosing — qishloqni tanlash")+'</span>';
+      tip.hidden=false;var w=$('map').clientWidth;tip.style.left=Math.min(w-tip.offsetWidth-8,pt.x+14)+'px';tip.style.top=Math.max(84,pt.y-50)+'px'})});
+    map.getCanvas().addEventListener('mouseleave',function(){cancelAnimationFrame(VHR);tip.hidden=true});
+    $('load').hidden=true;mapTheme();layers();all();notice();ndLoad();mctlInit();
     if(S.v>=0){var b=V[S.v].b;map.fitBounds([[b[0],b[1]],[b[2],b[3]]],{padding:60,duration:0})}
   });
 }
-window.__relang=function(){thPaint();whoPaint();if(!META||!map)return;buildRail();all();if(DCUR&&!$('drawer').hidden)DCUR()};
+/* ---------- map buttons (as in index.html): Maps gallery, 3D relief, Tozalash, Full, Ekran ---------- */
+var ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/';
+var GT=function(l){return 'https://mt{s}.google.com/vt/lyrs='+l+'&x={x}&y={y}&z={z}'},ET=function(x){return ESRI+x+'/MapServer/tile/{z}/{y}/{x}'};
+function gtl(l){return [0,1,2,3].map(function(k){return GT(l).replace('{s}',k)})}
+var BMS=[
+  {id:'gsat',n:'Google Satellite',th:GT('s').replace('{s}',1),l:[{us:gtl('s'),z:20,a:'© Google'}]},
+  {id:'ghyb',n:'Google Hybrid',th:GT('y').replace('{s}',1),l:[{us:gtl('y'),z:20,a:'© Google'}]},
+  {id:'groad',n:'Google Roadmap',th:GT('m').replace('{s}',1),l:[{us:gtl('m'),z:20,a:'© Google'}]},
+  {id:'gter',n:'Google Terrain',th:GT('p').replace('{s}',1),l:[{us:gtl('p'),z:20,a:'© Google'}]},
+  {id:'eimg',n:'Esri World Imagery',th:ET('World_Imagery'),l:[{u:ET('World_Imagery'),z:19}]},
+  {id:'estr',n:'Esri Street Map',th:ET('World_Street_Map'),l:[{u:ET('World_Street_Map'),z:19}]},
+  {id:'etopo',n:'Esri Topo Map',th:ET('World_Topo_Map'),l:[{u:ET('World_Topo_Map'),z:19}]},
+  {id:'edark',n:'Esri Dark Gray',th:ET('Canvas/World_Dark_Gray_Base'),l:[{u:ET('Canvas/World_Dark_Gray_Base'),z:16}]},
+  {id:'elab',n:'Esri Imagery Labels',th:ET('World_Imagery'),l:[{u:ET('World_Imagery'),z:19},{u:ET('Reference/World_Boundaries_and_Places'),z:19}]}
+].map(function(b){b.th=b.th.replace('{z}',11).replace('{x}',1561).replace('{y}',887);return b});
+var BM0='gsat',BMX=[];S.bm='dark';S.ebm='';S.full=false;S.d3=false;
+function bmItem(){for(var i=0;i<BMS.length;i++)if(BMS[i].id===S.ebm)return BMS[i];return BMS[0]}
+function bmOn(){return S.bm!=='dark'}
+function bmGallery(){
+  $('bmg-t').textContent=L("Asosiy xaritalar");$('bmg-l').textContent=L("Joriy xarita");
+  $('bmg-c').textContent=bmOn()?L(bmItem().n):L("Qorong'i");
+  $('bmg-g').innerHTML='<button type="button" data-id="dark" aria-pressed="'+!bmOn()+'" title="'+L("Qorong'i")+'"><i style="background:radial-gradient(circle at 40% 45%,#2f5a37 0 22%,#1b3522 23% 46%,#0c1b12 47%)"></i>'+L("Qorong'i")+'</button>'+
+    BMS.map(function(b){return '<button type="button" data-id="'+b.id+'" aria-pressed="'+(bmOn()&&b.id===S.ebm)+'" title="'+L(b.n)+'"><i style="background-image:url(\''+b.th+'\')"></i>'+L(b.n)+'</button>'}).join('')}
+function bmOpen(on){$('bmg').hidden=!on;$('bbm').setAttribute('aria-expanded',String(on));if(on){$('bmg').style.right=($('mctl').offsetWidth+20)+'px';bmGallery()}}
+function setEsri(id){
+  S.ebm=id;BMX.forEach(function(x){if(map.getLayer(x))map.removeLayer(x);if(map.getSource(x))map.removeSource(x)});BMX=[];
+  bmItem().l.forEach(function(l,k){var sid='bmx'+k;map.addSource(sid,{type:'raster',tileSize:256,maxzoom:l.z||16,attribution:l.a||'Esri',tiles:l.us||[l.u]});
+    map.addLayer({id:sid,type:'raster',source:sid,layout:{visibility:'none'}},'sat');BMX.push(sid)});
+  basemap()}
+function basemap(){
+  if(!map||!map.getLayer('sat'))return;
+  if(bmOn()&&!S.ebm){setEsri(BM0);return}
+  if(map.getLayer('mask'))map.setLayoutProperty('mask','visibility',S.full?'none':'visible');
+  var v=bmOn()?'visible':'none';BMX.forEach(function(x){if(map.getLayer(x))map.setLayoutProperty(x,'visibility',v)});
+  if(S.d3!==(S.bm==='3d'))set3d(S.bm==='3d');
+  $('b3d').setAttribute('aria-pressed',String(S.bm==='3d'));
+  if(!$('bmg').hidden)bmGallery();
+  layers()}
+var DEM3={type:'raster-dem',tiles:['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],encoding:'terrarium',tileSize:256,maxzoom:12,attribution:'Relyef: Mapzen Terrain Tiles (AWS Open Data)'};
+function set3d(on){
+  S.d3=on;stopAuto();   /* as in index.html: no 3D button panel, the mouse wheel button rotates / tilts */
+  if(on){if(!map.getSource('dem'))map.addSource('dem',DEM3);map.setTerrain({source:'dem',exaggeration:1.6});
+    if(map.setSky)try{map.setSky({'sky-color':'#7fb3e0','horizon-color':'#e6d2a8','fog-color':'#c9d6c4','sky-horizon-blend':.55,'horizon-fog-blend':.6,'fog-ground-blend':.25})}catch(e){}
+    map.setMaxPitch(75);map.dragRotate.disable();map.touchZoomRotate.enableRotation();
+    map.easeTo({pitch:60,bearing:-20,zoom:map.getZoom()+.6,duration:1400})}
+  else{map.stop();map.setTerrain(null);map.dragRotate.disable();map.touchZoomRotate.disableRotation();map.easeTo({pitch:0,bearing:0,duration:700});
+    setTimeout(function(){if(S.d3)return;map.stop();map.jumpTo({pitch:0,bearing:0});map.setMaxPitch(0)},760)}}
+/* rotate / tilt with the mouse wheel button held down (middle button), only in 3D */
+function wheelRotate(){
+  var cv=map.getCanvasContainer(),drag=null;
+  cv.addEventListener('mousedown',function(e){if(e.button!==1||!S.d3)return;e.preventDefault();stopAuto();
+    drag={x:e.clientX,y:e.clientY,b:map.getBearing(),p:map.getPitch()};cv.style.cursor='grabbing'});
+  cv.addEventListener('auxclick',function(e){if(e.button===1&&S.d3)e.preventDefault()});
+  addEventListener('mousemove',function(e){if(!drag)return;if(!S.d3){drag=null;cv.style.cursor='';return}
+    var dx=e.clientX-drag.x,dy=e.clientY-drag.y;map.jumpTo({bearing:drag.b+dx*.35,pitch:Math.max(0,Math.min(75,drag.p-dy*.3))})});
+  addEventListener('mouseup',function(e){if(drag&&e.button===1){drag=null;cv.style.cursor=''}})}
+/* automatic camera moves; any pointer / wheel / touch on the map stops them */
+var AUTO=null;
+function stopAuto(){if(!AUTO)return;var a=AUTO;AUTO=null;if(a.raf)cancelAnimationFrame(a.raf);if(a.tm)clearTimeout(a.tm);if(map)map.stop();
+  $('c-orb').setAttribute('aria-pressed','false');$('c-tour').setAttribute('aria-pressed','false');$('tourcap').hidden=true}
+function orbit(){if(AUTO&&AUTO.k==='orb'){stopAuto();return}stopAuto();
+  if(map.getPitch()<45)map.easeTo({pitch:65,duration:900});
+  var a=AUTO={k:'orb'},last=performance.now();$('c-orb').setAttribute('aria-pressed','true');
+  (function step(t){if(AUTO!==a)return;var dt=Math.min(50,t-last);last=t;if(!map.isEasing||!map.isEasing())map.setBearing(map.getBearing()+dt*.011);a.raf=requestAnimationFrame(step)})(last)}
+function tour(){if(AUTO&&AUTO.k==='tour'){stopAuto();return}stopAuto();
+  var ar=D.V.map(function(){return 0});for(var c=0;c<nf;c++)if(VI[c]<ar.length)ar[VI[c]]+=AREA[c];
+  var list=D.V.map(function(v,i){return {v:v,a:ar[i]}}).sort(function(x,y){return y.a-x.a}).slice(0,7),i=0,a=AUTO={k:'tour'},b=map.getBearing();
+  $('c-tour').setAttribute('aria-pressed','true');
+  function next(){if(AUTO!==a)return;
+    if(i>=list.length){map.flyTo({center:[(TB[0][0]+TB[1][0])/2,(TB[0][1]+TB[1][1])/2],zoom:10.3,pitch:55,bearing:b+40,duration:6000,essential:true});a.tm=setTimeout(stopAuto,6200);return}
+    var x=list[i++];b+=55;var cap=$('tourcap');cap.innerHTML='<b>'+esc(x.v.name)+'</b><span>'+ha(x.a,0)+'</span>';cap.hidden=false;
+    map.flyTo({center:x.v.c,zoom:13.2,pitch:70,bearing:b,duration:6500,curve:1.6,essential:true});
+    a.tm=setTimeout(function(){var t0=performance.now(),last=t0;(function sp(t){if(AUTO!==a)return;if(t-t0>3500){next();return}
+      var dt=Math.min(50,t-last);last=t;map.setBearing(map.getBearing()+dt*.014);a.raf=requestAnimationFrame(sp)})(t0)},6700)}
+  next()}
+function setFull(on){
+  S.full=on;$('bfull').setAttribute('aria-pressed',String(on));
+  /* Full = the whole world: on the dark map it borrows the satellite imagery, then gives it back */
+  if(on&&S.bm==='dark'){S.fullDark=true;S.bm='sat'}else if(!on&&S.fullDark){S.fullDark=false;if(S.bm==='sat')S.bm='dark'}
+  basemap();
+  if(on)map.easeTo({zoom:Math.max(2,map.getZoom()-4),duration:900});
+  else if(S.v>=0){var b=D.V[S.v].b;map.fitBounds([[b[0],b[1]],[b[2],b[3]]],{padding:60,duration:700})}else map.fitBounds(TB,{padding:40,duration:700})}
+var FSE=document.documentElement;function FSON(){return !!(document.fullscreenElement||document.webkitFullscreenElement)}
+function mctlPaint(){
+  var I=function(p){return '<svg viewBox="0 0 16 16" aria-hidden="true">'+p+'</svg>'},on=FSON();
+  $('bm').setAttribute('aria-label',L("Asosiy xarita"));
+  $('bbm').innerHTML=I('<path d="M8 2 14.5 5.3 8 8.6 1.5 5.3z"/><path d="m1.5 8.2 6.5 3.3 6.5-3.3M1.5 11 8 14.3 14.5 11"/>')+L("Maps")+'<svg class="cv" viewBox="0 0 10 10" aria-hidden="true"><path d="m6.5 2-3 3 3 3"/></svg>';
+  $('bbm').title=L("Asosiy xaritani tanlash");
+  $('b3d').innerHTML=I('<path d="M1.5 13 6 5.5l2.6 4L10.5 7l4 6z"/>')+'3D';$('b3d').title=L("Sun'iy yo'ldosh surati relyef ustida");
+  $('breset').innerHTML=I('<path d="M2.6 8a5.4 5.4 0 1 0 1.6-3.8M2.5 2.2v2.6h2.6"/>')+L("Tozalash");$('breset').title=L("Hammasini tozalash va boshlang'ich holatga qaytish");
+  $('bfull').innerHTML=I('<circle cx="8" cy="8" r="6"/><path d="M2 8h12M8 2c2 2 2.6 4 2.6 6S10 12 8 14M8 2C6 4 5.4 6 5.4 8S6 12 8 14"/>')+L("Full");$('bfull').title=L("Butun dunyo xaritasi");
+  $('bfs').innerHTML=I(on?'<path d="M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4"/>':'<path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/>')+L("Ekran");
+  $('bfs').title=L(on?"To'liq ekrandan chiqish":"To'liq ekran");$('bfs').setAttribute('aria-pressed',String(on));
+  $('c3d').setAttribute('aria-label',L("3D boshqaruvi"));
+  [['c-north',"Shimolga burish"],['c-rl',"Chapga aylantirish"],['c-rr',"O'ngga aylantirish"],['c-tu',"Ko'proq qiyalatish"],['c-td',"Kamroq qiyalatish (tepadan)"],
+   ['c-orb',"Aylanib ko'rish"],['c-tour',"Uchib ko'rish"]].forEach(function(q){$(q[0]).title=L(q[1]);$(q[0]).setAttribute('aria-label',L(q[1]))});
+  if(!$('bmg').hidden)bmGallery()}
+/* back to the first view: whole township, every class, no pick, dark map, flat */
+function resetAll(){
+  stopPlay();stopAuto();bmOpen(false);if(S.pick>=0)pick(-1,true);if(NDI>=0)ndShow(-1);
+  S.cls=-1;S.mode='s';S.sat=false;S.wat=false;S.lab=true;S.d=30;$('day').value=30;
+  S.full=false;S.fullDark=false;$('bfull').setAttribute('aria-pressed','false');S.bm='dark';basemap();
+  setVillage(-1)}
+/* click on empty ground outside the township: every class and village back on, the map stays where it is */
+function showAll(){var ch=false;if(S.pick>=0){pick(-1,true);ch=true}
+  if(S.cls>=0){S.cls=-1;ch=true}if(S.v>=0){S.v=-1;$('vsel').value='-1';S.wend=null;S.pin=null;qPaint();ch=true}if(ch)all()}
+function mctlPlace(){var w=document.querySelector('.mapwrap'),db=document.querySelector('.dayb'),m=$('mctl');if(!w||!db||!m)return;
+  var W=w.getBoundingClientRect(),B=db.getBoundingClientRect(),b=12;
+  if(B.height&&B.bottom>W.bottom-40)b=Math.round(W.bottom-B.top)+10;   /* the day slider sits at the bottom: stand above it */
+  m.style.bottom=b+'px';$('bmg').style.bottom=b+'px';var c=$('c3d');c.style.bottom=b+'px';c.style.right=(m.offsetWidth+20)+'px'}
+function mctlInit(){
+  mctlPaint();mctlPlace();addEventListener('resize',mctlPlace);
+  if(window.ResizeObserver)new ResizeObserver(mctlPlace).observe(document.querySelector('.dayb'));
+  new MutationObserver(function(){setTimeout(mctlPlace,30)}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+  $('bm').onclick=function(e){var b=e.target.closest('button');if(!b)return;
+    if(b.dataset.b==='maps'){bmOpen($('bmg').hidden);return}
+    bmOpen(false);if(S.bm==='3d'){S.bm=S.prev2d||'dark';basemap();return}S.prev2d=S.bm;S.bm='3d';basemap()};
+  $('bmg-g').onclick=function(e){var b=e.target.closest('button');if(!b)return;var id=b.dataset.id;bmOpen(false);S.fullDark=false;
+    if(id==='dark'){S.bm='dark';basemap();return}if(S.bm==='dark')S.bm='sat';if(id!==S.ebm)setEsri(id);else basemap()};
+  document.addEventListener('pointerdown',function(e){if(!$('bmg').hidden&&!e.target.closest('#bmg')&&!e.target.closest('#bbm'))bmOpen(false)});
+  addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('bmg').hidden)bmOpen(false)});
+  $('breset').onclick=resetAll;
+  function ease(o){stopAuto();map.easeTo(Object.assign({duration:700},o))}
+  $('c-north').onclick=function(){ease({bearing:0})};
+  $('c-rl').onclick=function(){ease({bearing:map.getBearing()-30})};
+  $('c-rr').onclick=function(){ease({bearing:map.getBearing()+30})};
+  $('c-tu').onclick=function(){ease({pitch:Math.min(75,map.getPitch()+12)})};
+  $('c-td').onclick=function(){ease({pitch:Math.max(0,map.getPitch()-15)})};
+  $('c-orb').onclick=orbit;$('c-tour').onclick=tour;
+  map.on('rotate',function(){$('c-needle').style.transform='rotate('+(-map.getBearing())+'deg)'});
+  wheelRotate();
+  ['mousedown','touchstart','wheel'].forEach(function(ev){map.on(ev,function(){if(AUTO)stopAuto()})});
+  /* 2D: flat and north-up, as in index.html */
+  map.dragRotate.disable();map.touchZoomRotate.disableRotation();map.setMaxPitch(0);
+  $('bfull').onclick=function(){setFull(!S.full)};
+  $('bfs').onclick=function(){
+    if(FSON())(document.exitFullscreen||document.webkitExitFullscreen).call(document);
+    else{var rq=FSE.requestFullscreen||FSE.webkitRequestFullscreen;var p=rq&&rq.call(FSE);if(!rq)toast(L("Bu brauzerda to'liq ekran ishlamaydi."));else if(p&&p.catch)p.catch(function(){toast(L("Bu brauzerda to'liq ekran ishlamaydi."))})}};
+  document.addEventListener('fullscreenchange',function(){mctlPaint();setTimeout(function(){map.resize()},60)});
+  document.addEventListener('webkitfullscreenchange',mctlPaint)}
+window.__relang=function(){thPaint();whoPaint();if($('bfs'))mctlPaint();if(META&&D&&D.V)qPaint();if(!META||!map)return;buildRail();all();if(DCUR&&!$('drawer').hidden)DCUR()};
 function setDay(d){S.d=Math.max(1,Math.min(DMAX,d));$('day').value=S.d;all()}
-function setVillage(k){S.v=k;$('vsel').value=String(k);if(S.pick>=0)pick(-1,true);S.wend=null;S.pin=null;all();
+/* ---------- village search in the top bar (as in index.html) ---------- */
+var VHA=null,QI=-1;
+function vHa(){if(VHA)return VHA;VHA=D.V.map(function(){return 0});for(var c=0;c<nf;c++)if(VI[c]<VHA.length)VHA[VI[c]]+=AREA[c];return VHA}
+function qPaint(){var q=$('q');q.value='';q.placeholder=S.v>=0?D.V[S.v].name:L("Qishloq nomini yozing");$('qx').hidden=S.v<0;$('qx').title=L("Butun Minbu tumani")}
+function qList(){
+  var q=$('q').value.trim().toLowerCase(),r=$('res'),h=vHa();QI=-1;
+  var m=D.V.map(function(v,i){return {i:i,n:v.name,a:h[i]}}).filter(function(v){return !q||v.n.toLowerCase().indexOf(q)>=0});
+  m.sort(q?function(a,b){var x=a.n.toLowerCase().indexOf(q),y=b.n.toLowerCase().indexOf(q);return x-y||a.n.localeCompare(b.n)}:function(a,b){return a.n.localeCompare(b.n)});
+  r.innerHTML=(q?'':'<button type="button" data-v="-1"'+(S.v<0?' class="cur"':'')+'>'+L("Butun Minbu tumani")+'<span>'+ha(h.reduce(function(x,y){return x+y},0),0)+'</span></button>')+
+    (m.length?m.map(function(v){return '<button type="button" data-v="'+v.i+'"'+(v.i===S.v?' class="cur"':'')+'>'+esc(v.n)+'<span>'+ha(v.a,0)+'</span></button>'}).join('')
+      :'<p>'+L("Bunday qishloq topilmadi. Boshqa nom bilan urinib ko'ring.")+'</p>');
+  r.hidden=false}
+function qPick(k){$('res').hidden=true;$('q').blur();setVillage(k)}
+function qInit(){
+  var q=$('q'),r=$('res');qPaint();
+  q.oninput=qList;q.onfocus=qList;
+  q.onkeydown=function(e){var bs=r.querySelectorAll('button');
+    if(e.key==='Escape'){r.hidden=true;q.value='';q.blur();return}
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();if(!bs.length)return;if(QI>=0&&bs[QI])bs[QI].classList.remove('on');
+      QI=e.key==='ArrowDown'?Math.min(bs.length-1,QI+1):Math.max(0,QI-1);bs[QI].classList.add('on');bs[QI].scrollIntoView({block:'nearest'});return}
+    if(e.key==='Enter'){var b=bs[QI>=0?QI:0];if(b&&!r.hidden){e.preventDefault();qPick(+b.dataset.v)}}};
+  r.onmousedown=function(e){e.preventDefault()};
+  r.onclick=function(e){var b=e.target.closest('button');if(b)qPick(+b.dataset.v)};
+  $('qx').onclick=function(){qPick(-1)};
+  document.addEventListener('pointerdown',function(e){if(!r.hidden&&!e.target.closest('.search'))r.hidden=true})}
+function setVillage(k){S.v=k;$('vsel').value=String(k);if($('q'))qPaint();if(S.pick>=0)pick(-1,true);S.wend=null;S.pin=null;all();
   if(k>=0){var b=D.V[k].b;map.fitBounds([[b[0],b[1]],[b[2],b[3]]],{padding:60,duration:700})}else map.fitBounds(TB,{padding:40,duration:700})}
 /* ---------- real Sentinel-2 NDVI of one day (forecast/f26_ndvi_rasters.py palette): 10 m, clipped to the contours,
    cloud / not imaged = transparent; only days with clear pixels exist. Display only, the model does not use it. ---------- */
@@ -1414,7 +1704,7 @@ function layers(){
   /* raster on: the contours keep only a thin outline, so the real pixels are visible */
   var nd=NDI>=0;if(!LC0)LC0=map.getPaintProperty('p-line','line-color');
   map.setPaintProperty('p-line','line-color',nd?['case',['boolean',['feature-state','sel'],false],'#ffffff',isLight()?'rgba(31,27,20,.45)':'rgba(238,245,233,.5)']:LC0);
-  map.setPaintProperty('p-fill','fill-opacity',nd?0:['case',['==',['coalesce',['feature-state','h'],0],1],S.sat?0:.1,['boolean',['feature-state','sel'],false],.97,S.sat?.72:.88]);
+  var sb=S.sat||(S.bm&&S.bm!=='dark');map.setPaintProperty('p-fill','fill-opacity',nd?0:['case',['==',['coalesce',['feature-state','h'],0],1],sb?0:.1,['boolean',['feature-state','sel'],false],.97,sb?.72:.88]);
   map.setLayoutProperty('p-water','visibility',S.wat?'visible':'none');
   $('map').classList.toggle('nolab',!S.lab);
   $('t_sat').checked=S.sat;$('t_lab').checked=S.lab;$('t_wat').checked=S.wat;
@@ -1439,6 +1729,7 @@ function applyMap(){
   var fcl=S.mode==='s'&&S.cls>=0;
   for(var c=0;c<nf;c++){var id=cid(c),hh=(S.v>=0&&VI[c]!==S.v)||(fcl&&id!==1+S.cls)?1:0;
     if(KC[c]!==id||KH[c]!==hh){KC[c]=id;KH[c]=hh;map.setFeatureState({source:'p',id:c},{c:id,h:hh})}}
+  if(map.getLayer('sel-line'))['sel-fill','sel-glow','sel-line'].forEach(function(l){map.setFilter(l,['==',['get','v'],S.v])});
 }
 /* ---------- statistics of the chosen area and of every village (cached per day) ---------- */
 var ST={};
@@ -1823,7 +2114,7 @@ var TPAIR=[['#69db7c','#40c057'],['#ff8787','#fa5252'],['rgba(200,230,195,','rgb
   ['#6ea8ff','#1b4fbf'],['rgba(110,168,255,','rgba(27,79,191,'],['#7fd06c','#2b8a3e'],['#b197fc','#7048e8'],['#f0a07c','#a9452a'],
   ['#13261a','#fff'],['#ff8a5c','#c8553d']];
 function thm(x){if(!isLight())return x;TPAIR.forEach(function(p){x=x.split(p[0]).join(p[1])});return x}
-var MPAIR={bg:[['background-color','#13261a','#f1ede3']],'p-fill':[['fill-color','#2c4634','#e3ddd0']],'p-line':[['line-color','#ffffff','#1f1b14']],
+var MPAIR={bg:[['background-color','#13261a','#f1ede3']],mask:[['fill-color','#13261a','#f1ede3']],'p-fill':[['fill-color','#2c4634','#e3ddd0']],'p-line':[['line-color','#ffffff','#1f1b14']],
   'bound-line':[['line-color','#a9c2a3','#6b6152']],'town-edge':[['line-color','#f0a07c','#7a3e22']]};
 function mapTheme(){if(!map||!map.getLayer||!map.getLayer('bg'))return;var lt=isLight();
   Object.keys(MPAIR).forEach(function(id){if(!map.getLayer(id))return;MPAIR[id].forEach(function(q){var v=map.getPaintProperty(id,q[0]);if(v==null)return;
@@ -1833,7 +2124,7 @@ function setWin(w){S.win=w;S.yr=null;S.wend=null;pressWin(w)}
 /* leaving a picked year by dragging: keep the same width, just let it scroll */
 function freeYear(span){if(S.yr==null)return;S.yr=null;S.win=Math.round(span);pressWin(-1)}
 function all(){applyMap();renderSide();writeHash()}
-addEventListener('hashchange',function(){if(!map||!META)return;var v0=S.v;readHash();$('vsel').value=String(S.v);$('day').value=S.d;if(S.v!==v0)setVillage(S.v);else all()});
+addEventListener('hashchange',function(){if(!map||!META)return;var v0=S.v;readHash();$('vsel').value=String(S.v);$('day').value=S.d;qPaint();if(S.v!==v0)setVillage(S.v);else all()});
 var rzt;addEventListener('resize',function(){clearTimeout(rzt);rzt=setTimeout(renderSide,150)});
 addEventListener('keydown',function(e){if(e.key==='Escape'){if(!$('drawer').hidden)closeD();else if(S.pick>=0)pick(-1)}
   if(e.target.tagName==='SELECT'||e.target.tagName==='INPUT'||!$('drawer').hidden||e.target.closest('.lang'))return;if(e.key==='ArrowRight'){stopPlay();setDay(S.d+1)}if(e.key==='ArrowLeft'){stopPlay();setDay(S.d-1)}});
