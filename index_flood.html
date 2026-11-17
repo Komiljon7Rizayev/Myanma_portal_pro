@@ -4798,10 +4798,10 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
 })();
 </script>
 <script>
-// ===== Sel suvining DEM bo'yicha oqishi v3: ko'lmaklar tomchilardan yig'iladi, past tomonga qisqarib quriydi, suv qo'shni ko'llarga oqadi =====
+// ===== Sel suvining DEM bo'yicha oqishi v4: ko'lmaklar tomchilardan yig'iladi, past tomonga qisqarib quriydi, suv qo'shni ko'llarga oqadi =====
 (function () {
   const PROB = window.PROB = { zarra: true, silliq: true };
-  const P = 12000, TR = 14; let kadrN = 0, rank = null, cx_ = null, cz_ = null, dJ = null, sJ = null, grow = null, shr = null, growN = 0, shrN = 0, shrM = null, curF = 0;                       // zarrachalar soni, iz uzunligi (nuqta)
+  const P = 12000, TR = 14; let kadrN = 0, rank = null, cx_ = null, cz_ = null, dJ = null, sJ = null, grow = null, shr = null, growN = 0, shrN = 0, shrM = null, curF = 0, wetV = 0, hadaf = 0, tirik = 0, gW = 0, sW = 0;                       // zarrachalar soni, iz uzunligi (nuqta)
   let dep = null, wet = null, wetN = 0, flow = null, joy = null, tf = -1, playOn = false, lastT = 0, lastDat = 0, lastStat = -1;
   const px = new Float32Array(P), pz = new Float32Array(P), age = new Float32Array(P), life = new Float32Array(P);
   const hx = new Float32Array(P * TR), hz = new Float32Array(P * TR), hy = new Float32Array(P * TR);
@@ -4832,7 +4832,7 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
     const N = HEC.N, Ka = hecKadr(a), Kb = b >= 0 ? hecKadr(b) : Ka;
     let w = 0; if (!wet || wet.length !== N) wet = new Int32Array(N);
     const iso = typeof hudIso !== "undefined" && hudIso && HEC.hud;
-    const Rv = cam.dist * .8, vx = cam.t.x, vz = cam.t.z; growN = 0; shrN = 0;
+    const Rv = cam.dist * .8, vx = cam.t.x, vz = cam.t.z; growN = 0; shrN = 0; wetV = 0; gW = 0; sW = 0;
     for (let j = 0; j < N; j++) {
       const da = hecD(Ka[j]), db = hecD(Kb[j]); let d, sv;
       if (!da && !db) { dJ[j] = 0; sJ[j] = 0; continue; }
@@ -4841,11 +4841,17 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
       else { d = da + (db - da) * f; sv = 1; }
       dJ[j] = d; sJ[j] = sv;
       const ok = !iso || HEC.hud[j] === hudSel, ko = Math.abs(cx_[j] - vx) < Rv && Math.abs(cz_[j] - vz) < Rv;
-      if (ok && ko) { if (db > da + .03) grow[growN++] = j; else if (db < da - .03) { shr[shrN++] = j; shrM[HEC.idx[j]] = 1; } }
+      if (ok && ko) {
+        if (db > da + .03) { grow[growN++] = j; gW += Math.min(1, (db - da) / .3); }
+        else if (db < da - .03) { shr[shrN++] = j; shrM[HEC.idx[j]] = 1; sW += Math.min(1, (da - db) / .3); }
+        if (d > .005) wetV++;
+      }
       if (d <= .005) continue;
       dep[HEC.idx[j]] = d; if (ok) wet[w++] = HEC.idx[j];
     }
     wetN = w;
+    // tomchilar soni: ko'rinishdagi suv + o'sayotgan suv (oqib keladi) + quriyotgan suv (oqib ketadi)
+    hadaf = Math.min(P, Math.round(wetV * .35 + gW * 6 + sW * 2.5));
   }
   function suvChiz() {              // datData'ni chuqurlik() hisoblagan oraliq holatdan to'ldirish
     const D = datData, N = HEC.N;
@@ -4882,14 +4888,16 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
   }
   function tugilsin(i) {            // tomchi: o'sayotgan ko'lmakka tepadan, quriyotgan ko'lmakdan tashqariga, yomg'irda qiyalikda yoki suv ichida
     const R = cam.dist * .75, cx = cam.t.x, cz = cam.t.z, rr = Math.random();
-    const pG = growN ? Math.min(.45, .08 + growN / 1500) : 0, pS = shrN ? Math.min(.3, .05 + shrN / 2500) : 0;
+    const wG = gW * 6, wS = sW * 2.5, wW = wetV * .35, jm = wG + wS + wW;
+    if (!jm) { life[i] = 0; return; }
+    const pG = wG / jm, pS = wS / jm;
     const iso = typeof hudIso !== "undefined" && hudIso;
     for (let k = 0; k < 14; k++) {
       let x, z, t;
-      if (rr < pG) { const j = grow[(Math.random() * growN) | 0]; [x, z] = tepaga(cx_[j] + (Math.random() - .5) * 30, cz_[j] + (Math.random() - .5) * 30, 4 + (Math.random() * 12 | 0)); t = 0; }
+      if (rr < pG) { const j = grow[(Math.random() * growN) | 0]; [x, z] = tepaga(cx_[j] + (Math.random() - .5) * 30, cz_[j] + (Math.random() - .5) * 30, 2 + (Math.random() * 7 | 0)); t = 0; }
       else if (rr < pG + pS) { const j = shr[(Math.random() * shrN) | 0]; x = cx_[j] + (Math.random() - .5) * 30; z = cz_[j] + (Math.random() - .5) * 30; t = 2; }
-      else if (rr < pG + pS + (1 - pG - pS) * yomgirUlush() || !wetN) { x = cx + (Math.random() * 2 - 1) * R; z = cz + (Math.random() * 2 - 1) * R; t = -1; }
-      else { const g = wet[(Math.random() * wetN) | 0]; [x, z] = cellXZ(g); x += (Math.random() - .5) * SUV.res; z += (Math.random() - .5) * SUV.res; t = -1;
+      else {
+        if (!wetN) break; const g = wet[(Math.random() * wetN) | 0]; [x, z] = cellXZ(g); x += (Math.random() - .5) * SUV.res; z += (Math.random() - .5) * SUV.res; t = -1;
         if (Math.abs(x - cx) > R || Math.abs(z - cz) > R) continue; }
       if (!validNear(x, z) || hudAt(x, z) < 0) continue;
       if (iso && hudAt(x, z) !== hudSel) continue;
@@ -4916,8 +4924,13 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
   function qadam(dt) {
     kadrN++; const siljit = kadrN % 3 === 0; const sp = cam.dist * .02, lift = cam.dist * .0015 + 3, e = 15;
     let v = 0;
+    let cur = tirik, tr = 0;
     for (let i = 0; i < P; i++) {
-      if (!(age[i] < life[i])) tugilsin(i);
+      if (!(age[i] < life[i])) {
+        if (life[i]) cur--;                                   // zarracha umri tugadi
+        if (cur < hadaf) { tugilsin(i); if (life[i]) cur++; } else { life[i] = 0; age[i] = 0; }
+      }
+      if (life[i]) tr++;
       if (!life[i]) continue;
       age[i] += dt;
       const x = px[i], z = pz[i];
@@ -4950,6 +4963,7 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
         v++;
       }
     }
+    tirik = tr;
     geo.setDrawRange(0, v); geo.attributes.position.needsUpdate = true; geo.attributes.aA.needsUpdate = true; geo.attributes.aC.needsUpdate = true;
   }
   function holat(ciz) {                // hozirgi kadr bo'yicha chuqurlik maydoni
