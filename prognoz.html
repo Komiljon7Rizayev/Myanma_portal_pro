@@ -170,6 +170,11 @@ select{width:100%;height:40px;border-radius:11px;background:var(--card);border:1
 .tb .mb{display:inline-block;width:54px;height:7px;border-radius:4px;background:var(--card2);vertical-align:middle;margin-right:6px;overflow:hidden}
 .tb .mb i{display:block;height:100%;background:var(--c1)}
 .vscroll{max-height:330px;overflow:auto}
+/* the tab card fills the right panel down to the bottom of the window; its list scrolls inside */
+.tcard{flex:1 0 auto;min-height:340px;display:flex;flex-direction:column}
+#tab{flex:1;min-height:0;display:flex;flex-direction:column}
+.tcard .vscroll{flex:1 1 0;min-height:180px;max-height:none}
+@media (max-width:1000px){.tcard{flex:none}.tcard .vscroll{flex:none;max-height:330px}}
 .cap{font-size:12px;color:var(--tx3);margin:7px 0 0}
 .lnk{font-size:12.5px;font-weight:600;color:var(--fc);text-decoration:underline;text-underline-offset:2px}
 .acc{display:grid;grid-template-columns:62px 1fr;gap:7px 10px;align-items:center;font-size:12.5px;margin:4px 0 2px}
@@ -298,6 +303,15 @@ select{width:100%;height:40px;border-radius:11px;background:var(--card);border:1
 .drawer{background:rgba(5,14,8,.6)}
 @media (max-width:1500px){.pb .t{display:none}.pb{padding:0 11px}.pmain .t{display:inline}}
 @media (max-width:1000px){.dayb{right:12px}.lgd{width:220px}}
+/* real Sentinel-2 day raster: date chip with previous / next */
+.ndc{position:absolute;top:12px;right:52px;z-index:4;display:flex;align-items:center;gap:2px;padding:4px;border-radius:12px;background:var(--glass);border:1px solid var(--line2);box-shadow:0 10px 26px rgba(0,0,0,.35);backdrop-filter:blur(8px);font-size:12.5px}
+.ndc span{display:flex;flex-direction:column;align-items:center;min-width:132px;padding:0 6px;line-height:1.25}
+.ndc small{color:var(--tx3);font-size:11px}
+.ndc button{width:28px;height:30px;border-radius:8px;font:600 18px var(--body);color:var(--tx);line-height:1}
+.ndc button:hover{background:var(--glass-2)}
+.ndc button:disabled{opacity:.3;cursor:default;background:none}
+.ndc.busy small{animation:updblink 1s steps(1) infinite}
+@media (max-width:640px){.ndc{top:auto;bottom:96px;right:12px}}
 @media print{:root{color-scheme:light;
   --bg:#f3efe6;--bg2:#fbf8f2;--card:#ffffff;--card2:#f4efe5;--line:rgba(60,48,30,.12);--line2:rgba(60,48,30,.24);
   --tx:#1f1b14;--tx2:#5f5648;--tx3:#8d8271;--acc:#c8553d;--acc2:#3f5f2f;--fc:#1b4fbf;--bad:#b83a2b;--good:#2f7d3a}
@@ -379,6 +393,47 @@ a.smc:hover{filter:brightness(1.05);transform:translateY(-1px)}
 html[data-theme="light"] .bp,html[data-theme="light"] #mpBtn,html[data-theme="light"] .pmain{color:#f1f8f0!important;
   background:linear-gradient(180deg,#3a8247,#2b6836)!important;border-color:#5a9e66!important;
   box-shadow:0 4px 14px rgba(48,115,60,.35),inset 0 1px 0 rgba(255,255,255,.18)!important}
+/* update panel next to the "as of" pill */
+.updw{position:relative;flex:none}
+.top .upd{display:flex;align-items:center;gap:7px;height:30px;padding:0 11px;border-radius:8px;background:var(--glass-2);border:1px solid var(--tline);font:500 13px var(--body);color:var(--ttx);white-space:nowrap}
+.top .upd:hover,.top .upd[aria-expanded="true"]{border-color:var(--sl)}
+.top .upd svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.top .upd i{width:8px;height:8px;border-radius:50%;background:#8a9a86;flex:none}
+/* new update ready: the blue dot blinks on and off (and the button edge glows) as long as the new data is not loaded */
+.top .upd i.new{width:10px;height:10px;background:#4dabf7;box-shadow:0 0 6px 2px rgba(77,171,247,.75);animation:updblink 1s steps(1,end) infinite}
+.top .upd:has(i.new){border-color:#4dabf7;animation:updedge 1s ease-in-out infinite}
+.top .upd i.busy{background:#f59f00}
+@keyframes updblink{0%{opacity:1}50%{opacity:.1}}
+@keyframes updedge{50%{box-shadow:0 0 0 3px rgba(77,171,247,.35)}}
+@media (prefers-reduced-motion:reduce){.top .upd i.new,.top .upd:has(i.new){animation:none}}
+.updp{position:absolute;left:0;top:calc(100% + 8px);z-index:60;width:340px;padding:14px 14px 12px;border-radius:14px;background:var(--bg2);border:1px solid var(--line2);box-shadow:0 18px 40px rgba(0,0,0,.35);color:var(--tx)}
+.updp h4{margin:0 0 8px;font:600 14px var(--display)}
+.updp .row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--tx2)}
+.updp .row b{color:var(--tx);font-weight:600;white-space:nowrap}
+.updp .st{margin-top:10px;padding:9px 10px;border-radius:10px;background:var(--card2);font-size:12.5px;line-height:1.45;color:var(--tx2)}
+.updp .st.new{background:rgba(77,171,247,.14);color:var(--tx)}
+.updp .go{margin-top:10px;width:100%;height:36px;border-radius:10px;background:var(--sl);color:#fff;font-weight:700}
+@media (max-width:1500px){.top .upd span{display:none}}
+/* map-mode buttons: a simple line icon in a soft tile */
+.modes .sw{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;border:0;background:var(--card2);color:var(--tx2)}
+.modes .sw svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.modes button[aria-pressed="true"] .sw{background:var(--acc2);color:var(--bg)}
+html[data-theme="light"] .modes button[aria-pressed="true"] .sw{color:#fff}
+/* chart legend works as a multi-select filter */
+#c1l .lgi{cursor:pointer;padding:1px 6px;margin:0 -6px;border-radius:6px;user-select:none;transition:opacity .15s,background .15s}
+#c1l .lgi:hover{background:rgba(127,127,127,.12)}
+#c1l .lgi.off{opacity:.38}
+#c1l .lgi.on{background:rgba(77,171,247,.16);box-shadow:inset 0 0 0 1px rgba(77,171,247,.55)}
+#c1l .lgc{display:flex;flex-direction:column;align-items:flex-start;gap:1px;line-height:1.25}
+#c1l .lgr{height:22px;padding:0 9px;border-radius:7px;border:1px solid var(--line2);font-size:11px;font-weight:600;color:var(--tx2)}
+#c1l .lgr:hover{color:var(--tx);border-color:var(--sl)}
+/* day slider + year-ruler box: light blue (the user found the red too strong) */
+:root{--sl:#4dabf7}
+html[data-theme="light"]{--sl:#228be6}
+.play{background:var(--sl)!important;color:#fff;box-shadow:0 6px 16px rgba(34,139,230,.35)!important}
+#day,html[data-theme="light"] #day{background:linear-gradient(90deg,var(--sl) 0 var(--p,100%),rgba(128,128,128,.25) var(--p,100%) 100%)!important}
+#day::-webkit-slider-thumb{border-color:var(--sl)!important}
+#day::-moz-range-thumb{border-color:var(--sl)!important}
 </style>
 </head>
 <body>
@@ -391,8 +446,12 @@ html[data-theme="light"] .bp,html[data-theme="light"] #mpBtn,html[data-theme="li
     <a class="pb pfc" href="prognoz.html" aria-current="page" title="Index Prognosis: NDVI prognozi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 13.5h12"/><path d="M3 11l3-3.2 2.4 1.8L13 4.5"/><path d="M10.2 4.5H13v2.8"/></svg><span class="t">Index Prognosis</span></a>
     <a class="pb pfl" href="index_flood.html" title="Flood Mapping: suv toshqini xaritasi va prognozi"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.6a3 3 0 0 0-3 3c0 2.1 3 4.7 3 4.7s3-2.6 3-4.7a3 3 0 0 0-3-3z"/><circle cx="8" cy="4.6" r=".9"/><path d="M1.4 11.4c1.1 0 1.5-.9 2.6-.9s1.5.9 2.6.9 1.5-.9 2.6-.9 1.5.9 2.6.9 1.5-.9 2.8-.9"/><path d="M1.4 14.2c1.1 0 1.5-.9 2.6-.9s1.5.9 2.6.9 1.5-.9 2.6-.9 1.5.9 2.6.9 1.5-.9 2.8-.9"/></svg><span class="t">Flood Mapping</span></a>
   </nav>
-  <div class="sp"></div>
   <span class="pill" id="asof"><i></i>…</span>
+  <div class="updw">
+    <button class="upd" id="updb" type="button" aria-expanded="false" aria-controls="updp"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.4 6.5A5.5 5.5 0 0 0 3.2 4.6"/><path d="M2.6 2.2v2.8h2.8"/><path d="M2.6 9.5a5.5 5.5 0 0 0 10.2 1.9"/><path d="M13.4 13.8V11h-2.8"/></svg><span>Yangilanishlar</span><i id="upddot"></i></button>
+    <div class="updp" id="updp" hidden></div>
+  </div>
+  <div class="sp"></div>
   <button class="hb" id="gbtn" title="Sahifadan qanday foydalaniladi"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.3"/><path d="M6.3 6.2a1.8 1.8 0 1 1 2.6 1.6c-.6.3-.9.7-.9 1.4"/><path d="M8 11.4v.2"/></svg><span>Qo'llanma</span></button>
   <button class="hb" id="rbtn" title="Rahbariyat uchun bir sahifali hisobot"><svg viewBox="0 0 16 16"><path d="M4 1.8h5.5L12.5 5v9.2H4z"/><path d="M9.3 1.8V5h3.2M6 8h4.5M6 10.5h4.5"/></svg><span>Hisobot</span></button>
   <button class="hb" id="mbtn"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.3"/><path d="M8 7.3v4"/><path d="M8 4.8v.2"/></svg><span>Model haqida</span></button>
@@ -405,6 +464,7 @@ html[data-theme="light"] .bp,html[data-theme="light"] #mpBtn,html[data-theme="li
     <section><h3 class="step"><i>2</i>Xaritada nimani ko'ray?</h3><div class="modes" id="mode"></div></section>
     <section><h3 class="step"><i>3</i>Qaysi hudud?</h3><select id="vsel" aria-label="Qishloq"></select></section>
     <section class="tog" aria-label="Qo'shimcha qatlamlar">
+      <label id="t_ndw" hidden><input type="checkbox" id="t_nd">Haqiqiy NDVI rasteri (Sentinel-2)</label>
       <label><input type="checkbox" id="t_sat">Sun'iy yo'ldosh surati (fon)</label>
       <label><input type="checkbox" id="t_lab" checked>Qishloq nomlari (yaqinlashtirganda)</label>
       <label><input type="checkbox" id="t_wat">Yaqinda suv kelgan dalalar</label>
@@ -418,6 +478,7 @@ html[data-theme="light"] .bp,html[data-theme="light"] #mpBtn,html[data-theme="li
       <div class="dinfo"><b id="dlab"></b><span id="dsub"></span><small id="dconf"></small></div>
       <div class="dsl"><input type="range" id="day" min="1" max="30" step="1" value="30" aria-label="Kun surgichi"><div class="dtk" id="dtk"></div></div>
     </div>
+    <div class="ndc" id="ndc" hidden><button id="ndp" type="button" title="Oldingi surat" aria-label="Oldingi surat">‹</button><span><b id="ndd"></b><small id="ndq"></small></span><button id="ndn" type="button" title="Keyingi surat" aria-label="Keyingi surat">›</button><button id="ndx" type="button" title="Rasterni yopish" aria-label="Rasterni yopish">×</button></div>
     <div class="lgd" id="legend"></div>
     <div class="tip" id="tip" hidden></div>
     <div class="loading" id="load"><div><span class="spin"></span><span id="loadt">Prognoz ma'lumotlari yuklanmoqda…</span></div></div>
@@ -425,7 +486,7 @@ html[data-theme="light"] .bp,html[data-theme="light"] #mpBtn,html[data-theme="li
   <aside class="insight">
     <div class="hero" id="hero"></div>
     <div class="card pc" id="pc" hidden></div>
-    <div class="card">
+    <div class="card tcard">
       <div class="tabs" id="tabs" role="tablist">
         <button data-t="v" role="tab">Qishloqlar</button><button data-t="f" role="tab" title="E'tibor talab dalalar">Dalalar</button><button data-t="t" role="tab">3 oygacha</button><button data-t="a" role="tab">Aniqlik</button>
       </div>
@@ -854,6 +915,15 @@ window.I18N={get lang(){return lang},set:set,apply:apply,mount:mount,add:functio
 
 /* Index Forecast page texts: Uzbek key -> [English, Russian, Burmese]. Strict JSON inside (checked by .build/fc_i18n_tool.py check). */
 window.__FC_I18N={
+"Haqiqiy NDVI rasteri (Sentinel-2)":["Real NDVI raster (Sentinel-2)","Реальный растр NDVI (Sentinel-2)","တကယ့် NDVI ရာစတာ (Sentinel-2)"],
+"Oldingi surat":["Previous image","Предыдущий снимок","ယခင်ပုံ"],
+"Keyingi surat":["Next image","Следующий снимок","နောက်ပုံ"],
+"Rasterni yopish":["Close the raster","Закрыть растр","ရာစတာကို ပိတ်ရန်"],
+"ochiq {0} %":["clear {0} %","ясно {0} %","ကြည်လင် {0} %"],
+"Sentinel-2 surati (NDVI), {0}":["Sentinel-2 image (NDVI), {0}","Снимок Sentinel-2 (NDVI), {0}","Sentinel-2 ပုံ (NDVI), {0}"],
+"Haqiqiy surat, 10 m. Bo'sh joy — bulut yoki o'sha kuni surat olinmagan. Ochiq dalalar: {0} %.":["Real image, 10 m. Empty areas: cloud, or not imaged that day. Clear fields: {0} %.","Реальный снимок, 10 м. Пустые места — облака или съёмки в этот день не было. Открытые поля: {0} %.","တကယ့်ပုံ၊ ၁၀ မီတာ။ ဗလာနေရာ — တိမ် သို့မဟုတ် ထိုနေ့ ပုံမရိုက်ခဲ့ပါ။ ကြည်လင်သော လယ်ကွက်များ: {0} %။"],
+"Raster yuklanmoqda…":["Loading the raster…","Растр загружается…","ရာစတာ ဖွင့်နေသည်…"],
+"Grafikdagi yashil nuqtani bosing — o'sha kunning surati xaritada ochiladi.":["Click a green point on the chart to open that day's image on the map.","Нажмите зелёную точку на графике — снимок того дня откроется на карте.","ဂရပ်ပေါ်ရှိ အစိမ်းရောင်အမှတ်ကို နှိပ်ပါ — ထိုနေ့၏ ပုံကို မြေပုံပေါ်တွင် ဖွင့်မည်။"],
 "Minbu Portal":["Minbu Portal","Minbu Portal","Minbu Portal"],
 "Batafsil":["Details","Подробнее","အသေးစိတ်"],
 "Kunduzgi / tungi rejim":["Light / dark mode","Светлый / тёмный режим","နေ့ / ည မုဒ်"],
@@ -861,6 +931,10 @@ window.__FC_I18N={
 "Ogohlantirish":["Notice","Внимание","သတိပေးချက်"],
 "Index Forecast portali hali yakuniga yetmagan — hozir sinov (test) rejimida ishlamoqda.":["The Index Forecast portal is not finished yet — it is currently running in test mode.","Портал Index Forecast ещё не завершён — сейчас он работает в тестовом режиме.","Index Forecast ပေါ်တယ်ကို မပြီးဆုံးသေးပါ — လက်ရှိတွင် စမ်းသပ်မုဒ်ဖြင့် လုပ်ဆောင်နေပါသည်။"],
 "Ko'rsatilgan prognozlar dastlabki natijalardir. Tez kunda yakuniy, to'liq tekshirilgan natijalar yuklanadi.":["The forecasts shown are preliminary results. Final, fully checked results will be uploaded soon.","Показанные прогнозы — предварительные результаты. В ближайшее время будут загружены окончательные, полностью проверенные результаты.","ပြသထားသော ခန့်မှန်းချက်များသည် ပဏာမရလဒ်များ ဖြစ်ပါသည်။ နောက်ဆုံး၊ အပြည့်အဝ စစ်ဆေးပြီးသော ရလဒ်များကို မကြာမီ တင်ပေးပါမည်။"],
+"uzoq prognoz, me'yorga tayanadi":["long-range forecast, based on the norm","дальний прогноз, опирается на норму","ရေရှည် ခန့်မှန်းချက်၊ ပုံမှန်အခြေအနေအပေါ် အခြေခံသည်"],
+"yuqori qiymat":["high value","верхнее значение","အမြင့်ဆုံး တန်ဖိုး"],
+"past qiymat":["low value","нижнее значение","အနိမ့်ဆုံး တန်ဖိုး"],
+"raster ma'lumoti":["raster data","данные растра","ရာစတာ ဒေတာ"],
 "Tushunarli":["Got it","Понятно","နားလည်ပါပြီ"],
 "Index Forecast":["Index Forecast","Index Forecast","Index Forecast"],
 "Index Prognosis":["Index Prognosis","Index Prognosis","Index Prognosis"],
@@ -916,7 +990,19 @@ window.__FC_I18N={
 "yuqori":["high","высокая","မြင့်"],
 "o'rta":["medium","средняя","အလယ်အလတ်"],
 "pastroq":["lower","пониже","နိမ့်"],
-"{0} holatidan · yangilangan {1}":["Based on {0} · updated {1}","По состоянию на {0} · обновлено {1}","{0} အခြေအနေအရ · {1} တွင် အပ်ဒိတ်လုပ်သည်"],
+"{0} holatidan prognoz":["Forecast as of {0}","Прогноз по состоянию на {0}","{0} အခြေအနေအရ ခန့်မှန်းချက်"],
+"Yangilanishlar":["Updates","Обновления","အပ်ဒိတ်များ"],
+"Ma'lumot yangilanishi":["Data updates","Обновление данных","ဒေတာ အပ်ဒိတ်"],
+"Prognoz boshlanish sanasi":["Forecast start date","Дата начала прогноза","ခန့်မှန်းချက် စတင်ရက်"],
+"Oxirgi Sentinel-2 ma'lumoti":["Latest Sentinel-2 data","Последние данные Sentinel-2","နောက်ဆုံး Sentinel-2 ဒေတာ"],
+"Ob-havo (ERA5) ma'lumoti":["Weather (ERA5) data","Данные о погоде (ERA5)","ရာသီဥတု (ERA5) ဒေတာ"],
+"{0} gacha":["up to {0}","до {0}","{0} အထိ"],
+"Oxirgi tekshiruv":["Last check","Последняя проверка","နောက်ဆုံး စစ်ဆေးချိန်"],
+"Yangi prognoz tayyor: {0} holatidan.":["A new forecast is ready: as of {0}.","Готов новый прогноз: по состоянию на {0}.","ခန့်မှန်းချက်အသစ် အသင့်ဖြစ်ပြီ: {0} အခြေအနေအရ။"],
+"Yangi ma'lumotni yuklash":["Load the new data","Загрузить новые данные","ဒေတာအသစ်ကို ဖွင့်ရန်"],
+"Yangi sun'iy yo'ldosh surati topildi ({0}). Ma'lumotlar tayyorlanmoqda — tayyor bo'lgach shu yerda xabar chiqadi.":["A new satellite image was found ({0}). The data are being prepared — a notice will appear here when ready.","Найден новый спутниковый снимок ({0}). Данные готовятся — когда будет готово, здесь появится уведомление.","ဂြိုဟ်တုပုံအသစ် တွေ့ရှိသည် ({0})။ ဒေတာများ ပြင်ဆင်နေသည် — အသင့်ဖြစ်လျှင် ဤနေရာတွင် အသိပေးပါမည်။"],
+"Hozircha yangi ma'lumot yo'q. Siz ko'rayotgan prognoz eng so'nggisi.":["No new data yet. The forecast you see is the latest.","Новых данных пока нет. Вы видите самый свежий прогноз.","ဒေတာအသစ် မရှိသေးပါ။ သင်ကြည့်နေသော ခန့်မှန်းချက်သည် နောက်ဆုံးဖြစ်သည်။"],
+"Yangi Sentinel surati chiqqanda va barcha hisob-kitob tugagach, shu yerda avtomatik xabar paydo bo'ladi.":["When a new Sentinel image appears and all processing is finished, a notice will appear here automatically.","Когда появится новый снимок Sentinel и вся обработка завершится, здесь автоматически появится уведомление.","Sentinel ပုံအသစ် ထွက်ပြီး တွက်ချက်မှုအားလုံး ပြီးဆုံးသောအခါ ဤနေရာတွင် အလိုအလျောက် အသိပေးချက် ပေါ်လာပါမည်။"],
 "Butun Minbu tumani":["All of Minbu township","Весь район Минбу","မင်းဘူးမြို့နယ် တစ်ခုလုံး"],
 "{0} kun":["{0} days","{0} дней","{0} ရက်"],
 "{0} prognozi":["Forecast for {0}","Прогноз на {0}","{0} အတွက် ခန့်မှန်းချက်"],
@@ -1104,7 +1190,7 @@ window.__FC_I18N={
    computed linearly between those points (day 0 = the latest clear observation). */
 (function(){
 'use strict';
-var MODE='agol',IDS={"data": "0a345e7052434403b9638d6cc9c3ba95", "parcels": "4e541b92a3964aa7886a8914173f4db5", "rasters": "b28aea0e5a5b4389af784621bd21f730", "forecast": "5508d753653d47ca8da45ed0517af75e"},PORTAL='https://land-tiiame.maps.arcgis.com';
+var MODE='agol',IDS={"data": "0a345e7052434403b9638d6cc9c3ba95", "parcels": "4e541b92a3964aa7886a8914173f4db5", "rasters": "b28aea0e5a5b4389af784621bd21f730", "forecast": "5508d753653d47ca8da45ed0517af75e", "ndvi_days": "deadee2a1cd34bada3b1ccfe65d0dc5b"},PORTAL='https://land-tiiame.maps.arcgis.com';
 var $=function(i){return document.getElementById(i)};
 I18N.add(window.__FC_I18N||{});
 var MON={uz:['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentabr','oktabr','noyabr','dekabr'],
@@ -1194,6 +1280,7 @@ function cid(c){var d=S.d;
 I18N.mount(document.querySelector('.top'),$('thb'));I18N.apply();
 Promise.all([getText('fc','meta.json'),getText('data'),getText('parcels'),getText('fc','main.txt')]).then(function(r){
   META=JSON.parse(r[0]);D=JSON.parse(r[1]);M=D.meta;nf=M.nf;NH=META.hist_dates.length;K0=META.hist_k0+NH-1;
+  ODAY=(META.obs_dates||[]).map(function(s){return (Date.parse(s+'T00:00:00Z')-T0)/DAY});
   var p=META.origin.split('-');O=new Date(Date.UTC(+p[0],+p[1]-1,+p[2]));
   if(META.nf!==nf)throw new Error('nf');
   $('loadt').textContent=L("Konturlar chizilmoqda…");
@@ -1227,12 +1314,18 @@ function confw(k){return k>30?L("yuqori"):k>15?L("o'rta"):L("pastroq")}
 /* left rail, header, day slider: texts that depend on the language */
 function buildRail(){
   var V=D.V;
-  $('asof').innerHTML='<i></i>'+L("{0} holatidan · yangilangan {1}",ds(META.origin,1),META.generated);
+  $('asof').innerHTML='<i></i>'+L("{0} holatidan prognoz",ds(META.origin,1));updPanel();
   $('vsel').innerHTML='<option value="-1">'+L("Butun Minbu tumani")+'</option>'+V.map(function(v,i){return {i:i,n:v.name}}).sort(function(a,b){return a.n.localeCompare(b.n)}).map(function(v){return '<option value="'+v.i+'">'+esc(v.n)+'</option>'}).join('');
   $('vsel').value=String(S.v);
   $('hz').innerHTML=HD.map(function(h,i){var k=META.skill[i].cv,lv=k>30?0:k>15?1:2;
     return '<button data-d="'+h*10+'"><b>'+L("{0} kun",h*10)+'</b><span>'+ds(META.targets[i])+'</span><em>'+[0,1,2].map(function(j){return '<u'+(j<3-lv?' class="on"':'')+'></u>'}).join('')+' '+confw(k)+'</em></button>'}).join('');
-  $('mode').innerHTML=MKEYS.map(function(k){var c=MCOL[k];return '<button data-m="'+k+'"><span class="sw" style="background:linear-gradient(135deg,'+c[0]+' 0 33%,'+c[Math.floor(c.length/2)]+' 33% 66%,'+c[c.length-1]+' 66%)"></span><span><b>'+mname(k)+'</b><small>'+mdesc(k)+'</small></span></button>'}).join('');
+  /* plain line icons (like the rest of the panel), not the map colours */
+  var MIC={s:'<path d="M3 13.5h10"/><path d="M5 13.5V8.5M8 13.5V4.5M11 13.5V7"/><path d="M2.5 6.2h11" stroke-dasharray="1.6 1.6"/>',
+    p:'<path d="M8 2.2 14 13H2z"/><path d="M8 6.5v3"/><path d="M8 11.4v.1"/>',
+    v:'<path d="M3 13c0-6 4-9.5 10-10-.4 6-4 10-10 10z"/><path d="M3 13 9 7"/>',
+    c:'<path d="M2.5 11 6 7.5l2.5 2.5L13.5 5"/><path d="M10.5 5h3v3"/>',
+    n:'<rect x="2.5" y="3.5" width="11" height="10" rx="1.6"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3"/><circle cx="8" cy="10" r="1.3"/>'};
+  $('mode').innerHTML=MKEYS.map(function(k){return '<button data-m="'+k+'"><span class="sw"><svg viewBox="0 0 16 16" aria-hidden="true">'+MIC[k]+'</svg></span><span><b>'+mname(k)+'</b><small>'+mdesc(k)+'</small></span></button>'}).join('');
   $('dtk').innerHTML=[1,10,20,30].map(function(d){return '<span style="left:'+((d-1)/(DMAX-1)*100)+'%"><b>'+(d===1?'1':L("{0} kun",d))+'</b>'+dD(d)+'</span>'}).join('');
   $('wsel').innerHTML=[[183,L("6 oy")],[365,L("1 yil")],[730,L("2 yil")],[99999,L("Hammasi")]].map(function(w){return '<button data-w="'+w[0]+'" aria-pressed="'+(S.win===w[0])+'">'+w[1]+'</button>'}).join('');
 }
@@ -1241,7 +1334,7 @@ function start(gj){
   readHash();buildRail();
   $('vsel').onchange=function(){setVillage(+this.value)};
   $('hz').onclick=function(e){var b=e.target.closest('button');if(!b)return;stopPlay();setDay(+b.dataset.d)};
-  $('mode').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.mode=b.dataset.m;S.cls=-1;all()};
+  $('mode').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.mode=b.dataset.m;S.cls=-1;if(NDI>=0)ndShow(-1);all()};
   $('tabs').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.tab=b.dataset.t;renderTab()};
   $('wsel').onclick=function(e){var b=e.target.closest('button');if(!b)return;setWin(+b.dataset.w);drawChart()};
   $('mbtn').onclick=openMethod;$('gbtn').onclick=openGuide;$('rbtn').onclick=openReport;
@@ -1283,18 +1376,45 @@ function start(gj){
       tip.hidden=false;var w=$('map').clientWidth;tip.style.left=Math.min(w-tip.offsetWidth-8,e.point.x+14)+'px';tip.style.top=Math.max(84,e.point.y-84)+'px'});
     map.on('mouseleave','p-fill',function(){tip.hidden=true;map.getCanvas().style.cursor='';if(HV>=0)map.setFeatureState({source:'p',id:HV},{hv:false});HV=-1});
     map.on('click',function(e){var ft=map.queryRenderedFeatures(e.point,{layers:['p-fill']})[0];pick(ft&&ft.id!==S.pick?ft.id:-1)});
-    $('load').hidden=true;mapTheme();layers();all();notice();
+    $('load').hidden=true;mapTheme();layers();all();notice();ndLoad();
     if(S.v>=0){var b=V[S.v].b;map.fitBounds([[b[0],b[1]],[b[2],b[3]]],{padding:60,duration:0})}
   });
 }
 window.__relang=function(){thPaint();whoPaint();if(!META||!map)return;buildRail();all();if(DCUR&&!$('drawer').hidden)DCUR()};
 function setDay(d){S.d=Math.max(1,Math.min(DMAX,d));$('day').value=S.d;all()}
-function setVillage(k){S.v=k;$('vsel').value=String(k);if(S.pick>=0)pick(-1,true);S.wend=null;all();
+function setVillage(k){S.v=k;$('vsel').value=String(k);if(S.pick>=0)pick(-1,true);S.wend=null;S.pin=null;all();
   if(k>=0){var b=D.V[k].b;map.fitBounds([[b[0],b[1]],[b[2],b[3]]],{padding:60,duration:700})}else map.fitBounds(TB,{padding:40,duration:700})}
+/* ---------- real Sentinel-2 NDVI of one day (forecast/f26_ndvi_rasters.py palette): 10 m, clipped to the contours,
+   cloud / not imaged = transparent; only days with clear pixels exist. Display only, the model does not use it. ---------- */
+var NDX=null,NDI=-1,NDT=[],LC0=null;
+function ndUrl(n){return MODE==='agol'?agol(IDS.ndvi_days,'nd/'+n):'ndc/'+n}
+function ndLoad(){if(MODE==='agol'&&!IDS.ndvi_days)return;
+  fetch(ndUrl('index.json')).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.days||!j.days.length)return;
+    NDX=j;NDT=j.days.map(function(x){return (Date.parse(x.d+'T00:00:00Z')-T0)/DAY});$('t_ndw').hidden=false;
+    $('t_nd').onchange=function(){ndShow(this.checked?(NDI>=0?NDI:NDX.days.length-1):-1)};
+    $('ndp').onclick=function(){ndShow(NDI-1)};$('ndn').onclick=function(){ndShow(NDI+1)};$('ndx').onclick=function(){ndShow(-1)}}).catch(function(){})}
+function ndNear(t){var b=-1;NDT.forEach(function(x,i){if(b<0||Math.abs(x-t)<Math.abs(NDT[b]-t))b=i});return b>=0&&Math.abs(NDT[b]-t)<1?b:-1}
+function ndShow(i){
+  if(!NDX||!map)return;i=Math.max(-1,Math.min(NDX.days.length-1,i));NDI=i;
+  if(i<0){if(map.getLayer('nd'))map.setLayoutProperty('nd','visibility','none')}
+  else{var u=ndUrl(NDX.days[i].d+'.png'),src=map.getSource('nd');$('ndc').classList.add('busy');
+    if(src)src.updateImage({url:u,coordinates:NDX.bounds});
+    else{map.addSource('nd',{type:'image',url:u,coordinates:NDX.bounds});
+      map.addLayer({id:'nd',type:'raster',source:'nd',paint:{'raster-resampling':'nearest','raster-fade-duration':0}},'p-line');
+      map.on('sourcedata',function(e){if(e.sourceId==='nd'&&map.isSourceLoaded('nd'))$('ndc').classList.remove('busy')})}
+    map.setLayoutProperty('nd','visibility','visible')}
+  var x=i>=0?NDX.days[i]:null;$('ndc').hidden=!x;$('t_nd').checked=!!x;
+  S.pin=x?{t:NDT[i],k:'o'}:(S.pin&&S.pin.k==='o'?null:S.pin);
+  if(x){$('ndd').textContent=ds(x.d,1);$('ndq').textContent=L("ochiq {0} %",f(x.clear*100,0));$('ndp').disabled=i===0;$('ndn').disabled=i===NDX.days.length-1}
+  layers();legend();drawChart();
+}
 function layers(){
   if(!map||!map.getLayer('sat'))return;
   map.setLayoutProperty('sat','visibility',S.sat?'visible':'none');
-  map.setPaintProperty('p-fill','fill-opacity',['case',['==',['coalesce',['feature-state','h'],0],1],S.sat?0:.1,['boolean',['feature-state','sel'],false],.97,S.sat?.72:.88]);
+  /* raster on: the contours keep only a thin outline, so the real pixels are visible */
+  var nd=NDI>=0;if(!LC0)LC0=map.getPaintProperty('p-line','line-color');
+  map.setPaintProperty('p-line','line-color',nd?['case',['boolean',['feature-state','sel'],false],'#ffffff',isLight()?'rgba(31,27,20,.45)':'rgba(238,245,233,.5)']:LC0);
+  map.setPaintProperty('p-fill','fill-opacity',nd?0:['case',['==',['coalesce',['feature-state','h'],0],1],S.sat?0:.1,['boolean',['feature-state','sel'],false],.97,S.sat?.72:.88]);
   map.setLayoutProperty('p-water','visibility',S.wat?'visible':'none');
   $('map').classList.toggle('nolab',!S.lab);
   $('t_sat').checked=S.sat;$('t_lab').checked=S.lab;$('t_wat').checked=S.wat;
@@ -1337,6 +1457,9 @@ function hot(d,lim){ /* fields that matter most: area x shortfall below the norm
 /* ---------- legend on the map ---------- */
 function legend(){
   var el=$('legend'),d=S.d,g=function(c){return '<div class="bar" style="background:linear-gradient(90deg,'+c.join(',')+')"></div>'};
+  if(NDI>=0){var x=NDX.days[NDI];el.onclick=null;
+    el.innerHTML='<h4>'+L("Sentinel-2 surati (NDVI), {0}",ds(x.d,1))+'</h4>'+g(VAL)+'<div class="ax"><span>'+f(VLO,2)+' '+L("yalang'och")+'</span><span>'+f(VHI,2)+' '+L("qalin yashil")+'</span></div>'+
+      '<div class="hint">'+L("Haqiqiy surat, 10 m. Bo'sh joy — bulut yoki o'sha kuni surat olinmagan. Ochiq dalalar: {0} %.",f(x.clear*100,0))+'</div>';return}
   if(S.mode==='s'){var s=sel(d),tot=sum(s.a)||1;
     el.innerHTML='<h4>'+L("{0}: me'yorga nisbatan holat",dD(d))+'</h4>'+[0,1,2,3,4].map(function(i){return '<button data-c="'+i+'" aria-pressed="'+(S.cls===i)+'"><i style="background:'+CC[i]+'"></i><span><b>'+cn(i)+'</b> <small>'+cr(i)+'</small></span><b>'+f(s.a[i]/tot*100,0)+' %</b></button>'}).join('')+
       '<div class="hint">'+(S.cls>=0?L("Faqat tanlangan toifa ko'rsatilmoqda. Qayta bosing — hammasi."):L("Toifani bosing — xaritada faqat o'sha dalalar qoladi. Foiz — maydon ulushi."))+'</div>';
@@ -1355,16 +1478,25 @@ var legend0=legend;legend=function(){legend0();var el=$('legend'),h=el.querySele
 /* ---------- picked contour ---------- */
 function pick(id,quiet){
   if(S.pick>=0)map.setFeatureState({source:'p',id:S.pick},{sel:false});
-  S.pick=id;S.wend=null;if(id<0){$('pc').hidden=true;if(!quiet)renderSide();return}
+  S.pick=id;S.wend=null;S.pin=null;if(id<0){$('pc').hidden=true;if(!quiet)renderSide();return}
   map.setFeatureState({source:'p',id:id},{sel:true});
   var hasF=META.h_layout==='obs,fill,norm',b=id>>10,Ln=NH*(hasF?2:1)+36;HSER=null;   /* block: observed | radar-filled | norm */
   (HB[b]||(HB[b]=getText('fc',(hasF?'h2/b':'h/b')+b+'.txt').then(inflate).then(function(buf){return new Uint8Array(buf)}))).then(function(B){
     if(S.pick!==id)return;var o=(id-(b<<10))*Ln,obs=[],fill=[],n36=[],no=o+NH*(hasF?2:1);
     for(var i=0;i<NH;i++){obs.push(q8(B[o+i]));fill.push(hasF?q8(B[o+NH+i]):null)}for(var j=0;j<36;j++)n36.push(q8(B[no+j]));
-    HSER={id:id,obs:obs,fill:fill,norm:n36};renderSide();
+    HSER={id:id,obs:obs,fill:fill,norm:n36,od:null};
+    /* real Sentinel-2 days of this field (h3/): shown on the chart instead of the 10-day values */
+    if(!ODAY.length){renderSide();return}
+    (HB3[b]||(HB3[b]=getText('fc','h3/b'+b+'.txt').then(inflate).then(function(buf){return new Uint8Array(buf)}))).then(function(C){
+      if(S.pick!==id||!HSER||HSER.id!==id)return;var o3=(id-(b<<10))*ODAY.length,od=[];
+      for(var i=0;i<ODAY.length;i++){var v=q8(C[o3+i]);if(v!=null)od.push([ODAY[i],v])}
+      HSER.od=od;renderSide()}).catch(function(){renderSide()});
   }).catch(function(){});
   renderSide();
 }
+var HB3={},ODAY=[];
+/* a series of values per real acquisition day (null = not clear) -> [[day, value], ...] */
+function odList(a){var r=[];if(!a)return null;a.forEach(function(v,i){if(v!=null)r.push([ODAY[i],v])});return r}
 function goField(c){map.flyTo({center:[CEN[2*c],CEN[2*c+1]],zoom:Math.max(map.getZoom(),14.3),duration:900});pick(c)}
 function fname(c){return L("Dala")+' #'+(c+1)}
 /* ---------- the chosen area: history + 4 forecast nodes (today, 10, 20, 30 days) ---------- */
@@ -1372,15 +1504,15 @@ function lastIn(a){for(var i=a.length-1;i>=0;i--)if(a[i]!=null)return a[i];retur
 function series(){
   var n0;
   if(S.pick>=0){var c=S.pick;
-    return {kind:'f',name:fname(c),obs:HSER&&HSER.id===c?HSER.obs:[],norm:HSER&&HSER.id===c?HSER.norm:[],today:lastObs(c),
+    return {kind:'f',name:fname(c),obs:HSER&&HSER.id===c?HSER.obs:[],norm:HSER&&HSER.id===c?HSER.norm:[],today:lastObs(c),od:HSER&&HSER.id===c?HSER.od:null,
       fill:HSER&&HSER.id===c?HSER.fill:null,
       N:{v:[0,1,2,3].map(function(j){return vN(c,j)}),n:[0,1,2,3].map(function(j){return nN(c,j)}),
          lo:[0,1,2,3].map(function(j){return j?lo(c,j-1):vN(c,0)}),hi:[0,1,2,3].map(function(j){return j?hi(c,j-1):vN(c,0)})}}}
   if(S.v>=0){var g=META.villages[S.v],t0=g.obs[NH-1]!=null?g.obs[NH-1]:lastIn(g.obs);n0=g.norm[K0%36];
-    return {kind:'v',name:D.V[S.v].name,obs:g.obs,norm:g.norm,today:t0,fill:g.full||null,
+    return {kind:'v',name:D.V[S.v].name,obs:g.obs,norm:g.norm,today:t0,fill:g.full||null,od:ODAY.length?odList(g.obsd):null,
       N:{v:[t0].concat(g.fc||[null,null,null]),n:[n0].concat(g.fn||[null,null,null]),lo:null,hi:null}}}
   var T=META.town,R=T.rows,tt=T.obs[NH-1]!=null?T.obs[NH-1]:lastIn(T.obs);n0=T.norm[K0%36];
-  return {kind:'t',name:L("Minbu tumani"),obs:T.obs,norm:T.norm,today:tt,far:R.slice(3),fill:T.full||null,
+  return {kind:'t',name:L("Minbu tumani"),obs:T.obs,norm:T.norm,today:tt,far:R.slice(3),fill:T.full||null,od:ODAY.length?odList(T.obsd):null,
     N:{v:[tt].concat(R.slice(0,3).map(function(r){return r.ndvi})),n:[n0].concat(R.slice(0,3).map(function(r){return r.norm})),
        lo:[tt].concat(R.slice(0,3).map(function(r){return r.lo80})),hi:[tt].concat(R.slice(0,3).map(function(r){return r.hi80}))}};
 }
@@ -1497,14 +1629,24 @@ function drawChart(){
   var we=yws!=null?ywe:S.wend==null?END:Math.max(START+span,Math.min(END,S.wend)),ws=we-span;
   $('c1s').textContent=tds(ws,1)+' — '+tds(yws!=null&&ywe<END?we-1:we,1);
   /* points */
-  var P=[];Sx.obs.forEach(function(v,i){if(v!=null)P.push([dk(k0+i),v])});
-  /* radar gap filling: cloudy periods get an estimate (purple), drawn apart from real images */
-  var RF=[],CB=[];if(Sx.fill)Sx.obs.forEach(function(v,i){var fv=Sx.fill[i],tt=dk(k0+i);if(v==null&&fv!=null)RF.push([tt,fv]);var cv=v!=null?v:fv;if(cv!=null)CB.push([tt,cv])});
+  /* observed points: the real Sentinel-2 days when available (od), otherwise the model's 10-day values */
+  var P=[];if(Sx.od)P=Sx.od.slice();else Sx.obs.forEach(function(v,i){if(v!=null)P.push([dk(k0+i),v])});
+  /* radar gap filling: a 10-day estimate (purple) for 10-day periods without any clear image, placed mid-period */
+  var RF=[];if(Sx.fill)Sx.obs.forEach(function(v,i){var fv=Sx.fill[i];if(v==null&&fv!=null)RF.push([dk(k0+i)+4.5,fv])});
+  var CB=P.concat(RF).sort(function(a,b){return a[0]-b[0]});
   var NP=[];for(var k=k0;k<=K0+9;k++){var nv=Sx.norm[k%36];if(nv!=null)NP.push([dk(k),nv])}
   var F=[];for(var d=0;d<=DMAX;d++){var x=at(Sx.N,d);F.push([OD+d,x.v,x.lo,x.hi])}
   var FAR=(Sx.far||[]).map(function(rw){return [OD+rw.horizon_days,rw.ndvi,rw.lo80,rw.hi80]});
+  /* daily values past day 30 (township 2-3 months): straight line between the 30 d forecast and the far points */
+  var FD=[];if(FAR.length&&F[DMAX][1]!=null){var kn=[F[DMAX]].concat(FAR);
+    for(var q=1;q<kn.length;q++){var A0=kn[q-1],A1=kn[q];for(var tq=A0[0]+1;tq<=A1[0];tq++){var w1=(tq-A0[0])/(A1[0]-A0[0]),li=function(j){return A0[j]!=null&&A1[j]!=null?A0[j]+(A1[j]-A0[j])*w1:null};
+      FD.push([tq,li(1),li(2),li(3)])}}}
+  var FA=F.concat(FD);   /* the whole forecast, one value per day */
   var ys=[];function inw(p){return p[0]>=ws-12&&p[0]<=we+12}
-  P.concat(NP,RF).forEach(function(p){if(inw(p))ys.push(p[1])});F.concat(FAR).forEach(function(p){if(inw(p)){if(p[1]!=null)ys.push(p[1]);if(p[2]!=null){ys.push(p[2]);ys.push(p[3])}}});
+  /* the value axis fits only the series that are switched on in the legend */
+  var on1=function(k){return !S.sel||!!S.sel[k]};
+  [[P,'o'],[NP,'n'],[RF,'r']].forEach(function(z){if(on1(z[1]))z[0].forEach(function(p){if(inw(p))ys.push(p[1])})});
+  F.concat(FAR).forEach(function(p){if(!inw(p))return;if(p[1]!=null&&(on1('f')||on1('d')))ys.push(p[1]);if(p[2]!=null){if(on1('l')||on1('b'))ys.push(p[2]);if(on1('h')||on1('b'))ys.push(p[3])}});
   if(!ys.length)ys=[0,0.8];
   var mn=Math.min.apply(null,ys),mx=Math.max.apply(null,ys),pd=(mx-mn)*.08||.05;mn-=pd;mx+=pd;
   var X=function(x){return l+(x-ws)/(we-ws)*iw},Y=function(v){return t+(1-(v-mn)/(mx-mn))*ih};
@@ -1523,39 +1665,92 @@ function drawChart(){
     if(X(a1)-X(a0)<34)continue;s+='<text x="'+((X(a0)+X(a1))/2).toFixed(1)+'" y="'+(Hh-5)+'" text-anchor="middle" font-size="13" font-weight="700" fill="#eef5e9">'+y+'</text>'}
   s+='<g clip-path="url(#cw)">';
   if(OD+0<=we)s+='<rect x="'+X(OD)+'" y="'+t+'" width="'+Math.max(0,X(Math.min(we,FEND))-X(OD))+'" height="'+ih+'" fill="rgba(110,168,255,.06)"/>';
-  s+='<path d="'+path(NP)+'" fill="none" stroke="#b7c7b3" stroke-opacity=".6" stroke-dasharray="3 3" stroke-width="1.3"/>';
-  if(F[1][2]!=null){var up='',dn='';F.forEach(function(p){if(p[2]==null)return;up+=(up?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[3]).toFixed(1)});
+  /* legend filter: S.sel = null (everything) or the set of series the user picked in the legend */
+  var on=function(k){return !S.sel||!!S.sel[k]};
+  if(on('n'))s+='<path d="'+path(NP)+'" fill="none" stroke="#d8c3a5" stroke-width="1.8"/>';
+  /* every drawn point is registered here so hover/click can find exactly that point */
+  var PT=[];function reg(tt,v,k,lo,hi){if(v!=null&&inw([tt])&&on(k))PT.push({x:X(tt),y:Y(v),t:tt,v:v,k:k,lo:lo,hi:hi})}
+  if(on('b')&&F[1][2]!=null){var up='',dn='';F.forEach(function(p){if(p[2]==null)return;up+=(up?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[3]).toFixed(1)});
     for(var j=F.length-1;j>=0;j--)if(F[j][2]!=null)dn+='L'+X(F[j][0]).toFixed(1)+' '+Y(F[j][2]).toFixed(1);s+='<path d="'+up+dn+'Z" fill="rgba(110,168,255,.16)"/>'}
-  if(RF.length)s+='<path d="'+path(CB)+'" fill="none" stroke="#b197fc" stroke-opacity=".75" stroke-dasharray="4 3" stroke-width="1.5"/>';
-  s+='<path d="'+path(P)+'" fill="none" stroke="#7fd06c" stroke-width="1.9"/>';
-  RF.forEach(function(p){if(inw(p)){var q=span>800?2.2:3.2;s+='<rect x="'+(X(p[0])-q).toFixed(1)+'" y="'+(Y(p[1])-q).toFixed(1)+'" width="'+2*q+'" height="'+2*q+'" fill="#13261a" stroke="#b197fc" stroke-width="1.3"/>'}});
-  P.forEach(function(p){if(inw(p))s+='<circle cx="'+X(p[0]).toFixed(1)+'" cy="'+Y(p[1]).toFixed(1)+'" r="'+(span>800?1.2:2)+'" fill="#7fd06c"/>'});
-  if(FAR.length){var fp='M'+X(F[DMAX][0]).toFixed(1)+' '+Y(F[DMAX][1]).toFixed(1);FAR.forEach(function(p){fp+='L'+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)});
-    s+='<path d="'+fp+'" fill="none" stroke="#6ea8ff" stroke-width="1.6" stroke-dasharray="5 4"/>';FAR.forEach(function(p){s+='<circle cx="'+X(p[0])+'" cy="'+Y(p[1])+'" r="3.5" fill="#13261a" stroke="#6ea8ff" stroke-width="1.6"/>'})}
-  s+='<path d="'+path(F)+'" fill="none" stroke="#6ea8ff" stroke-width="2.2"/>';
-  [10,20,30].forEach(function(dd){var p=F[dd];if(p[1]!=null)s+='<circle cx="'+X(p[0])+'" cy="'+Y(p[1])+'" r="3.4" fill="#6ea8ff" stroke="#13261a" stroke-width="1.4"/>'});
-  var sp=F[S.d];if(sp[1]!=null)s+='<line x1="'+X(sp[0])+'" x2="'+X(sp[0])+'" y1="'+t+'" y2="'+(t+ih)+'" stroke="#ff8a5c" stroke-width="1.3" stroke-dasharray="2 2"/><circle cx="'+X(sp[0])+'" cy="'+Y(sp[1])+'" r="5.5" fill="#ff8a5c" stroke="#13261a" stroke-width="2"/>';
+  if(on('r')&&RF.length)s+='<path d="'+path(on('o')?CB:RF)+'" fill="none" stroke="#b197fc" stroke-opacity=".75" stroke-dasharray="4 3" stroke-width="1.5"/>';
+  if(on('o'))s+='<path d="'+path(P)+'" fill="none" stroke="#7fd06c" stroke-width="1.9"/>';
+  RF.forEach(function(p){reg(p[0],p[1],'r')});P.forEach(function(p){reg(p[0],p[1],'o')});NP.forEach(function(p){reg(p[0],p[1],'n')});
+  if(on('r'))RF.forEach(function(p){if(inw(p)){var q=span>800?2.2:3.2;s+='<rect x="'+(X(p[0])-q).toFixed(1)+'" y="'+(Y(p[1])-q).toFixed(1)+'" width="'+2*q+'" height="'+2*q+'" fill="#13261a" stroke="#b197fc" stroke-width="1.3"/>'}});
+  if(on('o'))P.forEach(function(p){if(inw(p))s+='<circle cx="'+X(p[0]).toFixed(1)+'" cy="'+Y(p[1]).toFixed(1)+'" r="'+(span>800?2.2:3.4)+'" fill="#7fd06c" stroke="#13261a" stroke-width="1.4"/>'});
+  if(FD.length){var fp='M'+X(F[DMAX][0]).toFixed(1)+' '+Y(F[DMAX][1]).toFixed(1);FD.forEach(function(p){fp+='L'+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)});
+    if(on('b')&&FD[0][2]!=null){var u2='M'+X(F[DMAX][0]).toFixed(1)+' '+Y(F[DMAX][3]).toFixed(1),d2='';FD.forEach(function(p){u2+='L'+X(p[0]).toFixed(1)+' '+Y(p[3]).toFixed(1)});
+      for(var j2=FD.length-1;j2>=0;j2--)d2+='L'+X(FD[j2][0]).toFixed(1)+' '+Y(FD[j2][2]).toFixed(1);d2+='L'+X(F[DMAX][0]).toFixed(1)+' '+Y(F[DMAX][2]).toFixed(1);s+='<path d="'+u2+d2+'Z" fill="rgba(110,168,255,.08)"/>'}
+    if(on('f'))s+='<path d="'+fp+'" fill="none" stroke="#6ea8ff" stroke-width="1.6" stroke-dasharray="5 4"/>'}
+  /* norm: a point at every 10-day step */
+  var PR=span>800?2.2:3.4;   /* point size: same as the forecast points (smaller only in the many-year view) */
+  if(on('n'))NP.forEach(function(p){if(inw(p))s+='<circle cx="'+X(p[0]).toFixed(1)+'" cy="'+Y(p[1]).toFixed(1)+'" r="'+PR+'" fill="#d8c3a5" stroke="#13261a" stroke-width="1.4"/>'});
+  /* edges of the 80 % range: upper = light green, lower = light red, dashed with a point every 10 days */
+  if(FA.length>1&&FA[Math.min(10,FA.length-1)][2]!=null){
+    if(on('h'))s+='<path d="'+path(FA,3)+'" fill="none" stroke="#69db7c" stroke-width="1.5" stroke-dasharray="4 3"/>';if(on('l'))s+='<path d="'+path(FA,2)+'" fill="none" stroke="#ff8787" stroke-width="1.5" stroke-dasharray="4 3"/>';
+    for(var de=10;de<FA.length;de+=10){var pe=FA[de];if(pe[2]==null)continue;reg(pe[0],pe[3],'h');reg(pe[0],pe[2],'l');
+      if(on('h'))s+='<circle cx="'+X(pe[0])+'" cy="'+Y(pe[3])+'" r="2.8" fill="#13261a" stroke="#69db7c" stroke-width="1.5"/>';if(on('l'))s+='<circle cx="'+X(pe[0])+'" cy="'+Y(pe[2])+'" r="2.8" fill="#13261a" stroke="#ff8787" stroke-width="1.5"/>'}}
+  if(on('f'))s+='<path d="'+path(F)+'" fill="none" stroke="#6ea8ff" stroke-width="2.2"/>';
+  /* forecast: a point every 10 days (filled = model, hollow = past 30 days, built on the norm) */
+  for(var dd0=10;dd0<FA.length;dd0+=10){var p0=FA[dd0];if(p0)reg(p0[0],p0[1],'f',p0[2],p0[3]);if(on('f')&&p0&&p0[1]!=null)s+=dd0<=DMAX?'<circle cx="'+X(p0[0])+'" cy="'+Y(p0[1])+'" r="3.4" fill="#6ea8ff" stroke="#13261a" stroke-width="1.4"/>':'<circle cx="'+X(p0[0])+'" cy="'+Y(p0[1])+'" r="3.4" fill="#13261a" stroke="#6ea8ff" stroke-width="1.6"/>'}
+  var sp=F[S.d];if(on('d')&&sp[1]!=null)s+='<line x1="'+X(sp[0])+'" x2="'+X(sp[0])+'" y1="'+t+'" y2="'+(t+ih)+'" stroke="#ff8a5c" stroke-width="1.3" stroke-dasharray="2 2"/><circle cx="'+X(sp[0])+'" cy="'+Y(sp[1])+'" r="5.5" fill="#ff8a5c" stroke="#13261a" stroke-width="2"/>';
   if(OD>=ws&&OD<=we)s+='<text x="'+(X(OD)+4)+'" y="'+(t+12)+'" font-size="11" fill="#6ea8ff">'+L("prognoz")+' →</text>';
+  /* the day whose raster is open on the map */
+  if(NDI>=0&&NDT[NDI]>=ws&&NDT[NDI]<=we)s+='<line x1="'+X(NDT[NDI])+'" x2="'+X(NDT[NDI])+'" y1="'+t+'" y2="'+(t+ih)+'" stroke="#7fd06c" stroke-width="1.4" stroke-dasharray="3 3"/>';
+  /* the clicked (pinned) point gets a ring; a second ring follows the mouse */
+  var PIN=null;if(S.pin)PT.forEach(function(p){if(p.k===S.pin.k&&Math.abs(p.t-S.pin.t)<0.5)PIN=p});
+  if(PIN)s+='<circle cx="'+PIN.x+'" cy="'+PIN.y+'" r="8" fill="none" stroke="#eef5e9" stroke-width="2.2"/>';
+  s+='<circle id="c1hl" r="7.5" fill="none" stroke="#eef5e9" stroke-width="1.6" stroke-opacity=".8" cx="-50" cy="-50"/>';
   s+='</g><rect x="'+l+'" y="'+t+'" width="'+iw+'" height="'+ih+'" fill="transparent" id="c1hit" style="cursor:'+(span<END-START?'grab':'crosshair')+'"/></svg><div class="ctip" id="c1tip" hidden></div>';
   el.innerHTML=thm(s);
-  $('c1l').innerHTML='<span><i style="background:#7fd06c"></i>'+L("haqiqatda kuzatilgan")+'</span>'+(RF.length?'<span><i style="background:#13261a;border:1.5px solid #b197fc;width:8px;height:8px"></i>'+L("radar bilan to'ldirilgan (bulutli kunlar)")+'</span>':'')+'<span><i style="background:#6ea8ff"></i>'+L("prognoz")+'</span>'+(F[1][2]!=null?'<span><i style="background:rgba(110,168,255,.3);height:8px"></i>'+L("ehtimoliy oraliq (80 %)")+'</span>':'')+'<span><i style="background:#b7c7b3;opacity:.6"></i>'+L("me'yor (odatda)")+'</span><span><i style="background:#ff8a5c;width:8px;height:8px;border-radius:50%"></i>'+L("tanlangan kun")+'</span>';
+  /* legend = filter: click items to keep only them (several allowed), click again to switch off; nothing picked = all */
+  var lgI=function(k,sw,txt){var st=S.sel?(S.sel[k]?' on':' off'):'';return '<span class="lgi'+st+'" data-s="'+k+'" role="button" tabindex="0" aria-pressed="'+(S.sel?!!S.sel[k]:true)+'">'+sw+txt+'</span>'};
+  var col='<span class="lgc">';
+  $('c1l').innerHTML=thm(lgI('o','<i style="background:#7fd06c"></i>',L("raster ma'lumoti"))+(RF.length?lgI('r','<i style="background:#13261a;border:1.5px solid #b197fc;width:8px;height:8px"></i>',L("radar bilan to'ldirilgan (bulutli kunlar)")):'')+
+    lgI('n','<i style="background:#d8c3a5"></i>',L("me'yor (odatda)"))+lgI('f','<i style="background:#6ea8ff"></i>','<b>'+L("prognoz")+'</b>')+
+    (F[1][2]!=null?col+lgI('h','<i style="background:repeating-linear-gradient(90deg,#69db7c 0 4px,transparent 4px 7px)"></i>',L("yuqori qiymat"))+lgI('l','<i style="background:repeating-linear-gradient(90deg,#ff8787 0 4px,transparent 4px 7px)"></i>',L("past qiymat"))+'</span>':'')+
+    col+(F[1][2]!=null?lgI('b','<i style="background:rgba(110,168,255,.3);height:8px"></i>',L("ehtimoliy oraliq (80 %)")):'')+lgI('d','<i style="background:#ff8a5c;width:8px;height:8px;border-radius:50%"></i>',L("tanlangan kun"))+'</span>'+
+    (S.sel?'<button class="lgr" data-s="*">'+L("Hammasi")+'</button>':''));
+  $('c1l').onclick=function(e){var it=e.target.closest('[data-s]');if(!it)return;var k=it.dataset.s;
+    if(k==='*')S.sel=null;else{if(!S.sel){S.sel={};S.sel[k]=1}else if(S.sel[k])delete S.sel[k];else S.sel[k]=1;if(!Object.keys(S.sel).length)S.sel=null}
+    S.pin=null;drawChart()};
+  $('c1l').onkeydown=function(e){if((e.key==='Enter'||e.key===' ')&&e.target.dataset.s){e.preventDefault();e.target.click()}};
   /* hover, drag to scroll, click on the forecast part = choose the day */
-  var hit=el.querySelector('#c1hit'),tip=$('c1tip'),drag=null;
+  var hit=el.querySelector('#c1hit'),tip=$('c1tip');
   function tAt(e){var rc=el.getBoundingClientRect();return ws+((e.clientX-rc.left)*W/rc.width-l)/iw*(we-ws)}
+  var KL={o:"raster ma'lumoti",r:"radar bahosi",n:"me'yor",h:"yuqori qiymat",l:"past qiymat"};
+  function nearPt(e){var rc=el.getBoundingClientRect(),mx=(e.clientX-rc.left)*W/rc.width,my=(e.clientY-rc.top)*Hh/rc.height,bp=null,bd=13;
+    PT.forEach(function(p){var dd=Math.hypot(p.x-mx,p.y-my);if(dd<bd){bd=dd;bp=p}});return bp}
+  function ptTip(p){var day=Math.round(p.t-OD),lab=p.k==='f'?L(day<=DMAX?"prognoz":"uzoq prognoz, me'yorga tayanadi"):L(KL[p.k]);
+    var nk=null;if(p.k!=='n')NP.forEach(function(q){if(nk==null||Math.abs(q[0]-p.t)<Math.abs(nk[0]-p.t))nk=q});
+    /* 2 lines: date + value on top, range and norm below; placed well above the point */
+    var l2=[],ni=p.k==='o'?ndNear(p.t):-1;if(ni>=0)l2.push(L("ochiq {0} %",f(NDX.days[ni].clear*100,0)));if(p.k==='f'&&p.lo!=null)l2.push('80 %: '+iv(p.lo)+'–'+iv(p.hi));if(nk&&Math.abs(nk[0]-p.t)<8)l2.push(L("me'yor")+' '+iv(nk[1]));
+    tip.hidden=false;tip.innerHTML=tds(p.t,1)+': <b>'+iv(p.v)+'</b> ('+lab+')'+(l2.length?'<br><span style="color:var(--tx2)">'+l2.join(' · ')+'</span>':'');
+    var rc=el.getBoundingClientRect();tip.style.left=Math.max(120,Math.min(rc.width-120,p.x/W*rc.width))+'px';tip.style.top=(p.y/Hh*rc.height-18)+'px'}
+  var hl=el.querySelector('#c1hl');function hlAt(p){hl.setAttribute('cx',p?p.x:-50);hl.setAttribute('cy',p?p.y:-50)}
+  if(PIN)ptTip(PIN);
   hit.onpointermove=function(e){
-    if(drag){var dx=(e.clientX-drag.x)/el.getBoundingClientRect().width*W/iw*(we-ws);if(Math.abs(e.clientX-drag.x)>3){drag.moved=true;freeYear(span)}S.wend=drag.we-dx;drawChart();return}
+    if(CDR||OVD)return;   /* dragging: handled on the window */
+    var np=nearPt(e);hlAt(np);hit.style.cursor=np?'pointer':(span<END-START?'grab':'crosshair');if(np){ptTip(np);return}
     var tt=tAt(e),rc=el.getBoundingClientRect(),best=null,lab='';
-    if(tt>OD+0.5){var dd=Math.round(tt-OD);if(dd<=DMAX){best=F[dd];lab=' ('+L("prognoz")+')'}else FAR.forEach(function(p){if(!best||Math.abs(p[0]-tt)<Math.abs(best[0]-tt))best=p});if(dd>DMAX)lab=' ('+L("me'yor")+')'}
+    var rng='';if(tt>OD+0.5){var dd=Math.round(tt-OD);if(dd<FA.length){best=FA[dd];lab=' ('+L(dd<=DMAX?"prognoz":"uzoq prognoz, me'yorga tayanadi")+')';if(best[2]!=null)rng='80 %: '+iv(best[2])+'–'+iv(best[3])}}
     else{P.forEach(function(p){if(!best||Math.abs(p[0]-tt)<Math.abs(best[0]-tt))best=p});
       RF.forEach(function(p){if(!best||Math.abs(p[0]-tt)<Math.abs(best[0]-tt)){best=p;lab=' ('+L("radar bahosi")+')'}});
       if(best&&P.indexOf(best)>=0)lab=''}
     if(!best||best[1]==null){tip.hidden=true;return}
     var nk=null;NP.forEach(function(p){if(nk==null||Math.abs(p[0]-best[0])<Math.abs(nk[0]-best[0]))nk=p});
-    tip.hidden=false;tip.innerHTML=tds(best[0],1)+': <b>'+iv(best[1])+'</b>'+lab+(nk?' · '+L("me'yor")+' '+iv(nk[1]):'');
-    tip.style.left=Math.max(90,Math.min(rc.width-90,X(best[0])/W*rc.width))+'px';tip.style.top=(Y(best[1])/Hh*rc.height-8)+'px'};
-  hit.onpointerleave=function(){tip.hidden=true};
-  hit.onpointerdown=function(e){drag={x:e.clientX,we:we,moved:false};hit.setPointerCapture(e.pointerId);hit.style.cursor='grabbing'};
-  hit.onpointerup=function(e){var dr=drag;drag=null;hit.style.cursor='grab';if(dr&&!dr.moved){var tt=tAt(e);if(tt>OD+0.5&&tt<=OD+DMAX+0.5){stopPlay();setDay(Math.round(tt-OD))}}};
+    var l2=[];if(rng)l2.push(rng);if(nk)l2.push(L("me'yor")+' '+iv(nk[1]));
+    tip.hidden=false;tip.innerHTML=tds(best[0],1)+': <b>'+iv(best[1])+'</b>'+lab+(l2.length?'<br><span style="color:var(--tx2)">'+l2.join(' · ')+'</span>':'');
+    tip.style.left=Math.max(120,Math.min(rc.width-120,X(best[0])/W*rc.width))+'px';tip.style.top=(Y(best[1])/Hh*rc.height-18)+'px'};
+  hit.onpointerleave=function(){hlAt(null);if(PIN)ptTip(PIN);else tip.hidden=true};
+  hit.onpointerdown=function(e){e.preventDefault();CDR={x:e.clientX,we:we,moved:false,span:span,k:W/iw*(we-ws)/el.getBoundingClientRect().width};hit.style.cursor='grabbing'};
+  /* click: on a point = pin that point (forecast-side points within 30 days also move the day slider); click it again = unpin */
+  hit.onpointerup=function(e){var dr=CDR;CDR=null;hit.style.cursor='grab';if(!dr||dr.moved)return;
+    var np=nearPt(e);
+    if(np){var same=S.pin&&S.pin.k===np.k&&Math.abs(S.pin.t-np.t)<0.5;S.pin=same?null:{t:np.t,k:np.k};
+      /* a real Sentinel-2 point opens that day's raster on the map */
+      if(np.k==='o'){var ni=ndNear(np.t);if(ni>=0){ndShow(same?-1:ni);return}}
+      var day=Math.round(np.t-OD);if(!same&&'fhl'.indexOf(np.k)>=0&&day>=1&&day<=DMAX){stopPlay();setDay(day)}else drawChart();return}
+    S.pin=null;var tt=tAt(e);if(tt>OD+0.5&&tt<=OD+DMAX+0.5){stopPlay();setDay(Math.round(tt-OD))}else drawChart()};
   hit.onwheel=function(e){if(span>=END-START)return;e.preventDefault();freeYear(span);S.wend=we+(e.deltaY+e.deltaX)/600*span;drawChart()};
   /* overview strip: the whole period, the visible window is the box you drag */
   /* plain year ruler (no curve on it): the box shows which part of 2019 → now you are looking at */
@@ -1565,20 +1760,45 @@ function drawChart(){
     if(yy>2019)os+='<line x1="'+ox+'" x2="'+ox+'" y1="3" y2="'+(OH-3)+'" stroke="rgba(200,230,195,.22)"/>';
     if(ox1-ox>30&&!(yws!=null&&yy===S.yr))os+='<text x="'+((ox+ox1)/2).toFixed(1)+'" y="'+(OH/2+4.5)+'" text-anchor="middle" font-size="12" font-weight="600" fill="#b2c5af">'+yy+'</text>'}
   os+='<rect x="'+oX(OD)+'" y="2" width="'+(oX(FEND)-oX(OD))+'" height="'+(OH-4)+'" fill="rgba(110,168,255,.18)"/>';
-  if(yws!=null)os+='<text x="'+((oX(yws)+oX(ywe))/2).toFixed(1)+'" y="'+(OH/2+4.5)+'" text-anchor="middle" font-size="12.5" font-weight="800" fill="#f0a07c">'+S.yr+'</text>';
-  os+='<rect id="ovw" x="'+oX(ws)+'" y="1" width="'+Math.max(8,oX(we)-oX(ws))+'" height="'+(OH-2)+'" rx="6" fill="rgba(200,85,61,.12)" stroke="#ff8a5c" stroke-width="1.6" style="cursor:grab"/></svg>';
+  if(yws!=null)os+='<text x="'+((oX(yws)+oX(ywe))/2).toFixed(1)+'" y="'+(OH/2+4.5)+'" text-anchor="middle" font-size="12.5" font-weight="800" fill="#4dabf7">'+S.yr+'</text>';
+  os+='<rect id="ovw" x="'+oX(ws)+'" y="1" width="'+Math.max(8,oX(we)-oX(ws))+'" height="'+(OH-2)+'" rx="6" fill="rgba(77,171,247,.14)" stroke="#4dabf7" stroke-width="1.6" style="cursor:grab"/></svg>';
   ov.innerHTML=thm(os);$('c1l').innerHTML=thm($('c1l').innerHTML);
   /* ruler: click a year = show only that year; click the same year again = back to all years; drag the box = scroll */
   var osv=ov.querySelector('svg');osv.style.cursor='pointer';
   function oT(e){var rc=ov.getBoundingClientRect();return START+((e.clientX-rc.left)*OW/rc.width-l)/(OW-l-r)*(END-START)}
-  osv.onpointerdown=function(e){OVD={t:oT(e),we:we,x:e.clientX,moved:false,span:span}};
-  osv.onpointermove=function(e){if(!OVD)return;if(!OVD.moved&&Math.abs(e.clientX-OVD.x)<4)return;OVD.moved=true;freeYear(OVD.span);S.wend=OVD.we+(oT(e)-OVD.t);drawChart()};
-  osv.onpointerup=function(e){var o=OVD;OVD=null;if(!o||o.moved)return;
-    var yy=new Date(T0+Math.max(START,Math.min(END-1,oT(e)))*DAY).getUTCFullYear();
-    if(S.yr===yy)setWin(99999);else{S.yr=yy;S.wend=null;pressWin(-1)}drawChart()};
-  osv.onpointerleave=function(){OVD=null};
+  /* the drag itself is followed on the whole window (see below), so it keeps going when the mouse leaves the strip */
+  OVF={oT:oT,START:START,END:END};
+  osv.onpointerdown=function(e){e.preventDefault();OVD={t:oT(e),we:we,x:e.clientX,moved:false,span:span}};
 }
-var OVD=null;
+/* ---------- update panel: reads fc2/status.json, written by the automatic update job (when that job is connected).
+   status.json = {checked:"2026-11-16 06:00", latest_s2:"2026-11-06", state:"processing"|"ready", origin:"2026-11-11"}  ---------- */
+var UPD=null,updT=null;
+function updUrl(){return MODE==='agol'?agol(IDS.forecast,'fc2/status.json'):'fc2/status.json?'+Date.now()}
+function updCheck(){if(!TOK&&MODE==='agol')return;
+  fetch(updUrl(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){UPD=j&&!j.error&&j.state?j:null;updPanel()}).catch(function(){UPD=null;updPanel()})}
+function updPanel(){if(!META)return;var p=$('updp'),dot=$('upddot'),isNew=UPD&&UPD.state==='ready'&&UPD.origin>META.origin,busy=UPD&&UPD.state==='processing';
+  dot.className=isNew?'new':busy?'busy':'';
+  var st=isNew?'<div class="st new">'+L("Yangi prognoz tayyor: {0} holatidan.",ds(UPD.origin,1))+'</div><button class="go" id="updgo">'+L("Yangi ma'lumotni yuklash")+'</button>'
+    :busy?'<div class="st">'+L("Yangi sun'iy yo'ldosh surati topildi ({0}). Ma'lumotlar tayyorlanmoqda — tayyor bo'lgach shu yerda xabar chiqadi.",ds(UPD.latest_s2,1))+'</div>'
+    :'<div class="st">'+L("Hozircha yangi ma'lumot yo'q. Siz ko'rayotgan prognoz eng so'nggisi.")+'<br>'+L("Yangi Sentinel surati chiqqanda va barcha hisob-kitob tugagach, shu yerda avtomatik xabar paydo bo'ladi.")+'</div>';
+  p.innerHTML='<h4>'+L("Ma'lumot yangilanishi")+'</h4>'+
+    '<div class="row"><span>'+L("Prognoz boshlanish sanasi")+'</span><b>'+ds(META.origin,1)+'</b></div>'+
+    '<div class="row"><span>'+L("Oxirgi Sentinel-2 ma'lumoti")+'</span><b>'+ds(META.last_real||META.last_s2,1)+'</b></div>'+
+    '<div class="row"><span>'+L("Ob-havo (ERA5) ma'lumoti")+'</span><b>'+L("{0} gacha",ds(META.weather_to,1))+'</b></div>'+
+    (UPD&&UPD.checked?'<div class="row"><span>'+L("Oxirgi tekshiruv")+'</span><b>'+esc(UPD.checked)+'</b></div>':'')+st;
+  if(isNew)$('updgo').onclick=function(){location.reload()};
+  if(!updT){updT=setInterval(updCheck,30*60*1000);setTimeout(updCheck,1500)}}   /* checks again every 30 minutes while the page is open */
+$('updb').onclick=function(e){e.stopPropagation();var p=$('updp'),o=p.hidden;p.hidden=!o;this.setAttribute('aria-expanded',String(o))};
+document.addEventListener('click',function(e){var p=$('updp');if(!p.hidden&&!e.target.closest('.updw')){p.hidden=true;$('updb').setAttribute('aria-expanded','false')}});
+var OVD=null,OVF=null,CDR=null;
+addEventListener('pointermove',function(e){
+  if(OVD&&OVF){if(!OVD.moved&&Math.abs(e.clientX-OVD.x)<4)return;if(!OVD.moved){OVD.moved=true;freeYear(OVD.span)}S.wend=OVD.we+(OVF.oT(e)-OVD.t);drawChart()}
+  else if(CDR){if(!CDR.moved&&Math.abs(e.clientX-CDR.x)<=3)return;if(!CDR.moved){CDR.moved=true;freeYear(CDR.span)}S.wend=CDR.we-(e.clientX-CDR.x)*CDR.k;drawChart()}});
+addEventListener('pointerup',function(e){
+  if(OVD){var o=OVD;OVD=null;if(o.moved||!OVF)return;   /* a click on the ruler: show that year / back to all years */
+    var yy=new Date(T0+Math.max(OVF.START,Math.min(OVF.END-1,OVF.oT(e)))*DAY).getUTCFullYear();
+    if(S.yr===yy)setWin(99999);else{S.yr=yy;S.wend=null;pressWin(-1)}drawChart()}
+  CDR=null});   /* the chart's own pointerup (a click on a point) runs before this */
 /* top bar: day / night (shared with Minbu Portal: localStorage 'minbu.theme') and the signed-in user */
 function thPaint(){var lt=isLight(),b=$('thb');
   b.innerHTML=lt?'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8a5.6 5.6 0 1 0 6.8 6.8z"/></svg><span>'+L("Tun")+'</span>'
@@ -1599,7 +1819,7 @@ $('who').onclick=function(){
 thPaint();whoPaint();
 /* day / night: the page is drawn with night colours; for the light theme they are swapped back */
 function isLight(){return document.documentElement.getAttribute('data-theme')==='light'}
-var TPAIR=[['rgba(200,230,195,','rgba(60,48,30,'],['#8fa38b','#8d8271'],['#b2c5af','#5f5648'],['#eef5e9','#1f1b14'],['#b7c7b3','#8a8070'],
+var TPAIR=[['#69db7c','#40c057'],['#ff8787','#fa5252'],['rgba(200,230,195,','rgba(60,48,30,'],['#8fa38b','#8d8271'],['#b2c5af','#5f5648'],['#eef5e9','#1f1b14'],['#d8c3a5','#8c6d46'],['#4dabf7','#228be6'],['rgba(77,171,247,','rgba(34,139,230,'],
   ['#6ea8ff','#1b4fbf'],['rgba(110,168,255,','rgba(27,79,191,'],['#7fd06c','#2b8a3e'],['#b197fc','#7048e8'],['#f0a07c','#a9452a'],
   ['#13261a','#fff'],['#ff8a5c','#c8553d']];
 function thm(x){if(!isLight())return x;TPAIR.forEach(function(p){x=x.split(p[0]).join(p[1])});return x}
