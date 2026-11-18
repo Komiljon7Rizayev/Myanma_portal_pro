@@ -435,6 +435,63 @@ html[data-theme="light"]{--sl:#228be6}
 #day::-webkit-slider-thumb{border-color:var(--sl)!important}
 #day::-moz-range-thumb{border-color:var(--sl)!important}
 </style>
+<style id="dnut-css">/* pastki qator: grafik + holat diagrammasi */
+.bot{flex-direction:row;gap:14px}
+.botc{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:4px;min-height:0}
+.dnut{flex:0 0 372px;display:flex;flex-direction:column;gap:8px;min-height:0;padding:10px 12px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+.dn-h{display:flex;align-items:baseline;gap:8px;font:600 13px var(--display);line-height:1.25}
+.dn-h small{margin-left:auto;font:500 11.5px var(--body);color:var(--tx3);white-space:nowrap}
+.dn-r{flex:1;min-height:0;display:flex;align-items:center;gap:12px}
+.dn-c{flex:none;width:150px;height:150px;position:relative}
+.dn-c svg{display:block;width:100%;height:100%;overflow:visible}
+.dn-c path{cursor:pointer;transition:opacity .2s,transform .2s;transform-origin:75px 75px}
+.dn-c path.off{opacity:.22}
+.dn-c path.on{transform:scale(1.06)}
+.dn-c .ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center;line-height:1.1}
+.dn-c .ctr b{font:400 24px var(--display);color:var(--tx)}
+.dn-c .ctr span{margin-top:3px;font-size:11.5px;color:var(--tx2);max-width:96px}
+.dn-l{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.dn-l button{display:grid;grid-template-columns:12px minmax(0,1fr) auto auto;align-items:center;gap:7px;padding:4px 7px;border-radius:8px;border:1px solid transparent;text-align:left;font-size:12.5px}
+.dn-l button:hover{background:var(--glass-2)}
+.dn-l button[aria-pressed="true"]{background:rgba(224,113,75,.16);border-color:rgba(240,160,124,.6)}
+.dn-l button.off{opacity:.45}
+.dn-l i{width:12px;height:12px;border-radius:3px}
+.dn-l b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dn-l small{color:var(--tx3);font-size:11px;white-space:nowrap}
+.dn-l em{font-style:normal;font-weight:700;min-width:34px;text-align:right}
+.dnut .hz{gap:5px}
+.dnut .hz button{padding:5px 4px 4px;border-radius:10px}
+.dnut .hz button b{font-size:14px}
+.dnut .hz button span{font-size:11px}
+.dnut .hz button em{margin-top:2px;font-size:10.5px}
+@media (max-width:1500px){.dnut{flex-basis:330px}.dn-c{width:128px;height:128px}.dn-c .ctr b{font-size:20px}}
+</style>
+<style id="fold-css">/* pastki qator chap chetgacha; Berkitish / Ochish (index.html kabi) */
+/* chap panel butun balandlikda; o'ng panel torroq - xarita, grafik va diagramma kengroq */
+.grid{grid-template-columns:316px minmax(0,1fr) clamp(340px,22vw,420px);grid-template-rows:minmax(0,1fr) clamp(320px,40vh,420px)}
+.rail{grid-row:1/3}
+.bot{grid-column:2;position:relative}
+/* torroq o'ng panel: jadvallar ramkaga sig'adi (sana va izoh ustunlari ikki qatorga o'tishi mumkin) */
+.insight .tb{width:100%;font-size:12.5px}
+.insight .tb th,.insight .tb td{padding:6px 4px}
+.insight .tb th,.insight .tb td:first-child,.insight .tb td:last-child{white-space:normal}
+.insight .tb td:first-child{min-width:92px}
+.grid.bcl{grid-template-rows:minmax(0,1fr) 0px}
+.grid.bcl .bot{display:none}
+.grid.bcl .rail{grid-row:1/3}
+.grid.scl{grid-template-columns:316px minmax(0,1fr) 0px}
+.grid.scl .insight{display:none}
+.bhide,.bshow,.shide{display:flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:999px;font:600 13px var(--body);color:var(--tx);
+  background:var(--glass);border:1px solid var(--line2);backdrop-filter:blur(9px);box-shadow:0 6px 18px rgba(0,0,0,.35);cursor:pointer;white-space:nowrap}
+.bhide:hover,.bshow:hover,.shide:hover{color:#fff;background:#3f8f49;border-color:#3f8f49}
+.bhide svg,.bshow svg,.shide svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.bhide{position:absolute;z-index:6;top:-17px;left:50%;transform:translateX(-50%)}
+.bshow{position:absolute;z-index:6;left:50%;bottom:92px;transform:translateX(-50%)}
+.bshow[hidden]{display:none}
+.shide{position:absolute;z-index:6;right:6px;top:50%;transform:translateY(-50%);width:32px;height:auto;padding:14px 0;writing-mode:vertical-rl;justify-content:center;gap:8px}
+.shide span{transform:rotate(180deg)}
+html[data-theme="light"] .bhide,html[data-theme="light"] .bshow,html[data-theme="light"] .shide{box-shadow:0 6px 18px rgba(60,48,30,.18)}
+</style>
 <style id="ticons-css">/* o'ng burchak: faqat belgilar (yozuv sichqoncha ustida, title orqali) */
 .top .ticons{display:flex;align-items:center;gap:6px;flex:none}
 .top .ticons .hb,.top .ticons .upd{width:32px;height:32px;padding:0;justify-content:center;gap:0;position:relative}
@@ -443,6 +500,9 @@ html[data-theme="light"]{--sl:#228be6}
 .top .ticons .upd i{position:absolute;right:3px;top:3px;width:7px;height:7px}
 .top .ticons .upd i.new{width:8px;height:8px}
 .top .ticons .updp{left:auto;right:0}
+/* Kun rejimi: yangilanish, til va Kun/Tun tugmalari ham boshqa belgilardek oq */
+html[data-theme="light"] .top .ticons .upd,html[data-theme="light"] .top .thm,html[data-theme="light"] .top .lang>button{background:var(--card)!important;border-color:var(--line2)!important;color:var(--tx)!important}
+html[data-theme="light"] .top .ticons .upd:hover,html[data-theme="light"] .top .thm:hover,html[data-theme="light"] .top .lang>button:hover{border-color:var(--acc)!important}
 </style>
 <style id="srch-css">/* tepa qatordagi qishloq qidiruvi (index.html kabi) */
 .top .search{position:relative;flex:0 1 320px;min-width:150px}
@@ -512,7 +572,7 @@ html[data-theme="light"] .c3d,html[data-theme="light"] .tourcap{box-shadow:0 10p
     <button class="qx" id="qx" type="button" hidden>×</button>
     <div class="results" id="res" hidden></div>
   </div>
-  <span class="pill" id="asof"><i></i>…</span>
+  <span id="asof" hidden></span>
   <div class="sp"></div>
   <div class="ticons">
   <div class="updw">
@@ -528,8 +588,7 @@ html[data-theme="light"] .c3d,html[data-theme="light"] .tourcap{box-shadow:0 10p
 </header>
 <main class="grid">
   <aside class="rail">
-    <section><h3 class="step"><i>1</i>Qaysi sanaga prognoz?</h3><div class="hz" id="hz"></div></section>
-    <section><h3 class="step"><i>2</i>Xaritada nimani ko'ray?</h3><div class="modes" id="mode"></div></section>
+    <section><h3 class="step"><i>1</i>Xaritada nimani ko'ray?</h3><div class="modes" id="mode"></div></section>
     <select id="vsel" hidden aria-hidden="true" tabindex="-1"></select>
     <section class="tog" aria-label="Qo'shimcha qatlamlar">
       <label id="t_ndw" hidden><input type="checkbox" id="t_nd">Haqiqiy NDVI rasteri (Sentinel-2)</label>
@@ -569,6 +628,8 @@ html[data-theme="light"] .c3d,html[data-theme="light"] .tourcap{box-shadow:0 10p
       <button type="button" id="bfs" aria-pressed="false"></button>
     </div>
     <div class="tip" id="tip" hidden></div>
+    <button type="button" class="bshow" id="bshow" hidden></button>
+    <button type="button" class="shide" id="shide" aria-expanded="true"></button>
     <div class="loading" id="load"><div><span class="spin"></span><span id="loadt">Prognoz ma'lumotlari yuklanmoqda…</span></div></div>
   </section>
   <aside class="insight">
@@ -582,9 +643,17 @@ html[data-theme="light"] .c3d,html[data-theme="light"] .tourcap{box-shadow:0 10p
     </div>
   </aside>
   <section class="bot" aria-label="NDVI">
+    <button type="button" class="bhide" id="bhide" aria-expanded="true"></button>
+    <div class="botc">
     <div class="bh"><h4 id="c1t">NDVI</h4><span class="sub" id="c1s"></span><div class="lg" id="c1l"></div><div class="wsel" id="wsel"></div></div>
     <div id="c1"></div>
     <div id="c1ov"></div>
+    </div>
+    <div class="dnut" id="dnut">
+      <div class="dn-h" id="dn-h"></div>
+      <div class="dn-r"><div class="dn-c" id="dn-c"></div><div class="dn-l" id="dn-l"></div></div>
+      <div class="hz" id="hz"></div>
+    </div>
   </section>
 </main>
 </div>
@@ -1281,7 +1350,16 @@ window.__FC_I18N={
 var MODE='agol',IDS={"data": "0a345e7052434403b9638d6cc9c3ba95", "parcels": "4e541b92a3964aa7886a8914173f4db5", "rasters": "b28aea0e5a5b4389af784621bd21f730", "forecast": "5508d753653d47ca8da45ed0517af75e", "ndvi_days": "deadee2a1cd34bada3b1ccfe65d0dc5b"},PORTAL='https://land-tiiame.maps.arcgis.com';
 var $=function(i){return document.getElementById(i)};
 I18N.add(window.__FC_I18N||{});
-I18N.add({"Bosing — qishloqni tanlash":["Click to select the village","Нажмите, чтобы выбрать деревню","ကျေးရွာရွေးရန် နှိပ်ပါ"],
+I18N.add({"Berkitish":["Hide","Скрыть","ဝှက်ရန်"],
+"Ochish":["Show","Показать","ပြရန်"],
+"Grafiklar qatorini yashirish: xarita kattaroq ko'rinadi":["Hide the chart row: the map gets bigger","Скрыть ряд графиков: карта станет больше","ဇယားတန်းကို ဝှက်ရန်: မြေပုံ ပိုကြီးလာမည်"],
+"Grafiklar qatorini qayta ochish":["Show the chart row again","Снова показать ряд графиков","ဇယားတန်းကို ပြန်ပြရန်"],
+"O'ng panelni yashirish: xarita kengroq ko'rinadi":["Hide the right panel: the map gets wider","Скрыть правую панель: карта станет шире","ညာဘက်အကွက်ကို ဝှက်ရန်: မြေပုံ ပိုကျယ်လာမည်"],
+"O'ng panelni qayta ochish":["Show the right panel again","Снова показать правую панель","ညာဘက်အကွက်ကို ပြန်ပြရန်"],
+"kontur":["parcels","контуров","မြေကွက်"],
+"ga, jami":["ha, total","га, всего","ဟက်တာ၊ စုစုပေါင်း"],
+"Holat bo'yicha konturlar":["Parcels by condition","Контуры по состоянию","အခြေအနေအလိုက် မြေကွက်များ"],
+"Bosing — qishloqni tanlash":["Click to select the village","Нажмите, чтобы выбрать деревню","ကျေးရွာရွေးရန် နှိပ်ပါ"],
 "Qishloq nomini yozing":["Type a village name","Введите название деревни","ကျေးရွာအမည် ရိုက်ထည့်ပါ"],
 "Qishloq qidirish":["Search village","Поиск деревни","ကျေးရွာ ရှာရန်"],
 "Bunday qishloq topilmadi. Boshqa nom bilan urinib ko'ring.":["No such village. Try another name.","Такая деревня не найдена. Попробуйте другое название.","ဤကျေးရွာ မတွေ့ပါ။ အခြားအမည်ဖြင့် စမ်းကြည့်ပါ။"],
@@ -1435,7 +1513,7 @@ function outline(fc){var K=function(p){return p[0].toFixed(6)+','+p[1].toFixed(6
 function start(gj){
   var V=D.V;TB=[[Math.min.apply(null,V.map(function(v){return v.b[0]})),Math.min.apply(null,V.map(function(v){return v.b[1]}))],[Math.max.apply(null,V.map(function(v){return v.b[2]})),Math.max.apply(null,V.map(function(v){return v.b[3]}))]];
   readHash();buildRail();
-  $('vsel').onchange=function(){setVillage(+this.value)};qInit();
+  $('vsel').onchange=function(){setVillage(+this.value)};qInit();$('dn-c').onclick=dnPick;$('dn-l').onclick=dnPick;foldInit();
   $('hz').onclick=function(e){var b=e.target.closest('button');if(!b)return;stopPlay();setDay(+b.dataset.d)};
   $('mode').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.mode=b.dataset.m;S.cls=-1;if(NDI>=0)ndShow(-1);all()};
   $('tabs').onclick=function(e){var b=e.target.closest('button');if(!b)return;S.tab=b.dataset.t;renderTab()};
@@ -1614,7 +1692,7 @@ function showAll(){var ch=false;if(S.pick>=0){pick(-1,true);ch=true}
 function mctlPlace(){var w=document.querySelector('.mapwrap'),db=document.querySelector('.dayb'),m=$('mctl');if(!w||!db||!m)return;
   var W=w.getBoundingClientRect(),B=db.getBoundingClientRect(),b=12;
   if(B.height&&B.bottom>W.bottom-40)b=Math.round(W.bottom-B.top)+10;   /* the day slider sits at the bottom: stand above it */
-  m.style.bottom=b+'px';$('bmg').style.bottom=b+'px';var c=$('c3d');c.style.bottom=b+'px';c.style.right=(m.offsetWidth+20)+'px'}
+  m.style.bottom=b+'px';$('bmg').style.bottom=b+'px';if($('bshow'))$('bshow').style.bottom=b+'px';var c=$('c3d');c.style.bottom=b+'px';c.style.right=(m.offsetWidth+20)+'px'}
 function mctlInit(){
   mctlPaint();mctlPlace();addEventListener('resize',mctlPlace);
   if(window.ResizeObserver)new ResizeObserver(mctlPlace).observe(document.querySelector('.dayb'));
@@ -1645,7 +1723,7 @@ function mctlInit(){
     else{var rq=FSE.requestFullscreen||FSE.webkitRequestFullscreen;var p=rq&&rq.call(FSE);if(!rq)toast(L("Bu brauzerda to'liq ekran ishlamaydi."));else if(p&&p.catch)p.catch(function(){toast(L("Bu brauzerda to'liq ekran ishlamaydi."))})}};
   document.addEventListener('fullscreenchange',function(){mctlPaint();setTimeout(function(){map.resize()},60)});
   document.addEventListener('webkitfullscreenchange',mctlPaint)}
-window.__relang=function(){thPaint();whoPaint();if($('bfs'))mctlPaint();if(META&&D&&D.V)qPaint();if(!META||!map)return;buildRail();all();if(DCUR&&!$('drawer').hidden)DCUR()};
+window.__relang=function(){thPaint();whoPaint();foldPaint();if($('bfs'))mctlPaint();if(META&&D&&D.V)qPaint();if(!META||!map)return;buildRail();all();if(DCUR&&!$('drawer').hidden)DCUR()};
 function setDay(d){S.d=Math.max(1,Math.min(DMAX,d));$('day').value=S.d;all()}
 /* ---------- village search in the top bar (as in index.html) ---------- */
 var VHA=null,QI=-1;
@@ -2123,7 +2201,42 @@ function pressWin(w){[].forEach.call($('wsel').children,function(x){x.setAttribu
 function setWin(w){S.win=w;S.yr=null;S.wend=null;pressWin(w)}
 /* leaving a picked year by dragging: keep the same width, just let it scroll */
 function freeYear(span){if(S.yr==null)return;S.yr=null;S.win=Math.round(span);pressWin(-1)}
-function all(){applyMap();renderSide();writeHash()}
+/* ---------- status donut under the map: contours per class, total area in the middle; a class pressed = only it lights up ---------- */
+function donut(){
+  var el=$('dnut');if(!el||!META)return;var d=S.d,s=sel(d),n=s.n,a=s.a,tn=sum(n)||1,ta=sum(a),k=S.cls;
+  $('dn-h').innerHTML=esc(L("{0}: me'yorga nisbatan holat",dD(d)))+'<small>'+esc(S.v>=0?D.V[S.v].name:L("Butun Minbu tumani"))+'</small>';
+  var R=66,W=17,cx=75,cy=75,a0=-Math.PI/2,gap=n.filter(function(x){return x>0}).length>1?.025:0,P=[];
+  function pt(r,t){return (cx+r*Math.cos(t)).toFixed(2)+' '+(cy+r*Math.sin(t)).toFixed(2)}
+  [0,1,2,3,4].forEach(function(i){if(!n[i])return;var sw=n[i]/tn*Math.PI*2,t0=a0+gap/2,t1=a0+sw-gap/2;a0+=sw;if(t1<=t0)t1=t0+.001;
+    if(sw>=Math.PI*2-1e-6){t0=-Math.PI/2;t1=t0+Math.PI*2-1e-4}
+    var lg=t1-t0>Math.PI?1:0,ro=R+W/2,ri=R-W/2;
+    P.push('<path data-c="'+i+'" class="'+(k<0?'':k===i?'on':'off')+'" fill="'+CC[i]+'" d="M'+pt(ro,t0)+' A'+ro+' '+ro+' 0 '+lg+' 1 '+pt(ro,t1)+' L'+pt(ri,t1)+' A'+ri+' '+ri+' 0 '+lg+' 0 '+pt(ri,t0)+'Z"><title>'+esc(cn(i))+': '+f(n[i])+' '+L("kontur")+' · '+ha(a[i],0)+'</title></path>')});
+  $('dn-c').innerHTML='<svg viewBox="0 0 150 150" role="img" aria-label="'+esc(L("Holat bo'yicha konturlar"))+'">'+P.join('')+'</svg>'+
+    '<div class="ctr"><b>'+f(k>=0?a[k]:ta,0)+'</b><span>'+(k>=0?L("ga")+' · '+esc(cn(k)):L("ga, jami"))+'</span></div>';
+  $('dn-l').innerHTML=[0,1,2,3,4].map(function(i){return '<button type="button" data-c="'+i+'" aria-pressed="'+(k===i)+'"'+(k>=0&&k!==i?' class="off"':'')+' title="'+esc(cr(i))+'">'+
+    '<i style="background:'+CC[i]+'"></i><b>'+esc(cn(i))+'</b><small>'+f(n[i])+'</small><em>'+f(n[i]/tn*100,0)+' %</em></button>'}).join('')}
+function dnPick(e){var b=e.target.closest('[data-c]');if(!b)return;var c=+b.dataset.c;
+  if(S.mode!=='s'){S.mode='s';if(NDI>=0)ndShow(-1);S.cls=c}else S.cls=S.cls===c?-1:c;all()}
+/* the map legend stays only for the colour scales (other map modes, the real NDVI raster); the status classes live in the donut */
+var legend1=legend;legend=function(){legend1();var el=$('legend');el.hidden=S.mode==='s'&&NDI<0;donut()};
+/* ---------- fold the chart row / the right column (as in index.html), remembered in this browser ---------- */
+var FOLD={b:false,s:false};try{FOLD.b=localStorage.getItem('fc_bcl')==='1';FOLD.s=localStorage.getItem('fc_scl')==='1'}catch(e){}
+function foldPaint(){var g=document.querySelector('.grid');if(!g||!$('bhide'))return;
+  g.classList.toggle('bcl',FOLD.b);g.classList.toggle('scl',FOLD.s);
+  $('bhide').innerHTML='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg>'+L("Berkitish");
+  $('bhide').title=L("Grafiklar qatorini yashirish: xarita kattaroq ko'rinadi");$('bhide').setAttribute('aria-expanded',String(!FOLD.b));
+  $('bshow').hidden=!FOLD.b;$('bshow').innerHTML='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 10 4-4 4 4"/></svg>'+L("Ochish");$('bshow').title=L("Grafiklar qatorini qayta ochish");
+  $('shide').innerHTML='<span>'+L(FOLD.s?"Ochish":"Berkitish")+'</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="'+(FOLD.s?'m10 4-4 4 4 4':'m6 4 4 4-4 4')+'"/></svg>';
+  $('shide').title=L(FOLD.s?"O'ng panelni qayta ochish":"O'ng panelni yashirish: xarita kengroq ko'rinadi");$('shide').setAttribute('aria-expanded',String(!FOLD.s))}
+function foldSet(k,on){FOLD[k]=on;try{localStorage.setItem(k==='b'?'fc_bcl':'fc_scl',on?'1':'0')}catch(e){}foldPaint();
+  setTimeout(function(){if(map)map.resize();if(typeof mctlPlace==='function')mctlPlace();window.dispatchEvent(new Event('resize'))},40)}
+function foldInit(){foldPaint();
+  $('bhide').onclick=function(){foldSet('b',true)};$('bshow').onclick=function(){foldSet('b',false)};
+  $('shide').onclick=function(){foldSet('s',!FOLD.s)}}
+/* narrow right panel: never split "(10 kun)", "+9 %", "(80 %)" across lines - the whole bracket moves to the next line */
+function nbFix(){var w=document.createTreeWalker(document.querySelector('.insight'),NodeFilter.SHOW_TEXT),n;
+  while(n=w.nextNode()){var t=n.nodeValue,u=t.replace(/(\d) (?=%)/g,'$1\u00a0').replace(/\((\d+) /g,'($1\u00a0').replace(/ (kun\))/g,'\u00a0$1');if(u!==t)n.nodeValue=u}}
+var renderTab0=renderTab;renderTab=function(){var r=renderTab0.apply(this,arguments);try{nbFix()}catch(e){}return r};function all(){applyMap();renderSide();writeHash()}
 addEventListener('hashchange',function(){if(!map||!META)return;var v0=S.v;readHash();$('vsel').value=String(S.v);$('day').value=S.d;qPaint();if(S.v!==v0)setVillage(S.v);else all()});
 var rzt;addEventListener('resize',function(){clearTimeout(rzt);rzt=setTimeout(renderSide,150)});
 addEventListener('keydown',function(e){if(e.key==='Escape'){if(!$('drawer').hidden)closeD();else if(S.pick>=0)pick(-1)}
