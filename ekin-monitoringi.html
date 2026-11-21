@@ -472,7 +472,7 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <div class="formula"><p class="lbl">Formula</p><p class="f">(Green − NIR) / (Green + NIR)</p><p class="sub">PlanetScope 8b: (b4 − b8) / (b4 + b8) · ArcGIS Pro: Water → NDWI, Green = 4, NIR = 8</p></div>
 <div class="facts sm">
 <div class="fact"><p class="k">Nimani o‘lchaydi</p><p class="v">Ochiq suv: ko‘l, kanal, zovur, suv bosgan dala</p></div>
-<div class="fact"><p class="k">Qachon kerak</p><p class="v">Sholi, suv bosish, sug‘orish tarmog‘i nazorati</p></div>
+<div class="fact"><p class="k">Qachon kerak</p><p class="v">Suv bosish, sug‘orish nazorati; 2026 — paxta uchun qo‘shimcha</p></div>
 <div class="fact"><p class="k">Toifalar</p><p class="v">Suv miqdori bo‘yicha: past → juda yuqori</p></div>
 </div>
 </div>
@@ -568,6 +568,48 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <div class="card o"><p class="num">04</p><h3>Dala statistikasi</h3><p class="t">Kontur chegarasi bo‘yicha o‘rtacha qiymat</p></div>
 <div class="card o"><p class="num">05</p><h3>Anomaliya</h3><p class="t">Ko‘p yillik o‘rtacha va qo‘shni dalalar bilan taqqoslash</p></div>
 <div class="card o"><p class="num">06</p><h3>Xarita va hisobot</h3><p class="t">Muammoli dalalar ro‘yxati va tematik xarita</p></div>
+</div>
+<div class="foot"><p>Rizayev Komiljon · Vegetatsiya monitoringi</p><p class="pg"></p></div>
+
+</section>
+<section id="kiritish" class="alt">
+<p class="eyebrow">Amaliyot · 2026</p>
+<h2>Natijalarni kiritish tartibi</h2>
+<p class="lead" style="margin-bottom:28px">Indeks natijalari kontur qatlamiga ikki shaklda yoziladi: gektar (toifa bo‘yicha) yoki piksel qiymati</p>
+<div class="cols" style="align-items:start">
+<div>
+<table class="tbl tight" style="font-size:26px">
+<tr class="h"><th style="width:20%">Indeks</th><th style="width:44%">Bug‘doy, 2026</th><th style="width:36%">Paxta, 2026</th></tr>
+<tr class="z"><td><b>NDVI</b></td><td>Zonal statistika</td><td>Piksel qiymati</td></tr>
+<tr><td><b>CI</b></td><td>Maska → shape → ga</td><td>Piksel qiymati</td></tr>
+<tr class="z"><td><b>NDRE</b></td><td>Maska → shape → ga</td><td>Piksel qiymati</td></tr>
+<tr><td><b>RVI</b></td><td>Maska → shape → ga</td><td>Piksel qiymati</td></tr>
+<tr class="z"><td><b>NDWI</b></td><td style="color:#4A5A50">Ishlatilmagan</td><td>Piksel qiymati, qo‘shimcha</td></tr>
+</table>
+<div class="formula" style="margin-top:28px;padding:28px 36px">
+<p class="lbl">“Maska → shape → ga” qanday bajariladi</p>
+<p class="sub" style="font-size:26px;color:#F5F4EC;margin-top:0">Reclassify (4 toifa) → Raster to Polygon → Pairwise Intersect (kontur) → Calculate Geometry (ga) → Pivot Table</p>
+</div>
+</div>
+<div class="stack" style="gap:24px">
+<div>
+<p class="cap" style="margin-bottom:10px">Gektar shaklda — bug‘doy, CI (namuna)</p>
+<table class="tbl tight" style="font-size:24px">
+<tr class="h"><th>Kontur</th><th>Jami, ga</th><th style="background:#C0392B">Past</th><th style="background:#D9792B">O‘rta</th><th style="background:#5E9A2E">Yaxshi</th><th style="background:#2E6B3A">J. yaxshi</th></tr>
+<tr class="z"><td>1</td><td>12,4</td><td>1,2</td><td>3,5</td><td>5,8</td><td>1,9</td></tr>
+<tr><td>2</td><td>8,6</td><td>4,1</td><td>2,7</td><td>1,5</td><td>0,3</td></tr>
+</table>
+</div>
+<div>
+<p class="cap" style="margin-bottom:10px">Piksel qiymati — paxta, kontur bo‘yicha (namuna)</p>
+<table class="tbl tight" style="font-size:24px">
+<tr class="h"><th>Kontur</th><th>NDVI</th><th>CI</th><th>NDRE</th><th>RVI</th><th>NDWI</th></tr>
+<tr class="z"><td>3</td><td>0,71</td><td>5,2</td><td>0,36</td><td>5,9</td><td>−0,24</td></tr>
+<tr><td>4</td><td>0,38</td><td>1,8</td><td>0,17</td><td>2,2</td><td>−0,05</td></tr>
+</table>
+</div>
+<p class="small">Gektar shakli “dalaning qancha qismi qaysi holatda” degan savolga, piksel qiymati esa “dala o‘rtacha qanday holatda” degan savolga javob beradi.</p>
+</div>
 </div>
 <div class="foot"><p>Rizayev Komiljon · Vegetatsiya monitoringi</p><p class="pg"></p></div>
 
