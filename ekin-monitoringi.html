@@ -116,6 +116,7 @@ section.accent .foot { color: var(--dark); }
 .tbl th { color: var(--light); font-weight: 700; padding: 14px 20px; }
 .tbl td { padding: 14px 20px; }
 .tbl tr.z { background: var(--paper); }
+.tbl.tight th, .tbl.tight td { padding: 8px 20px; }
 
 /* chart helpers */
 .rel { position: relative; }
@@ -237,7 +238,7 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <p class="lead">Asoslardan amaliyotgacha — beshta qadamda</p>
 <div class="agenda">
 <div class="ag"><p class="n">01</p><p class="h">Asoslar</p><p class="d">O‘simlik yorug‘likni qanday qaytaradi</p></div>
-<div class="ag"><p class="n">02</p><p class="h">Ma’lumot manbai</p><p class="d">Sentinel-2 sun’iy yo‘ldoshi kanallari</p></div>
+<div class="ag"><p class="n">02</p><p class="h">Ma’lumot manbai</p><p class="d">PlanetScope 8 kanalli tasviri</p></div>
 <div class="ag"><p class="n">03</p><p class="h">Oltita indeks</p><p class="d">NDVI, RVI, NDRE, CI, NDMI, NDWI</p></div>
 <div class="ag"><p class="n">04</p><p class="h">Taqqoslash va mavsum</p><p class="d">Qaysi indeks qachon qo‘llanadi</p></div>
 <div class="ag"><p class="n">05</p><p class="h">Amaliyot va cheklovlar</p><p class="d">Ish jarayoni, xatolar va yechimlar</p></div>
@@ -250,7 +251,7 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <h2>Vegetatsiya monitoringi nima?</h2>
 <p class="lead">Ekinlarning o‘sish holatini sun’iy yo‘ldosh tasvirlari orqali muntazam, katta hududda va bir xil usulda kuzatish</p>
 <div class="cards c3">
-<div class="card"><p class="num">Nima?</p><h3>Masofadan kuzatish</h3><p class="t">Har 5 kunda olinadigan tasvirlardan har bir dala uchun o‘simlik holati ko‘rsatkichini hisoblash</p></div>
+<div class="card"><p class="num">Nima?</p><h3>Masofadan kuzatish</h3><p class="t">Har kuni olinadigan tasvirlardan har bir dala uchun o‘simlik holati ko‘rsatkichini hisoblash</p></div>
 <div class="card o"><p class="num">Nega?</p><h3>Erta ogohlantirish</h3><p class="t">Suv tanqisligi, azot yetishmasligi, kasallik va zararkunandalarni ko‘z bilan ko‘rinmasdan oldin aniqlash</p></div>
 <div class="card w"><p class="num">Qanday?</p><h3>Spektral indekslar</h3><p class="t">Turli to‘lqin uzunligidagi kanallar nisbatidan hisoblanadigan oddiy formulalar</p></div>
 </div>
@@ -294,6 +295,7 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <div class="key"><div class="sw" style="background:#9A7346"></div><p>Ochiq tuproq (punktir)</p></div>
 <p class="small">B — ko‘k, G — yashil, R — qizil, RE — qizil chegara (Red Edge), NIR — yaqin infraqizil (Near Infrared), SWIR — qisqa to‘lqinli infraqizil (Short-Wave Infrared)</p>
 <p class="small">Xlorofill qizilni yutadi, barg hujayralari NIR’ni qaytaradi, barg suvi SWIR’ni yutadi. Indekslar shu farqlarni o‘lchaydi.</p>
+<p class="small">PlanetScope 8 kanali B dan NIR gacha (430–885 nm); SWIR yo‘q.</p>
 </div>
 </div>
 <div class="foot"><p>Rizayev Komiljon · Vegetatsiya monitoringi</p><p class="pg"></p></div>
@@ -301,16 +303,19 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 </section>
 <section id="sentinel" class="alt">
 <p class="eyebrow">Ma’lumot manbai</p>
-<h2>Sentinel-2: indekslar uchun kerakli kanallar</h2>
-<p class="lead">Yevropa Kosmik Agentligi (ESA) yo‘ldoshlari · 13 kanal · har 5 kunda qayta suratga olish · bepul</p>
-<table class="tbl">
-<tr class="h"><th style="width:12%">Kanal</th><th style="width:34%">Nomi</th><th style="width:18%">Markaz, nm</th><th style="width:12%">Piksel</th><th style="width:24%">Indekslar</th></tr>
-<tr class="z"><td>B2</td><td>Ko‘k (Blue)</td><td>490</td><td>10 m</td><td>—</td></tr>
-<tr><td>B3</td><td>Yashil (Green)</td><td>560</td><td>10 m</td><td>CI Green, NDWI</td></tr>
-<tr class="z"><td>B4</td><td>Qizil (Red)</td><td>665</td><td>10 m</td><td>NDVI, RVI</td></tr>
-<tr><td>B5</td><td>Qizil chegara (Red Edge)</td><td>705</td><td>20 m</td><td>NDRE, CI Red-Edge</td></tr>
-<tr class="z"><td>B8</td><td>Yaqin infraqizil (NIR)</td><td>842</td><td>10 m</td><td>Barchasi</td></tr>
-<tr><td>B11</td><td>Qisqa to‘lqinli infraqizil (SWIR)</td><td>1610</td><td>20 m</td><td>NDMI</td></tr>
+<h2>PlanetScope: 8 kanalli tasvir</h2>
+<p class="lead" style="margin-bottom:28px">Planet Labs SuperDove yo‘ldoshlari · 8 kanal · 3 m piksel · deyarli har kuni suratga olish</p>
+<table class="tbl tight" style="font-size:26px">
+<tr class="h"><th style="width:10%">Kanal</th><th style="width:36%">Nomi</th><th style="width:20%">Diapazon, nm</th><th style="width:34%">Indekslar</th></tr>
+<tr class="z"><td>b1</td><td>Qirg‘oq ko‘ki (Coastal Blue)</td><td>431–452</td><td>—</td></tr>
+<tr><td>b2</td><td>Ko‘k (Blue)</td><td>465–515</td><td>—</td></tr>
+<tr class="z"><td>b3</td><td>Yashil I (Green I)</td><td>513–549</td><td>—</td></tr>
+<tr><td><b>b4</b></td><td>Yashil (Green)</td><td>547–583</td><td>CI Green, NDWI</td></tr>
+<tr class="z"><td>b5</td><td>Sariq (Yellow)</td><td>600–620</td><td>—</td></tr>
+<tr><td><b>b6</b></td><td>Qizil (Red)</td><td>650–680</td><td>NDVI, RVI</td></tr>
+<tr class="z"><td><b>b7</b></td><td>Qizil chegara (Red Edge)</td><td>697–713</td><td>NDRE, CI Red-Edge</td></tr>
+<tr><td><b>b8</b></td><td>Yaqin infraqizil (NIR)</td><td>845–885</td><td>Barchasi</td></tr>
+<tr class="z"><td style="color:#9E4E16">—</td><td style="color:#9E4E16">Qisqa to‘lqinli infraqizil (SWIR)</td><td style="color:#9E4E16">yo‘q</td><td style="color:#9E4E16">NDMI hisoblanmaydi</td></tr>
 </table>
 <div class="foot"><p>Rizayev Komiljon · Vegetatsiya monitoringi</p><p class="pg"></p></div>
 
@@ -321,7 +326,7 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <p class="lead">Normalized Difference Vegetation Index — normallashtirilgan farq vegetatsiya indeksi</p>
 <div class="cols">
 <div class="stack">
-<div class="formula"><p class="lbl">Formula</p><p class="f">(NIR − Red) / (NIR + Red)</p><p class="sub">Sentinel-2: (B8 − B4) / (B8 + B4) · PlanetScope: (b8 − b6) / (b8 + b6)</p></div>
+<div class="formula"><p class="lbl">Formula</p><p class="f">(NIR − Red) / (NIR + Red)</p><p class="sub">PlanetScope 8b: (b8 − b6) / (b8 + b6) · ArcGIS Pro: NDVI, NIR = 8, Red = 6</p></div>
 <div class="facts sm">
 <div class="fact"><p class="k">Nimani o‘lchaydi</p><p class="v">Yashil biomassa va qoplam zichligi</p></div>
 <div class="fact"><p class="k">Qachon kerak</p><p class="v">Mavsum boshi va o‘rtasi, ekilgan maydonni aniqlash</p></div>
@@ -361,7 +366,7 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <p class="lead">Ratio Vegetation Index — nisbat vegetatsiya indeksi (Jordan, 1969)</p>
 <div class="cols">
 <div class="stack">
-<div class="formula"><p class="lbl">Formula</p><p class="f">NIR / Red</p><p class="sub">Sentinel-2: B8 / B4 · PlanetScope: b8 / b6 · ArcGIS Pro: SR</p></div>
+<div class="formula"><p class="lbl">Formula</p><p class="f">NIR / Red</p><p class="sub">PlanetScope 8b: b8 / b6 · ArcGIS Pro: SR, NIR = 8, Red = 6</p></div>
 <div class="facts sm">
 <div class="fact"><p class="k">Nimani o‘lchaydi</p><p class="v">Biomassa va barg sathi indeksi (LAI — Leaf Area Index)</p></div>
 <div class="fact"><p class="k">Afzalligi</p><p class="v">Zich ekinda NDVI’dan sezgirroq, kech to‘yinadi</p></div>
@@ -389,11 +394,11 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <p class="lead">Normalized Difference Red Edge Index — qizil chegara normallashtirilgan farq indeksi</p>
 <div class="cols">
 <div class="stack">
-<div class="formula"><p class="lbl">Formula</p><p class="f">(NIR − RE) / (NIR + RE)</p><p class="sub">Sentinel-2: (B8 − B5) / (B8 + B5) · PlanetScope: (b8 − b7) / (b8 + b7)</p></div>
+<div class="formula"><p class="lbl">Formula</p><p class="f">(NIR − RE) / (NIR + RE)</p><p class="sub">PlanetScope 8b: (b8 − b7) / (b8 + b7) · ArcGIS Pro: Red-Edge NDVI, NIR = 8, RE = 7</p></div>
 <div class="facts sm">
 <div class="fact"><p class="k">Nimani o‘lchaydi</p><p class="v">Barg xlorofili va azot bilan ta’minlanish</p></div>
 <div class="fact"><p class="k">Qachon kerak</p><p class="v">NDVI to‘yinganda; o‘g‘itlash rejasi</p></div>
-<div class="fact"><p class="k">Cheklovi</p><p class="v">Sentinel-2’da RE kanali 20 m — mayda dalada aniqlik pasayadi</p></div>
+<div class="fact"><p class="k">Cheklovi</p><p class="v">RE kanali tor (697–713 nm): chegaralar boshqa sensorlarnikidan farq qiladi</p></div>
 </div>
 </div>
 <div class="rel illus" style="width:800px;height:560px">
@@ -415,10 +420,10 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <p class="lead">Chlorophyll Index — xlorofill indeksi (Gitelson va boshqalar, 2003)</p>
 <div class="cols">
 <div class="stack">
-<div class="formula"><p class="lbl">Formula</p><p class="f">CI Green = NIR / Green − 1</p><p class="f">CI Red-Edge = NIR / RE − 1</p><p class="sub">Sentinel-2: B8 / B3 − 1 va B8 / B5 − 1 · PlanetScope: b8 / b4 − 1 va b8 / b7 − 1</p></div>
+<div class="formula"><p class="lbl">Formula</p><p class="f">CI Green = NIR / Green − 1</p><p class="f">CI Red-Edge = NIR / RE − 1</p><p class="sub">PlanetScope 8b: b8 / b4 − 1 va b8 / b7 − 1 · ArcGIS Pro: CI Green, CI Red-Edge</p></div>
 <div class="facts sm">
 <div class="fact"><p class="k">Nimani o‘lchaydi</p><p class="v">Barg xlorofili; zich qoplamda ham to‘yinmaydi</p></div>
-<div class="fact"><p class="k">Variantlari</p><p class="v">CI Green — 10 m; CI Red-Edge — sezgirroq, 20 m</p></div>
+<div class="fact"><p class="k">Variantlari</p><p class="v">CI Green va CI Red-Edge — ikkalasi ham 3 m; Red-Edge sezgirroq</p></div>
 </div>
 </div>
 <div class="rel illus" style="width:800px;height:560px">
@@ -440,11 +445,11 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <p class="lead">Normalized Difference Moisture Index — normallashtirilgan farq namlik indeksi</p>
 <div class="cols">
 <div class="stack">
-<div class="formula"><p class="lbl">Formula</p><p class="f">(NIR − SWIR) / (NIR + SWIR)</p><p class="sub">Sentinel-2: (B8 − B11) / (B8 + B11) · PlanetScope’da SWIR kanali yo‘q</p></div>
+<div class="formula"><p class="lbl">Formula</p><p class="f">(NIR − SWIR) / (NIR + SWIR)</p><p class="sub">PlanetScope 8b: SWIR kanali yo‘q — bu indeks hisoblanmaydi. Kerak bo‘lsa Sentinel-2 (B8, B11) yoki Landsat 8/9 (B5, B6) olinadi</p></div>
 <div class="facts sm">
 <div class="fact"><p class="k">Nimani o‘lchaydi</p><p class="v">Barg va to‘qimadagi suv miqdori</p></div>
 <div class="fact"><p class="k">Qachon kerak</p><p class="v">Sug‘orish nazorati, suv stressini erta aniqlash</p></div>
-<div class="fact"><p class="k">Eslatma</p><p class="v">Gao (1996) NDWI bilan bir xil formula</p></div>
+<div class="fact"><p class="k">Diqqat</p><p class="v">PlanetScope’da yo‘q; o‘rniga NDWI va dala kuzatuvi</p></div>
 </div>
 </div>
 <div class="rel illus" style="width:800px;height:560px">
@@ -466,7 +471,7 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <p class="lead">Normalized Difference Water Index — normallashtirilgan farq suv indeksi (McFeeters, 1996)</p>
 <div class="cols">
 <div class="stack">
-<div class="formula"><p class="lbl">Formula</p><p class="f">(Green − NIR) / (Green + NIR)</p><p class="sub">Sentinel-2: (B3 − B8) / (B3 + B8) · PlanetScope: (b4 − b8) / (b4 + b8)</p></div>
+<div class="formula"><p class="lbl">Formula</p><p class="f">(Green − NIR) / (Green + NIR)</p><p class="sub">PlanetScope 8b: (b4 − b8) / (b4 + b8) · ArcGIS Pro: Water → NDWI, Green = 4, NIR = 8</p></div>
 <div class="facts sm">
 <div class="fact"><p class="k">Nimani o‘lchaydi</p><p class="v">Ochiq suv: ko‘l, kanal, zovur, suv bosgan dala</p></div>
 <div class="fact"><p class="k">Qachon kerak</p><p class="v">Sholi, suv bosish, sug‘orish tarmog‘i nazorati</p></div>
@@ -490,31 +495,31 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <p class="eyebrow">Ma’lumotnoma</p>
 <h2>Barcha indekslar: formula, kanal, maqsad</h2>
 <table class="tbl" style="font-size:24px;margin-top:24px">
-<tr class="h"><th style="width:11%">Indeks</th><th style="width:26%">Formula</th><th style="width:20%">Sentinel-2</th><th style="width:18%">PlanetScope 8b</th><th style="width:25%">Maqsadi</th></tr>
-<tr class="z"><td>NDVI</td><td>(NIR − Red) / (NIR + Red)</td><td>(B8 − B4) / (B8 + B4)</td><td>(b8 − b6) / (b8 + b6)</td><td>Biomassa, qoplam zichligi</td></tr>
-<tr><td>RVI (SR)</td><td>NIR / Red</td><td>B8 / B4</td><td>b8 / b6</td><td>Zich qoplamdagi biomassa</td></tr>
-<tr class="z"><td>NDRE</td><td>(NIR − RE) / (NIR + RE)</td><td>(B8 − B5) / (B8 + B5)</td><td>(b8 − b7) / (b8 + b7)</td><td>Xlorofill, azot</td></tr>
-<tr><td>CI Green</td><td>NIR / Green − 1</td><td>B8 / B3 − 1</td><td>b8 / b4 − 1</td><td>Xlorofill miqdori</td></tr>
-<tr class="z"><td>CI Red-Edge</td><td>NIR / RE − 1</td><td>B8 / B5 − 1</td><td>b8 / b7 − 1</td><td>Xlorofill, sezgirroq</td></tr>
-<tr><td>NDMI</td><td>(NIR − SWIR) / (NIR + SWIR)</td><td>(B8 − B11) / (B8 + B11)</td><td>SWIR yo‘q</td><td>Barg namligi, suv stressi</td></tr>
-<tr class="z"><td>NDWI</td><td>(Green − NIR) / (Green + NIR)</td><td>(B3 − B8) / (B3 + B8)</td><td>(b4 − b8) / (b4 + b8)</td><td>Ochiq suv, suv bosgan yer</td></tr>
+<tr class="h"><th style="width:12%">Indeks</th><th style="width:25%">Formula</th><th style="width:19%">PlanetScope 8b</th><th style="width:20%">ArcGIS Pro</th><th style="width:24%">Maqsadi</th></tr>
+<tr class="z"><td>NDVI</td><td>(NIR − Red) / (NIR + Red)</td><td>(b8 − b6) / (b8 + b6)</td><td>NDVI</td><td>Biomassa, qoplam zichligi</td></tr>
+<tr><td>RVI (SR)</td><td>NIR / Red</td><td>b8 / b6</td><td>SR</td><td>Zich qoplamdagi biomassa</td></tr>
+<tr class="z"><td>NDRE</td><td>(NIR − RE) / (NIR + RE)</td><td>(b8 − b7) / (b8 + b7)</td><td>Red-Edge NDVI</td><td>Xlorofill, azot</td></tr>
+<tr><td>CI Green</td><td>NIR / Green − 1</td><td>b8 / b4 − 1</td><td>CI Green</td><td>Xlorofill miqdori</td></tr>
+<tr class="z"><td>CI Red-Edge</td><td>NIR / RE − 1</td><td>b8 / b7 − 1</td><td>CI Red-Edge</td><td>Xlorofill, sezgirroq</td></tr>
+<tr><td>NDMI</td><td>(NIR − SWIR) / (NIR + SWIR)</td><td><b>SWIR yo‘q — hisoblanmaydi</b></td><td>Water → NDMI</td><td>Barg namligi, suv stressi</td></tr>
+<tr class="z"><td>NDWI</td><td>(Green − NIR) / (Green + NIR)</td><td>(b4 − b8) / (b4 + b8)</td><td>Water → NDWI</td><td>Ochiq suv, suv bosgan yer</td></tr>
 </table>
-<p class="small" style="margin-top:24px">Kanallar: NIR — yaqin infraqizil · Red — qizil · RE — qizil chegara (Red Edge) · Green — yashil · SWIR — qisqa to‘lqinli infraqizil. PlanetScope: b4 — Green, b6 — Red, b7 — Red Edge, b8 — NIR.</p>
+<p class="small" style="margin-top:24px">PlanetScope 8b kanallari: b4 — Green (yashil, 547–583 nm) · b6 — Red (qizil, 650–680 nm) · b7 — Red Edge (qizil chegara, 697–713 nm) · b8 — NIR (yaqin infraqizil, 845–885 nm). SWIR — qisqa to‘lqinli infraqizil, PlanetScope’da yo‘q.</p>
 <div class="foot"><p>Rizayev Komiljon · Vegetatsiya monitoringi</p><p class="pg"></p></div>
 
 </section>
 <section id="taqqos" class="alt">
 <p class="eyebrow">Taqqoslash</p>
-<h2>Oltita indeks bir jadvalda</h2>
+<h2>Oltita indeks: PlanetScope 8b kanallari</h2>
 <p class="lead">Har bir indeks ekin holatining boshqa tomonini ko‘rsatadi — ular bir-birini to‘ldiradi</p>
 <table class="tbl">
 <tr class="h"><th style="width:14%">Indeks</th><th style="width:26%">Kanallar</th><th style="width:28%">Asosiy ma’lumot</th><th style="width:32%">Eng mos davr</th></tr>
-<tr class="z"><td>NDVI</td><td>NIR, Red</td><td>Biomassa, qoplam</td><td>Mavsum boshi va o‘rtasi</td></tr>
-<tr><td>RVI</td><td>NIR, Red</td><td>Biomassa, LAI</td><td>Zich qoplam davri</td></tr>
-<tr class="z"><td>NDRE</td><td>NIR, Red Edge</td><td>Xlorofill, azot</td><td>Mavsum o‘rtasi va oxiri</td></tr>
-<tr><td>CI</td><td>NIR, Green yoki RE</td><td>Xlorofill</td><td>O‘g‘itlash davri</td></tr>
-<tr class="z"><td>NDMI</td><td>NIR, SWIR</td><td>Barg suvi</td><td>Issiq davr, sug‘orish</td></tr>
-<tr><td>NDWI</td><td>Green, NIR</td><td>Ochiq suv</td><td>Sholi, suv bosish</td></tr>
+<tr class="z"><td>NDVI</td><td>b8 NIR, b6 Red</td><td>Biomassa, qoplam</td><td>Mavsum boshi va o‘rtasi</td></tr>
+<tr><td>RVI</td><td>b8 NIR, b6 Red</td><td>Biomassa, LAI</td><td>Zich qoplam davri</td></tr>
+<tr class="z"><td>NDRE</td><td>b8 NIR, b7 RE</td><td>Xlorofill, azot</td><td>Mavsum o‘rtasi va oxiri</td></tr>
+<tr><td>CI</td><td>b8 NIR, b4 Green / b7 RE</td><td>Xlorofill</td><td>O‘g‘itlash davri</td></tr>
+<tr class="z"><td>NDMI</td><td>SWIR yo‘q — PlanetScope’da hisoblanmaydi</td><td>Barg suvi</td><td>Issiq davr, sug‘orish</td></tr>
+<tr><td>NDWI</td><td>b4 Green, b8 NIR</td><td>Ochiq suv</td><td>Sholi, suv bosish</td></tr>
 </table>
 <div class="foot"><p>Rizayev Komiljon · Vegetatsiya monitoringi</p><p class="pg"></p></div>
 
@@ -536,11 +541,11 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <section id="jarayon">
 <p class="eyebrow">Amaliyot</p>
 <h2>Monitoring ish jarayoni</h2>
-<p class="lead">Google Earth Engine (GEE) yoki ArcGIS Pro’da bajariladigan oltita qadam</p>
+<p class="lead">PlanetScope 8 kanalli tasvir bilan ArcGIS Pro’da bajariladigan oltita qadam</p>
 <div class="cards c3">
-<div class="card"><p class="num">01</p><h3>Tasvir tanlash</h3><p class="t">Sentinel-2 L2A, bulutliligi past sanalar</p></div>
-<div class="card"><p class="num">02</p><h3>Bulut niqobi</h3><p class="t">Bulut va soyani SCL qatlami bilan olib tashlash</p></div>
-<div class="card"><p class="num">03</p><h3>Indeks hisoblash</h3><p class="t">NDVI, RVI, NDRE, CI, NDMI, NDWI rastrlari</p></div>
+<div class="card"><p class="num">01</p><h3>Tasvir tanlash</h3><p class="t">PlanetScope 8b Surface Reflectance, bulutsiz sanalar</p></div>
+<div class="card"><p class="num">02</p><h3>Bulut niqobi</h3><p class="t">Bulut va soyani UDM2 niqobi bilan olib tashlash</p></div>
+<div class="card"><p class="num">03</p><h3>Indeks hisoblash</h3><p class="t">NDVI, RVI, NDRE, CI, NDWI rastrlari (Raster Functions)</p></div>
 <div class="card o"><p class="num">04</p><h3>Dala statistikasi</h3><p class="t">Kontur chegarasi bo‘yicha o‘rtacha qiymat</p></div>
 <div class="card o"><p class="num">05</p><h3>Anomaliya</h3><p class="t">Ko‘p yillik o‘rtacha va qo‘shni dalalar bilan taqqoslash</p></div>
 <div class="card o"><p class="num">06</p><h3>Xarita va hisobot</h3><p class="t">Muammoli dalalar ro‘yxati va tematik xarita</p></div>
@@ -553,10 +558,10 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <h2>Xatolar manbai va yechimlar</h2>
 <p class="lead">Indeks qiymatiga ishonishdan oldin to‘rt narsani tekshiramiz</p>
 <div class="cards c4">
-<div class="card w"><h3>Bulutlilik</h3><p class="t">Bahor va kuzda ochiq tasvirlar kam bo‘ladi</p><p class="tag">Yechim: 10 kunlik kompozit, Sentinel-1 radar</p></div>
+<div class="card w"><h3>Bulutlilik</h3><p class="t">Bahor va kuzda ochiq tasvirlar kam bo‘ladi</p><p class="tag">Yechim: har kungi suratlardan bulutsiz sanani tanlash</p></div>
 <div class="card"><h3>To‘yinish</h3><p class="t">Zich qoplamda NDVI deyarli o‘zgarmaydi</p><p class="tag">Yechim: NDRE, RVI bilan to‘ldirish</p></div>
-<div class="card s"><h3>Tuproq foni</h3><p class="t">Siyrak ekinda tuproq rangi natijani buzadi; 20 m pikselda chegara aralashadi</p><p class="tag">Yechim: SAVI, dala chetidan bufer</p></div>
-<div class="card o"><h3>Ma’lumot mosligi</h3><p class="t">2022-yil 25-yanvardan L2A qiymatlariga 1000 birlik siljish qo‘shilgan</p><p class="tag">Yechim: taqqoslashdan oldin tuzatish</p></div>
+<div class="card s"><h3>Tuproq foni</h3><p class="t">Siyrak ekinda tuproq rangi natijani buzadi; dala chetida piksellar aralashadi</p><p class="tag">Yechim: SAVI, dala chetidan bufer</p></div>
+<div class="card o"><h3>Ma’lumot mosligi</h3><p class="t">Yo‘ldoshlar soni ko‘p, ular orasida kalibrlash farqi bor</p><p class="tag">Yechim: faqat SR mahsuloti va SuperDove (8b) tasvirlari</p></div>
 </div>
 <div class="foot"><p>Rizayev Komiljon · Vegetatsiya monitoringi</p><p class="pg"></p></div>
 
@@ -661,11 +666,11 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <section id="m2-manbalar" class="alt">
 <p class="eyebrow">Ma’lumot manbalari</p>
 <h2>Kosmik tasvir va yer usti ma’lumoti</h2>
-<p class="lead">Optik va radar tasvirlar dala ma’lumotlari bilan birga ishlatiladi</p>
+<p class="lead">Asosiy manba — PlanetScope 8 kanalli tasviri; qolganlari uni to‘ldiradi</p>
 <table class="tbl">
 <tr class="h"><th style="width:28%">Manba</th><th style="width:14%">Aniqlik</th><th style="width:22%">Takrorlanish</th><th style="width:36%">Vazifasi</th></tr>
-<tr class="z"><td>Sentinel-2 (optik)</td><td>10 m</td><td>5 kun</td><td>Ekin turi, vegetatsiya indekslari</td></tr>
-<tr><td>Landsat 8/9 (optik)</td><td>30 m</td><td>8 kun</td><td>Ko‘p yillik arxiv, taqqoslash</td></tr>
+<tr class="z"><td><b>PlanetScope 8b (optik)</b></td><td>3 m</td><td>Har kuni</td><td>Ekin turi, indekslar, mayda dalalar</td></tr>
+<tr><td>Sentinel-2 (optik)</td><td>10–20 m</td><td>5 kun</td><td>SWIR kanali (NDMI), bepul arxiv</td></tr>
 <tr class="z"><td>Sentinel-1 (radar)</td><td>10 m</td><td>6–12 kun</td><td>Bulutli kunlarda ham tasvir</td></tr>
 <tr><td>Dala tekshiruvi</td><td>nuqta</td><td>Mavsumda 1–2 marta</td><td>O‘qitish va tekshirish namunalari</td></tr>
 <tr class="z"><td>Kontur xaritasi</td><td>vektor</td><td>Yiliga</td><td>Dala bo‘yicha natija</td></tr>
@@ -733,7 +738,7 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <div class="cols">
 <div class="facts">
 <div class="fact"><p class="k">Algoritm</p><p class="v">Random Forest (tasodifiy o‘rmon) — yuzlab qaror daraxtlari ovozi</p></div>
-<div class="fact"><p class="k">Kirish belgilari</p><p class="v">Oylik NDVI, NDRE, NDMI va Sentinel-1 radar (VV, VH) qiymatlari</p></div>
+<div class="fact"><p class="k">Kirish belgilari</p><p class="v">PlanetScope 8b: oylik NDVI, NDRE, CI, NDWI va 8 ta kanal qiymati</p></div>
 <div class="fact"><p class="k">Sinflar</p><p class="v">Bug‘doy, g‘o‘za, takroriy ekin, bog‘, boshqa ekin, bo‘sh yer</p></div>
 <div class="fact"><p class="k">Namunalar</p><p class="v">Dala tekshiruvi: 70% o‘qitish, 30% tekshirish uchun</p></div>
 </div>
@@ -806,8 +811,8 @@ body:hover #bar, #bar:focus-within { opacity: 1; }
 <h2>Xatolar manbai va yechimlar</h2>
 <p class="lead">Natija aniqligiga eng ko‘p ta’sir qiladigan to‘rt omil</p>
 <div class="cards c4">
-<div class="card w"><h3>Bulutlilik</h3><p class="t">Bahorda ekish davri tasvirlari yetishmaydi</p><p class="tag">Yechim: Sentinel-1 radar, kompozit</p></div>
-<div class="card s"><h3>Mayda dalalar</h3><p class="t">Tomorqa va kichik konturlarda piksellar aralashadi</p><p class="tag">Yechim: kontur ichidan bufer, 10 m kanallar</p></div>
+<div class="card w"><h3>Bulutlilik</h3><p class="t">Bahorda ekish davri tasvirlari yetishmaydi</p><p class="tag">Yechim: har kungi PlanetScope, kompozit</p></div>
+<div class="card s"><h3>Mayda dalalar</h3><p class="t">Tomorqa va kichik konturlarda piksellar aralashadi</p><p class="tag">Yechim: 3 m PlanetScope, kontur ichidan bufer</p></div>
 <div class="card y"><h3>O‘xshash ekinlar</h3><p class="t">Bug‘doy va arpa, beda va o‘t egri chiziqlari yaqin</p><p class="tag">Yechim: ko‘proq sana, radar belgilari</p></div>
 <div class="card o"><h3>Namuna kamligi</h3><p class="t">Dala tekshiruvi kam bo‘lsa algoritm adashadi</p><p class="tag">Yechim: har sinfga yetarli namuna</p></div>
 </div>
